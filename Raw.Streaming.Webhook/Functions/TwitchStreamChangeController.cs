@@ -14,11 +14,12 @@ using Raw.Streaming.Webhook.Translators;
 
 namespace Raw.Streaming.Webhook.Functions
 {
-    public class TwitchStreamChangeWebhookController
+    public class TwitchStreamChangeController
     {
         private const string WebhookEndpoint = "webhook/twitch/stream-change";
 
         private readonly string _webhookTopic = AppSettings.TwitchStreamChangeTopic;
+        private readonly string _broadcasterId = AppSettings.TwitchBroadcasterId;
         private readonly string _discordwebhookId = AppSettings.DiscordStreamLiveWebhookId;
         private readonly string _discordwebhookToken = AppSettings.DiscordStreamLiveWebhookToken;
         private readonly IDiscordNotificationService _discordNotificationService;
@@ -26,7 +27,7 @@ namespace Raw.Streaming.Webhook.Functions
         private readonly ISubscriptionService _subscriptionService;
         private readonly TwitchStreamChangeToDiscordNotificationTranslator _translator;
 
-        public TwitchStreamChangeWebhookController(
+        public TwitchStreamChangeController(
             ISubscriptionService subscriptionService, 
             IDiscordNotificationService discordNotificationService,
             ITwitchApiService twitchApiService,
@@ -40,14 +41,14 @@ namespace Raw.Streaming.Webhook.Functions
 
         [FunctionName("StreamChangeSubscribe")]
         public async Task StreamChangeSubscribe(
-            [TimerTrigger("0 0 5 * * 1", RunOnStartup = true)]TimerInfo myTimer,
+            [TimerTrigger("0 0 5 * * 1")]TimerInfo myTimer,
             ILogger logger)
         {
             try
             {
                 logger.LogInformation("StreamChangeSubscribe execution started");
                 var callbackUrl = $"https://{AppSettings.WebSiteUrl}/api/{WebhookEndpoint}";
-                await _subscriptionService.SubscribeAsync(_webhookTopic, callbackUrl);
+                await _subscriptionService.SubscribeAsync($"{_webhookTopic}{_broadcasterId}", callbackUrl);
                 logger.LogInformation("StreamChangeSubscribe execution succeeded");
             }
             catch(Exception e)
@@ -74,7 +75,7 @@ namespace Raw.Streaming.Webhook.Functions
                     return new OkResult();
                 }
                 var twitchStreamChange = requestContentObject.Data.First();
-                var games = await _twitchApiService.GetGames(twitchStreamChange.GameId);
+                var games = await _twitchApiService.GetGamesAsync(twitchStreamChange.GameId);
                 var notification = _translator.Translate(twitchStreamChange, games.First());
                 logger.LogInformation("Sending stream change notification to discord server");
                 await _discordNotificationService.SendNotification(_discordwebhookId, _discordwebhookToken, notification);

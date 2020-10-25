@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Raw.Streaming.Webhook.Functions
 {
-    public static class WebhookConfirmController
+    public static class WebhookController
     {
         [FunctionName("WebHookConfirm")]
         public static IActionResult WebHookConfirm(

@@ -16,7 +16,9 @@ namespace Raw.Streaming.Webhook
             builder.Services.AddSingleton<ISubscriptionService, TwitchSubscriptionService>();
             builder.Services.AddSingleton<IDiscordNotificationService, DiscordNotificationService>();
             builder.Services.AddSingleton<ITwitchApiService, TwitchApiService>();
+            builder.Services.AddSingleton<TwitchClipToDiscordNotificationTranslator>();
             builder.Services.AddSingleton<TwitchStreamChangeToDiscordNotificationTranslator>();
+            builder.Services.AddSingleton<TwitchVideoToDiscordNotificationTranslator>();
         }
     }
 }

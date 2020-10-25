@@ -2,12 +2,6 @@
 
 namespace Raw.Streaming.Webhook.Model
 {
-    public class TwitchGameResponse
-    {
-        [JsonPropertyName("data")]
-        public TwitchGame[] Data { get; set; }
-    }
-
     public class TwitchGame
     {
         [JsonPropertyName("id")]

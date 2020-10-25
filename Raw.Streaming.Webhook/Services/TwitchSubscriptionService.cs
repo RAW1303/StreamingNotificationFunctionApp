@@ -47,11 +47,11 @@ namespace Raw.Streaming.Webhook.Services
             request.Headers.Add("Authorization", $"Bearer {await GetTwitchToken(scope)}");
             request.Headers.Add("client-id", AppSettings.TwitchClientId);
 
-            _logger.LogInformation($"Calling twitch subscription endpoint with content:\n{subscriptionRequestJson}");
+            _logger.LogDebug($"Calling twitch subscription endpoint with content:\n{subscriptionRequestJson}");
             var response = await _client.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
-                throw new TwitchApiException($"Error while subscribing: {await response.Content.ReadAsStringAsync()}");
+                throw new TwitchApiException($"Error while subscribing:\n{subscriptionRequestJson}\n{await response.Content.ReadAsStringAsync()}");
             }
         }
     }

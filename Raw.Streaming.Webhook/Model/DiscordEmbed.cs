@@ -29,6 +29,12 @@ namespace Raw.Streaming.Webhook.Model
         [JsonPropertyName("image")]
         public DiscordEmbedImage Image { get; set; }
 
+        [JsonPropertyName("thumbnail")]
+        public DiscordEmbedThumbnail Thumbnail { get; set; }
+
+        [JsonPropertyName("video")]
+        public DiscordEmbedVideo Video { get; set; }
+
         [JsonPropertyName("author")]
         public DiscordEmbedAuthor Author { get; set; }
 
@@ -64,5 +70,29 @@ namespace Raw.Streaming.Webhook.Model
     {
         [JsonPropertyName("text")]
         public string Text { get; set; }
+    }
+
+    public class DiscordEmbedVideo
+    {
+        [JsonPropertyName("url")]
+        public string Url { get; set; }
+
+        [JsonPropertyName("height")]
+        public int Height { get; set; }
+
+        [JsonPropertyName("width")]
+        public int Width { get; set; }
+    }
+
+    public class DiscordEmbedThumbnail
+    {
+        [JsonPropertyName("url")]
+        public string Url { get; set; }
+
+        [JsonPropertyName("height")]
+        public int Height { get; set; }
+
+        [JsonPropertyName("width")]
+        public int Width { get; set; }
     }
 }
