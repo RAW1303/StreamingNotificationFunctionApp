@@ -1,5 +1,6 @@
 ﻿using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Model;
+using System;
 
 namespace Raw.Streaming.Webhook.Translators
 {
@@ -19,7 +20,7 @@ namespace Raw.Streaming.Webhook.Translators
                             Name = $"{twitchStreamChange.UserName} is now streaming"
                         },
                         Title = $"{twitchStreamChange.Title}",
-                        Url = $"https://twitch.tv/{twitchStreamChange.UserName}",
+                        Url = Uri.EscapeUriString($"https://twitch.tv/{twitchStreamChange.UserName}"),
                         Color = 6570404,
                         Fields = new DiscordEmbedField[]
                         {
@@ -32,7 +33,7 @@ namespace Raw.Streaming.Webhook.Translators
                         },
                         Image = new DiscordEmbedImage()
                         {
-                            Url = game.BoxArtUrl.Replace("{width}x{height}", AppSettings.GameBoxSize)
+                            Url = Uri.EscapeUriString(game.BoxArtUrl.Replace("{width}x{height}", AppSettings.GameBoxSize))
                         },
                         Footer = new DiscordEmbedFooter()
                         {

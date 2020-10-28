@@ -1,12 +1,25 @@
-﻿using Raw.Streaming.Webhook.Model;
+﻿using Microsoft.Extensions.Logging;
+using Raw.Streaming.Webhook.Model;
 using System;
 
 namespace Raw.Streaming.Webhook.Translators
 {
     public class TwitchVideoToDiscordNotificationTranslator
     {
+        private ILogger<TwitchVideoToDiscordNotificationTranslator> _logger;
+
+        public TwitchVideoToDiscordNotificationTranslator(ILogger<TwitchVideoToDiscordNotificationTranslator> logger)
+        {
+            _logger = logger;
+        }
+
         public DiscordNotification Translate(TwitchVideo twitchVideo)
         {
+            if(!TimeSpan.TryParseExact(twitchVideo.Duration, @"%h\h%m\m%s\s", null, out var duration))
+            {
+                _logger.LogWarning($"Could not parse duration string: {twitchVideo.Duration}");
+            }
+
             return new DiscordNotification()
             {
                 Embeds = new DiscordEmbed[]
@@ -18,21 +31,21 @@ namespace Raw.Streaming.Webhook.Translators
                             Name = $"New Highlight from {twitchVideo.UserName}"
                         },
                         Title = twitchVideo.Title,
-                        Url = twitchVideo.Url,
+                        Url = Uri.EscapeUriString(twitchVideo.Url),
                         Description = twitchVideo.Description,
                         Color = 6570404,
-                        Fields = new DiscordEmbedField[]
+                        Fields = duration == TimeSpan.Zero ? null : new DiscordEmbedField[]
                         {
                             new DiscordEmbedField()
                             {
                                 Name = "Duration",
-                                Value = TimeSpan.ParseExact(twitchVideo.Duration, "h`hm`ms`s", null).ToString("c"),
+                                Value = duration.ToString("c"),
                                 Inline = true
                             }
                         },
                         Image = new DiscordEmbedImage()
                         {
-                            Url = twitchVideo.ThumbnailUrl
+                            Url = Uri.EscapeUriString(twitchVideo.ThumbnailUrl.Replace("%{width}x%{height}", "320x180"))
                         },
                         Footer = new DiscordEmbedFooter()
                         {
