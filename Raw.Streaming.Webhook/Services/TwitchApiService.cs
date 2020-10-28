@@ -44,11 +44,9 @@ namespace Raw.Streaming.Webhook.Services
             return responseObject.Data;
         }
 
-        public async Task<TwitchVideo[]> GetHighlightsByBroadcasterAsync(string broadcasterId, DateTime? startedAt = null, DateTime? endedAt = null)
+        public async Task<TwitchVideo[]> GetHighlightsByBroadcasterAsync(string broadcasterId)
         {
             var queryString = $"?type=highlight&user_id={broadcasterId}";
-            queryString = startedAt.HasValue ? $"{queryString}&started_at={startedAt:yyyy-MM-ddTHH:mm:ssK}" : queryString;
-            queryString = endedAt.HasValue ? $"{queryString}&ended_at={endedAt:yyyy-MM-ddTHH:mm:ssK}" : queryString;
             var scope = "user:read:broadcast";
             _logger.LogInformation($"Calling twitch clip endpoint with query string: {queryString}");
             var response = await SendTwitchApiRequestAsync(_videoEndpoint, queryString, scope);
