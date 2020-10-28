@@ -62,9 +62,10 @@ namespace Raw.Streaming.Webhook.Functions
             try
             {
                 logger.LogInformation("NotifyTwitchClips execution started");
-                var startedAt = DateTime.SpecifyKind(timer.ScheduleStatus.Last, DateTimeKind.Utc);
-                var endedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
-                var notificationOut = await SendClipsAsync(AppSettings.TwitchBroadcasterId, startedAt, endedAt, logger);
+                var startedAt = new DateTime(Math.Min(timer.ScheduleStatus.Last.Ticks, DateTime.UtcNow.AddMinutes(-10).Ticks));
+                var startedAtUtc = DateTime.SpecifyKind(startedAt, DateTimeKind.Utc);
+                var endedAtUtc = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
+                var notificationOut = await SendClipsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc, endedAtUtc, logger);
             }
             catch (Exception e)
             {
