@@ -55,7 +55,7 @@ namespace Raw.Streaming.Webhook.Functions
 
 
         [FunctionName("NotifyTwitchClips")]
-        public async Task<IActionResult> NotifyTwitchClips(
+        public async Task NotifyTwitchClips(
             [TimerTrigger("0 */5 * * * *")] TimerInfo timer,
             ILogger logger)
         {
@@ -65,7 +65,6 @@ namespace Raw.Streaming.Webhook.Functions
                 var startedAt = DateTime.SpecifyKind(timer.ScheduleStatus.Last, DateTimeKind.Utc);
                 var endedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
                 var notificationOut = await SendClipsAsync(AppSettings.TwitchBroadcasterId, startedAt, endedAt, logger);
-                return new OkObjectResult(notificationOut);
             }
             catch (Exception e)
             {

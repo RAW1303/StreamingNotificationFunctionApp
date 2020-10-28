@@ -41,10 +41,9 @@ namespace Raw.Streaming.Webhook.Functions
             {
                 var broadcasterId = req.Query["broadcaster-id"];
                 var startedAt = DateTime.SpecifyKind(Convert.ToDateTime(req.Query["started-at"]), DateTimeKind.Utc);
-                var endedAt = DateTime.SpecifyKind(Convert.ToDateTime(req.Query["ended-at"]), DateTimeKind.Utc);
                 logger.LogInformation("NotifyTwitchHighlightsHttp execution started");
-                var notificationOut = await SendClipsAsync(broadcasterId, startedAt, endedAt, logger);
-                return new OkObjectResult(notificationOut);
+                await SendClipsAsync(broadcasterId, startedAt, logger);
+                return new NoContentResult();
             }
             catch (Exception e)
             {
@@ -55,7 +54,7 @@ namespace Raw.Streaming.Webhook.Functions
 
 
         [FunctionName("NotifyTwitchHighlights")]
-        public async Task<IActionResult> NotifyTwitchHighlights(
+        public async Task NotifyTwitchHighlights(
             [TimerTrigger("0 0 9 */1 * *")] TimerInfo timer,
             ILogger logger)
         {
@@ -63,9 +62,7 @@ namespace Raw.Streaming.Webhook.Functions
             {
                 logger.LogInformation("NotifyTwitchHighlights execution started");
                 var startedAt = DateTime.SpecifyKind(timer.ScheduleStatus.Last, DateTimeKind.Utc);
-                var endedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
-                var notificationOut = await SendClipsAsync(AppSettings.TwitchBroadcasterId, startedAt, endedAt, logger);
-                return new OkObjectResult(notificationOut);
+                await SendClipsAsync(AppSettings.TwitchBroadcasterId, startedAt, logger);
             }
             catch (Exception e)
             {
@@ -74,28 +71,25 @@ namespace Raw.Streaming.Webhook.Functions
             }
         }
 
-        private async Task<DiscordNotification> SendClipsAsync(string broadcasterId, DateTime startedAt, DateTime endedAt, ILogger logger)
+        private async Task SendClipsAsync(string broadcasterId, DateTime startedAt, ILogger logger)
         {
-            var videos = await _twitchApiService.GetHighlightsByBroadcasterAsync(broadcasterId, startedAt, endedAt);
-            var succeeded = 0;
-            DiscordNotification notificationOut = null;
-            await Task.WhenAll(videos.Select(async video =>
+            var videos = await _twitchApiService.GetHighlightsByBroadcasterAsync(broadcasterId);
+            var filteredVideos = videos.Where(video => video.PublishedAt >= startedAt).OrderBy(video => video.PublishedAt);
+                
+            foreach(var video in filteredVideos)
             {
                 var notification = _translator.Translate(video);
-                notificationOut = notification;
                 try
                 {
                     logger.LogInformation($"Highlight notification {notification.Embeds[0].Title} started");
                     await _discordNotificationService.SendNotification(_discordwebhookId, _discordwebhookToken, notification);
-                    succeeded++;
                     logger.LogInformation($"Highlight notification {notification.Embeds[0].Title} succeeded");
                 }
                 catch (Exception e)
                 {
                     logger.LogError($"Highlight notification {notification.Embeds[0].Title} failed: {e.Message}");
                 }
-            }));
-            return notificationOut;
+            }
         }
     }
 }
