@@ -23,5 +23,6 @@ namespace Raw.Streaming.Webhook.Common
         public static string DiscordStreamLiveWebhookId { get; } = Environment.GetEnvironmentVariable("DiscordStreamLiveWebhookId");
         public static string DiscordStreamLiveWebhookToken { get; } = Environment.GetEnvironmentVariable("DiscordStreamLiveWebhookToken");
         public static string GameBoxSize { get; } = Environment.GetEnvironmentVariable("GameBoxSize");
+        public static string VideoThumbnailSize { get; } = Environment.GetEnvironmentVariable("VideoThumbnailSize");
     }
 }

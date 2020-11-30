@@ -1,5 +1,5 @@
-﻿using Raw.Streaming.Webhook.Model;
-using System;
+﻿using System;
+using Raw.Streaming.Webhook.Model;
 
 namespace Raw.Streaming.Webhook.Translators
 {
@@ -18,7 +18,7 @@ namespace Raw.Streaming.Webhook.Translators
                             Name = $"New Clip of {twitchClip.BroadcasterName}"
                         },
                         Title = twitchClip.Title,
-                        Url = Uri.EscapeUriString(twitchClip.Url),
+                        Url = twitchClip.Url,
                         Color = 6570404,
                         Fields = new DiscordEmbedField[]
                         {
@@ -37,7 +37,7 @@ namespace Raw.Streaming.Webhook.Translators
                         },
                         Image = new DiscordEmbedImage()
                         {
-                            Url = Uri.EscapeUriString(twitchClip.ThumbnailUrl)
+                            Url = new Uri(twitchClip.ThumbnailUrl).AbsoluteUri
                         },
                         Footer = new DiscordEmbedFooter()
                         {

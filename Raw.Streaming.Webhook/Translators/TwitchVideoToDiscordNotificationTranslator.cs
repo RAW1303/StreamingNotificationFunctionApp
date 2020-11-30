@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
+using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Model;
-using System;
 
 namespace Raw.Streaming.Webhook.Translators
 {
@@ -31,7 +32,7 @@ namespace Raw.Streaming.Webhook.Translators
                             Name = $"New Highlight from {twitchVideo.UserName}"
                         },
                         Title = twitchVideo.Title,
-                        Url = Uri.EscapeUriString(twitchVideo.Url),
+                        Url = twitchVideo.Url,
                         Description = twitchVideo.Description,
                         Color = 6570404,
                         Fields = duration == TimeSpan.Zero ? null : new DiscordEmbedField[]
@@ -45,7 +46,7 @@ namespace Raw.Streaming.Webhook.Translators
                         },
                         Image = new DiscordEmbedImage()
                         {
-                            Url = Uri.EscapeUriString(twitchVideo.ThumbnailUrl.Replace("%{width}x%{height}", "320x180"))
+                            Url = new Uri(twitchVideo.ThumbnailUrl.Replace("%{width}x%{height}", AppSettings.VideoThumbnailSize)).AbsoluteUri
                         },
                         Footer = new DiscordEmbedFooter()
                         {
