@@ -79,7 +79,7 @@ namespace Raw.Streaming.Webhook.Functions
             var clips = await _twitchApiService.GetClipsByBroadcasterAsync(broadcasterId, startedAt, endedAt);
             var succeeded = 0;
             DiscordNotification notificationOut = null;
-            await Task.WhenAll(clips.Select(async clip =>
+            await Task.WhenAll(clips.OrderBy(x => x.CreatedAt).Select(async clip =>
             {
                 var games = await _twitchApiService.GetGamesAsync(clip.GameId);
                 var notification = _translator.Translate(clip, games.First());
