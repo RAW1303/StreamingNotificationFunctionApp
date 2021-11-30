@@ -9,7 +9,7 @@ trigger:
 variables:
   azureSubscription: '0e43496e-dd9f-4359-8a9d-227bc76d5e01'
   functionAppName: 'RawStreamingWebhook'
-  vmImageName: 'vs2017-win2016'
+  vmImageName: 'windows-latest'
   workingDirectory: '$(System.DefaultWorkingDirectory)/Raw.Streaming.Webhook'
   resourceGroupName: 'StreamingAutomation'
   stagingSlotName: 'staging'
@@ -45,22 +45,21 @@ stages:
     - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
       artifact: drop
 
-- stage: Deploy
-  displayName: Deploy stage
+- stage: Staging
+  displayName: Deploy to Staging
   dependsOn: Build
   condition: succeeded()
 
   jobs:
   - deployment: Deploy
     displayName: Deploy
-    environment: 'development'
+    environment: 'staging'
     pool:
       vmImage: $(vmImageName)
 
     strategy:
       runOnce:
         deploy:
-
           steps:
           - task: AzureFunctionApp@1
             displayName: 'Azure functions app deploy'
@@ -72,3 +71,27 @@ stages:
               deployToSlotOrASE: true
               resourceGroupName: $(resourceGroupName)
               slotName: $(stagingSlotName)
+
+- stage: Production
+  displayName: Deploy to Production
+  dependsOn: Staging
+  condition: succeeded()
+
+  jobs:
+  - deployment: Swap
+    displayName: Swap Slots
+    environment: 'production'
+    pool:
+      vmImage: $(vmImageName)
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureAppServiceManage@0
+            displayName: 'Swap Staging with Production'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              webAppName: $(functionAppName)
+              resourceGroupName: $(resourceGroupName)
+              sourceSlot: $(stagingSlotName)
