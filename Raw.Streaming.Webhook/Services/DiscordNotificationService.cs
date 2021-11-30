@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Exceptions;
-using Raw.Streaming.Webhook.Model;
+using Raw.Streaming.Webhook.Model.Discord;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -21,7 +21,7 @@ namespace Raw.Streaming.Webhook.Services
             _logger = logger;
         }
 
-        public async Task SendNotification(string webhookId, string webhookToken, DiscordNotification notification)
+        public async Task SendNotification(string webhookId, string webhookToken, Notification notification)
         {
             var fullUrl = $"{_discordWebhookUrl}/{webhookId}/{webhookToken}";
             var notificationRequestJson = JsonSerializer.Serialize(notification);

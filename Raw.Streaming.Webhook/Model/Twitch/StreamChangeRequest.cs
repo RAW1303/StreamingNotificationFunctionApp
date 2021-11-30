@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Raw.Streaming.Webhook.Model
+namespace Raw.Streaming.Webhook.Model.Twitch
 {
-    public class TwitchStreamChangeRequest
+    public class StreamChangeRequest
     {
         [JsonPropertyName("data")]
-        public TwitchStreamChange[] Data { get; set; }
+        public StreamChange[] Data { get; set; }
     }
 
-    public class TwitchStreamChange
+    public class StreamChange
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

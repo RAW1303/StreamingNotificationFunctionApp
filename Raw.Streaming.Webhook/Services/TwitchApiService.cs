@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Exceptions;
-using Raw.Streaming.Webhook.Model;
+using Raw.Streaming.Webhook.Model.Twitch;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace Raw.Streaming.Webhook.Services
     {
         private readonly string _twitchApiUrl = AppSettings.TwitchApiUrl;
         private readonly string _clientId = AppSettings.TwitchClientId;
+        private readonly string _channelEndpoint = AppSettings.TwitchApiChannelEndpoint;
         private readonly string _gameEndpoint = AppSettings.TwitchApiGameEndpoint;
         private readonly string _clipEndpoint = AppSettings.TwitchApiClipEndpoint;
         private readonly string _videoEndpoint = AppSettings.TwitchApiVideoEndpoint;
@@ -21,18 +23,28 @@ namespace Raw.Streaming.Webhook.Services
         {
         }
 
-        public async Task<TwitchGame[]> GetGamesAsync(params string[] gameIds)
+        public async Task<Channel> GetChannelInfoAsync(string broadcasterId)
+        {
+            var queryString = $"?broadcaster_id={broadcasterId}";
+            var scope = "user:read:broadcast";
+            _logger.LogInformation($"Calling twitch channel info endpoint with query string: {queryString}");
+            var response = await SendTwitchApiRequestAsync(_channelEndpoint, queryString, scope);
+            var responseObject = JsonSerializer.Deserialize<TwitchApiResponse<Channel>>(await response.Content.ReadAsStringAsync());
+            return responseObject.Data[0];
+        }
+
+        public async Task<IList<Game>> GetGamesAsync(params string[] gameIds)
         {
             var gameIdList = string.Join(',', gameIds);
             var queryString = $"?id={gameIdList}";
             var scope = "user:read:broadcast";
             _logger.LogInformation($"Calling twitch game endpoint with query string: {queryString}");
             var response = await SendTwitchApiRequestAsync(_gameEndpoint, queryString, scope);
-            var responseObject = JsonSerializer.Deserialize<TwitchResponse<TwitchGame>>(await response.Content.ReadAsStringAsync());
+            var responseObject = JsonSerializer.Deserialize<TwitchApiResponse<Game>>(await response.Content.ReadAsStringAsync());
             return responseObject.Data;
         }
 
-        public async Task<TwitchClip[]> GetClipsByBroadcasterAsync(string broadcasterId, DateTime? startedAt = null, DateTime? endedAt = null)
+        public async Task<IList<Clip>> GetClipsByBroadcasterAsync(string broadcasterId, DateTime? startedAt = null, DateTime? endedAt = null)
         {
             var queryString = $"?broadcaster_id={broadcasterId}";
             queryString = startedAt.HasValue ? $"{queryString}&started_at={startedAt:yyyy-MM-ddTHH:mm:ssK}" : queryString;
@@ -40,17 +52,17 @@ namespace Raw.Streaming.Webhook.Services
             var scope = "user:read:broadcast";
             _logger.LogInformation($"Calling twitch clip endpoint with query string: {queryString}");
             var response = await SendTwitchApiRequestAsync(_clipEndpoint, queryString, scope);
-            var responseObject = JsonSerializer.Deserialize<TwitchResponse<TwitchClip>>(await response.Content.ReadAsStringAsync());
+            var responseObject = JsonSerializer.Deserialize<TwitchApiResponse<Clip>>(await response.Content.ReadAsStringAsync());
             return responseObject.Data;
         }
 
-        public async Task<TwitchVideo[]> GetHighlightsByBroadcasterAsync(string broadcasterId)
+        public async Task<IList<Video>> GetHighlightsByBroadcasterAsync(string broadcasterId)
         {
             var queryString = $"?type=highlight&user_id={broadcasterId}";
             var scope = "user:read:broadcast";
             _logger.LogInformation($"Calling twitch clip endpoint with query string: {queryString}");
             var response = await SendTwitchApiRequestAsync(_videoEndpoint, queryString, scope);
-            var responseObject = JsonSerializer.Deserialize<TwitchResponse<TwitchVideo>>(await response.Content.ReadAsStringAsync());
+            var responseObject = JsonSerializer.Deserialize<TwitchApiResponse<Video>>(await response.Content.ReadAsStringAsync());
             return responseObject.Data;
         }
 

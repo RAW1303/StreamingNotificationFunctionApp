@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Raw.Streaming.Webhook.Model
+namespace Raw.Streaming.Webhook.Model.Twitch
 {
-    public class TwitchVideo
+    public class Video
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

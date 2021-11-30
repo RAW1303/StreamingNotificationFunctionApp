@@ -1,45 +1,47 @@
 ﻿using System;
 using Raw.Streaming.Webhook.Common;
-using Raw.Streaming.Webhook.Model;
+using Raw.Streaming.Webhook.Model.Discord;
+using Raw.Streaming.Webhook.Model.Twitch;
+using Raw.Streaming.Webhook.Model.Twitch.EventSub;
 
 namespace Raw.Streaming.Webhook.Translators
 {
     public class TwitchStreamChangeToDiscordNotificationTranslator
     {
-        public DiscordNotification Translate(TwitchStreamChange twitchStreamChange, TwitchGame game)
+        public Notification Translate(StreamOnlineEvent message, Channel channel, Game game)
         {
-            return new DiscordNotification()
+            return new Notification()
             {
-                Content = $"<@&766814146330624011>",
-                Embeds = new DiscordEmbed[]
+                Content = AppSettings.DiscordNotificationGroupIds,
+                Embeds = new Embed[]
                 {
-                    new DiscordEmbed()
+                    new Embed()
                     {
-                        Author = new DiscordEmbedAuthor()
+                        Author = new EmbedAuthor()
                         {
-                            Name = $"{twitchStreamChange.UserName} is now streaming"
+                            Name = $"{channel.BroadcasterName} is now streaming on twitch"
                         },
-                        Title = $"{twitchStreamChange.Title}",
-                        Url = $"https://twitch.tv/{twitchStreamChange.UserName}",
+                        Title = $"{channel.Title}",
+                        Url = $"https://twitch.tv/{channel.BroadcasterName}",
                         Color = 6570404,
-                        Fields = new DiscordEmbedField[]
+                        Fields = new EmbedField[]
                         {
-                            new DiscordEmbedField()
+                            new EmbedField()
                             {
                                 Name = "Playing",
                                 Value = game.Name,
                                 Inline = true
                             }
                         },
-                        Image = new DiscordEmbedImage()
+                        Image = new EmbedImage()
                         {
-                            Url = new Uri(game.BoxArtUrl.Replace("{width}x{height}", AppSettings.GameBoxSize)).AbsoluteUri
+                            Url = new Uri(game.BoxArtUrl.Replace("{width}x{height}", AppSettings.DiscordGameBoxSize)).AbsoluteUri
                         },
-                        Footer = new DiscordEmbedFooter()
+                        Footer = new EmbedFooter()
                         {
                             Text = "Stream started"
                         },
-                        Timestamp = twitchStreamChange.StartedAt
+                        Timestamp = DateTime.Parse(message.StartedAt)
                     }
                 }
             };

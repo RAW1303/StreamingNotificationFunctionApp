@@ -1,7 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using Raw.Streaming.Webhook.Common;
-using Raw.Streaming.Webhook.Model;
+using Raw.Streaming.Webhook.Model.Discord;
+using Raw.Streaming.Webhook.Model.Twitch;
 
 namespace Raw.Streaming.Webhook.Translators
 {
@@ -14,20 +15,20 @@ namespace Raw.Streaming.Webhook.Translators
             _logger = logger;
         }
 
-        public DiscordNotification Translate(TwitchVideo twitchVideo)
+        public Notification Translate(Video twitchVideo)
         {
             if(!TimeSpan.TryParseExact(twitchVideo.Duration, @"%h\h%m\m%s\s", null, out var duration))
             {
                 _logger.LogWarning($"Could not parse duration string: {twitchVideo.Duration}");
             }
 
-            return new DiscordNotification()
+            return new Notification()
             {
-                Embeds = new DiscordEmbed[]
+                Embeds = new Embed[]
                 {
-                    new DiscordEmbed()
+                    new Embed()
                     {
-                        Author = new DiscordEmbedAuthor()
+                        Author = new EmbedAuthor()
                         {
                             Name = $"New Highlight from {twitchVideo.UserName}"
                         },
@@ -35,20 +36,20 @@ namespace Raw.Streaming.Webhook.Translators
                         Url = twitchVideo.Url,
                         Description = twitchVideo.Description,
                         Color = 6570404,
-                        Fields = duration == TimeSpan.Zero ? null : new DiscordEmbedField[]
+                        Fields = duration == TimeSpan.Zero ? null : new EmbedField[]
                         {
-                            new DiscordEmbedField()
+                            new EmbedField()
                             {
                                 Name = "Duration",
                                 Value = duration.ToString("c"),
                                 Inline = true
                             }
                         },
-                        Image = new DiscordEmbedImage()
+                        Image = new EmbedImage()
                         {
-                            Url = new Uri(twitchVideo.ThumbnailUrl.Replace("%{width}x%{height}", AppSettings.VideoThumbnailSize)).AbsoluteUri
+                            Url = new Uri(twitchVideo.ThumbnailUrl.Replace("%{width}x%{height}", AppSettings.DiscordVideoThumbnailSize)).AbsoluteUri
                         },
-                        Footer = new DiscordEmbedFooter()
+                        Footer = new EmbedFooter()
                         {
                             Text = "Highlight Published"
                         },

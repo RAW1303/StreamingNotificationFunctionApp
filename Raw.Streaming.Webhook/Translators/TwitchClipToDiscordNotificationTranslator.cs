@@ -1,45 +1,46 @@
 ﻿using System;
-using Raw.Streaming.Webhook.Model;
+using Raw.Streaming.Webhook.Model.Discord;
+using Raw.Streaming.Webhook.Model.Twitch;
 
 namespace Raw.Streaming.Webhook.Translators
 {
     public class TwitchClipToDiscordNotificationTranslator
     {
-        public DiscordNotification Translate(TwitchClip twitchClip, TwitchGame game)
+        public Notification Translate(Clip twitchClip, Game game)
         {
-            return new DiscordNotification()
+            return new Notification()
             {
-                Embeds = new DiscordEmbed[]
+                Embeds = new Embed[]
                 {
-                    new DiscordEmbed()
+                    new Embed()
                     {
-                        Author = new DiscordEmbedAuthor()
+                        Author = new EmbedAuthor()
                         {
                             Name = $"New Clip of {twitchClip.BroadcasterName}"
                         },
                         Title = twitchClip.Title,
                         Url = twitchClip.Url,
                         Color = 6570404,
-                        Fields = new DiscordEmbedField[]
+                        Fields = new EmbedField[]
                         {
-                            new DiscordEmbedField()
+                            new EmbedField()
                             {
                                 Name = "Game",
                                 Value = game.Name,
                                 Inline = true
                             },
-                            new DiscordEmbedField()
+                            new EmbedField()
                             {
                                 Name = "Created By",
                                 Value = twitchClip.CreatorName,
                                 Inline = true
                             }
                         },
-                        Image = new DiscordEmbedImage()
+                        Image = new EmbedImage()
                         {
                             Url = new Uri(twitchClip.ThumbnailUrl).AbsoluteUri
                         },
-                        Footer = new DiscordEmbedFooter()
+                        Footer = new EmbedFooter()
                         {
                             Text = "Clip created"
                         },

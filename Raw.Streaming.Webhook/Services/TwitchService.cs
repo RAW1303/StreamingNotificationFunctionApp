@@ -29,7 +29,7 @@ namespace Raw.Streaming.Webhook.Services
                 throw new TwitchApiException($"Error getting twitch token: {await response.Content.ReadAsStringAsync()}");
             }
             var responseString = await response.Content.ReadAsStringAsync();
-            var responseObject = JsonSerializer.Deserialize<TwitchTokenResponse>(responseString);
+            var responseObject = JsonSerializer.Deserialize<TokenResponse>(responseString);
             return responseObject.AccessToken;
         }
     }

@@ -5,38 +5,21 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Exceptions;
-using Raw.Streaming.Webhook.Model;
+using Raw.Streaming.Webhook.Model.Twitch.EventSub;
 
 namespace Raw.Streaming.Webhook.Services
 {
-    public class TwitchSubscriptionService : TwitchService, ISubscriptionService
+    public class TwitchSubscriptionService : TwitchService, ITwitchSubscriptionService
     {
-        private const int LeaseSeconds = 864000;
+        private readonly string _secret = AppSettings.TwitchSubscriptionSecret;
 
         public TwitchSubscriptionService(ILogger<TwitchSubscriptionService> logger, HttpClient httpClient): base(logger, httpClient)
         {
         }
 
-        public async Task SubscribeAsync(string topic, string callbackUrl)
+        public async Task SubscribeAsync<T>(string type, T condition, string callbackUrl) where T: Condition
         {
-            await SendTwitchWebookRequestAsync("subscribe", topic, callbackUrl);
-        }
-
-        public async Task UnsubscribeAsync(string topic, string callbackUrl)
-        {
-            await SendTwitchWebookRequestAsync("unsubscribe", topic, callbackUrl);
-        }
-
-        private async Task SendTwitchWebookRequestAsync(string action, string topic, string callbackUrl)
-        {
-            var subscriptionRequest = new HubSubscriptionRequest
-            {
-                Callback = callbackUrl,
-                Mode = action,
-                Topic = topic,
-                LeaseSeconds = LeaseSeconds
-            };
-
+            var subscriptionRequest = GenerateSubscriptionRequest(type, condition, callbackUrl);
             var subscriptionRequestJson = JsonSerializer.Serialize(subscriptionRequest);
             var request = new HttpRequestMessage(HttpMethod.Post, AppSettings.TwitchSubscriptionUrl)
             {
@@ -53,6 +36,22 @@ namespace Raw.Streaming.Webhook.Services
             {
                 throw new TwitchApiException($"Error while subscribing:\n{subscriptionRequestJson}\n{await response.Content.ReadAsStringAsync()}");
             }
+        }
+
+        public EventSubRequest<T> GenerateSubscriptionRequest<T>(string type, T condition, string callbackUrl) where T : Condition
+        {
+            return new EventSubRequest<T>
+            {
+                Type = type,
+                Version = "1",
+                Condition = condition,
+                Transport = new Transport
+                {
+                    Method = "webhook",
+                    Callback = callbackUrl,
+                    Secret = _secret
+                }
+            };
         }
     }
 }

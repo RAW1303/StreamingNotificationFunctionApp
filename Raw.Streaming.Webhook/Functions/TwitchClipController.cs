@@ -7,7 +7,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Raw.Streaming.Webhook.Common;
-using Raw.Streaming.Webhook.Model;
+using Raw.Streaming.Webhook.Model.Discord;
 using Raw.Streaming.Webhook.Services;
 using Raw.Streaming.Webhook.Translators;
 
@@ -56,7 +56,7 @@ namespace Raw.Streaming.Webhook.Functions
 
         [FunctionName("NotifyTwitchClips")]
         public async Task NotifyTwitchClips(
-            [TimerTrigger("0 */5 * * * *")] TimerInfo timer,
+            [TimerTrigger("%TwitchClipsTimerTrigger%")] TimerInfo timer,
             ILogger logger)
         {
             try
@@ -74,11 +74,11 @@ namespace Raw.Streaming.Webhook.Functions
             }
         }
 
-        private async Task<DiscordNotification> SendClipsAsync(string broadcasterId, DateTime startedAt, DateTime endedAt, ILogger logger)
+        private async Task<Notification> SendClipsAsync(string broadcasterId, DateTime startedAt, DateTime endedAt, ILogger logger)
         {
             var clips = await _twitchApiService.GetClipsByBroadcasterAsync(broadcasterId, startedAt, endedAt);
             var succeeded = 0;
-            DiscordNotification notificationOut = null;
+            Notification notificationOut = null;
             await Task.WhenAll(clips.OrderBy(x => x.CreatedAt).Select(async clip =>
             {
                 var games = await _twitchApiService.GetGamesAsync(clip.GameId);

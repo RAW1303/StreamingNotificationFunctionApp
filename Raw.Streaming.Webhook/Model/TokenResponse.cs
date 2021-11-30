@@ -2,7 +2,7 @@
 
 namespace Raw.Streaming.Webhook.Model
 {
-    public class TwitchTokenResponse
+    public class TokenResponse
     {
         [JsonPropertyName("access_token")]
         public string AccessToken { get; set; }

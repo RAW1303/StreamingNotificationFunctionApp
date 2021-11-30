@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{17DB4137-E473-461E-8C85-5A7E56E31B69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raw.Streaming.Webhook.Tests", "Raw.Streaming.Webhook.Tests\Raw.Streaming.Webhook.Tests.csproj", "{53D57735-3C0B-40DF-816B-CE51744F340C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raw.Streaming.Webhook.Tests", "Raw.Streaming.Webhook.Tests\Raw.Streaming.Webhook.Tests.csproj", "{53D57735-3C0B-40DF-816B-CE51744F340C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

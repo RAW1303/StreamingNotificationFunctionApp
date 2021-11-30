@@ -1,13 +1,13 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Raw.Streaming.Webhook.Model
+namespace Raw.Streaming.Webhook.Model.Discord
 {
-    public class DiscordNotification
+    public class Notification
     {
         [JsonPropertyName("content")]
         public string Content { get; set; }
 
         [JsonPropertyName("embeds")]
-        public DiscordEmbed[] Embeds { get; set; }
+        public Embed[] Embeds { get; set; }
     }
 }

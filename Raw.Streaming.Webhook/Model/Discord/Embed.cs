@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Raw.Streaming.Webhook.Model
+namespace Raw.Streaming.Webhook.Model.Discord
 {
-    public class DiscordEmbed
+    public class Embed
     {
         [JsonPropertyName("title")]
         public string Title { get; set; }
@@ -18,31 +18,31 @@ namespace Raw.Streaming.Webhook.Model
         public string Url { get; set; }
 
         [JsonPropertyName("timestamp")]
-        public DateTime Timestamp { get; set; }
+        public DateTime? Timestamp { get; set; }
 
         [JsonPropertyName("color")]
         public int Color { get; set; }
 
         [JsonPropertyName("footer")]
-        public DiscordEmbedFooter Footer { get; set; }
+        public EmbedFooter Footer { get; set; }
 
         [JsonPropertyName("image")]
-        public DiscordEmbedImage Image { get; set; }
+        public EmbedImage Image { get; set; }
 
         [JsonPropertyName("thumbnail")]
-        public DiscordEmbedThumbnail Thumbnail { get; set; }
+        public EmbedThumbnail Thumbnail { get; set; }
 
         [JsonPropertyName("video")]
-        public DiscordEmbedVideo Video { get; set; }
+        public EmbedVideo Video { get; set; }
 
         [JsonPropertyName("author")]
-        public DiscordEmbedAuthor Author { get; set; }
+        public EmbedAuthor Author { get; set; }
 
         [JsonPropertyName("fields")]
-        public DiscordEmbedField[] Fields { get; set; }
+        public EmbedField[] Fields { get; set; }
     }
 
-    public class DiscordEmbedField
+    public class EmbedField
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }
@@ -54,25 +54,25 @@ namespace Raw.Streaming.Webhook.Model
         public bool Inline { get; set; }
     }
 
-    public class DiscordEmbedAuthor
+    public class EmbedAuthor
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }
     }
 
-    public class DiscordEmbedImage
+    public class EmbedImage
     {
         [JsonPropertyName("url")]
         public string Url { get; set; }
     }
 
-    public class DiscordEmbedFooter
+    public class EmbedFooter
     {
         [JsonPropertyName("text")]
         public string Text { get; set; }
     }
 
-    public class DiscordEmbedVideo
+    public class EmbedVideo
     {
         [JsonPropertyName("url")]
         public string Url { get; set; }
@@ -84,7 +84,7 @@ namespace Raw.Streaming.Webhook.Model
         public int Width { get; set; }
     }
 
-    public class DiscordEmbedThumbnail
+    public class EmbedThumbnail
     {
         [JsonPropertyName("url")]
         public string Url { get; set; }

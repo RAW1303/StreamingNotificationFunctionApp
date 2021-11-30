@@ -54,7 +54,7 @@ namespace Raw.Streaming.Webhook.Functions
 
         [FunctionName("NotifyTwitchHighlights")]
         public async Task NotifyTwitchHighlights(
-            [TimerTrigger("0 0 9 */1 * *")] TimerInfo timer,
+            [TimerTrigger("%TwitchHighlightsTimerTrigger%")] TimerInfo timer,
             ILogger logger)
         {
             try
@@ -74,7 +74,7 @@ namespace Raw.Streaming.Webhook.Functions
         private async Task SendClipsAsync(string broadcasterId, DateTime startedAt, ILogger logger)
         {
             var videos = await _twitchApiService.GetHighlightsByBroadcasterAsync(broadcasterId);
-            var filteredVideos = videos.Where(video => video.PublishedAt >= startedAt).OrderBy(video => video.PublishedAt);
+            var filteredVideos = videos.Where(video => video.PublishedAt >= startedAt && video.Viewable == "public").OrderBy(video => video.PublishedAt);
                 
             foreach(var video in filteredVideos)
             {

@@ -1,13 +1,15 @@
-﻿using Raw.Streaming.Webhook.Model;
+﻿using Raw.Streaming.Webhook.Model.Twitch;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Raw.Streaming.Webhook.Services
 {
     public interface ITwitchApiService
     {
-        Task<TwitchGame[]> GetGamesAsync(params string[] gameId);
-        Task<TwitchClip[]> GetClipsByBroadcasterAsync(string broadcasterId, DateTime? startedAt = null, DateTime? endedAt = null);
-        Task<TwitchVideo[]> GetHighlightsByBroadcasterAsync(string broadcasterId);
+        Task<Channel> GetChannelInfoAsync(string broadcasterId);
+        Task<IList<Game>> GetGamesAsync(params string[] gameId);
+        Task<IList<Clip>> GetClipsByBroadcasterAsync(string broadcasterId, DateTime? startedAt = null, DateTime? endedAt = null);
+        Task<IList<Video>> GetHighlightsByBroadcasterAsync(string broadcasterId);
     }
 }
