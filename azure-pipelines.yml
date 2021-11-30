@@ -53,7 +53,7 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy
-    environment: 'staging'
+    environment: 'Staging'
     pool:
       vmImage: $(vmImageName)
 
@@ -80,7 +80,7 @@ stages:
   jobs:
   - deployment: Swap
     displayName: Swap Slots
-    environment: 'production'
+    environment: 'Production'
     pool:
       vmImage: $(vmImageName)
 
