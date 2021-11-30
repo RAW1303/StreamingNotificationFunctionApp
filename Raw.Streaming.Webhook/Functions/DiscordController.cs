@@ -1,7 +1,7 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Raw.Streaming.Webhook.Model;
+using Raw.Streaming.Webhook.Model.Discord;
 using Raw.Streaming.Webhook.Services;
 using System;
 using System.Threading.Tasks;
