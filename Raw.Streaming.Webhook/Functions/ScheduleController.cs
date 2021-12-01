@@ -30,7 +30,7 @@ namespace Raw.Streaming.Webhook.Functions
 
 
         [FunctionName("NotifyWeeklySchedule")]
-        [return: ServiceBus("discordnotificationqueue", Connection = "StreamingServiceBus")]
+        [return: ServiceBus("%DiscordNotificationQueueName%", Connection = "StreamingServiceBus")]
         public async Task<ServiceBusMessage> NotifyWeeklySchedule(
             [TimerTrigger("%ScheduleWeeklyTimerTrigger%")] TimerInfo timer,
             ILogger logger)
@@ -58,7 +58,7 @@ namespace Raw.Streaming.Webhook.Functions
 
 
         [FunctionName("NotifyDailySchedule")]
-        [return: ServiceBus("discordnotificationqueue", Connection = "StreamingServiceBus")]
+        [return: ServiceBus("%DiscordNotificationQueueName%", Connection = "StreamingServiceBus")]
         public async Task<ServiceBusMessage> NotifyDailySchedule(
             [TimerTrigger("%ScheduleDailyTimerTrigger%")] TimerInfo timer,
             ILogger logger)

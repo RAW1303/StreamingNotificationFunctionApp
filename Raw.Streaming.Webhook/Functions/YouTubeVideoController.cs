@@ -58,7 +58,7 @@ namespace Raw.Streaming.Webhook.Functions
         }
 
         [FunctionName(nameof(YoutubeVideoWebhook))]
-        [return: ServiceBus("discordnotificationqueue", Connection = "StreamingServiceBus")]
+        [return: ServiceBus("%DiscordNotificationQueueName%", Connection = "StreamingServiceBus")]
         public ServiceBusMessage YoutubeVideoWebhook(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = WebhookEndpoint)] HttpRequest req,
             ILogger logger)
