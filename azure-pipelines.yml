@@ -16,7 +16,7 @@ variables:
 
 stages:
 - stage: Build
-  displayName: Build stage
+  displayName: Build
 
   jobs:
   - job: Build
@@ -46,7 +46,7 @@ stages:
       artifact: drop
 
 - stage: Staging
-  displayName: Deploy to Staging
+  displayName: Staging
   dependsOn: Build
   condition: succeeded()
 
@@ -73,7 +73,7 @@ stages:
               slotName: $(stagingSlotName)
 
 - stage: Production
-  displayName: Deploy to Production
+  displayName: Production
   dependsOn: Staging
   condition: succeeded()
 
