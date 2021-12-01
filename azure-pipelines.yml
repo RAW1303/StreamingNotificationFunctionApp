@@ -71,6 +71,16 @@ stages:
               deployToSlotOrASE: true
               resourceGroupName: $(resourceGroupName)
               slotName: $(stagingSlotName)
+              
+          - task: AzureAppServiceManage@0
+            displayName: 'Start Staging Slot'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              action: Start Azure App Service
+              webAppName: $(functionAppName)
+              resourceGroupName: $(resourceGroupName)
+              specifySlotOrASE: true
+              slot: $(stagingSlotName)
 
 - stage: Production
   displayName: Production
