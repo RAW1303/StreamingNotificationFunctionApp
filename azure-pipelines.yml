@@ -95,3 +95,13 @@ stages:
               webAppName: $(functionAppName)
               resourceGroupName: $(resourceGroupName)
               sourceSlot: $(stagingSlotName)
+        
+          - task: AzureAppServiceManage@0
+            displayName: 'Stop Staging Slot'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              action: Stop Azure App Service
+              webAppName: $(functionAppName)
+              resourceGroupName: $(resourceGroupName)
+              specifySlotOrASE: true
+              slot: $(stagingSlotName)
