@@ -9,7 +9,7 @@ trigger:
 variables:
   azureSubscription: '0e43496e-dd9f-4359-8a9d-227bc76d5e01'
   functionAppName: 'RawStreamingWebhook'
-  vmImageName: 'windows-latest'
+  vmImageName: 'ubuntu-latest'
   workingDirectory: '$(System.DefaultWorkingDirectory)/Raw.Streaming.Webhook'
   resourceGroupName: 'StreamingAutomation'
   stagingSlotName: 'staging'

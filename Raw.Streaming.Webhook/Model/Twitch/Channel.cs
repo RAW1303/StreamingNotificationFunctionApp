@@ -17,6 +17,6 @@ namespace Raw.Streaming.Webhook.Model.Twitch
         [JsonPropertyName("title")]
         public string Title { get; set; }
         [JsonPropertyName("delay")]
-        public string Delay { get; set; }
+        public int Delay { get; set; }
     }
 }
