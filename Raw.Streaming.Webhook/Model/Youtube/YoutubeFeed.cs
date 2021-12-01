@@ -14,8 +14,7 @@ namespace Raw.Streaming.Webhook.Model.Youtube
         public DateTimeOffset Updated { get; set; }
         public bool IsNewVideo(DateTimeOffset checkDateTime)
         {
-            return Published != null
-                && Published <= Updated
+            return Published <= Updated
                 && Published > checkDateTime.AddMinutes(-10)
                 && Updated <= Published.AddMinutes(30);
         }
