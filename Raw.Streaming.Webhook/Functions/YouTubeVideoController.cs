@@ -1,21 +1,21 @@
-﻿using System;
-using Microsoft.Azure.WebJobs;
-using Raw.Streaming.Webhook.Services;
-using Raw.Streaming.Webhook.Common;
-using System.Threading.Tasks;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.ServiceBus;
+﻿using Azure.Messaging.ServiceBus;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using System.ServiceModel.Syndication;
-using Raw.Streaming.Webhook.Model.Youtube;
-using Raw.Streaming.Webhook.Model.Discord;
-using System.IO;
-using System.Xml;
-using System.Linq;
-using System.Xml.Linq;
-using Raw.Streaming.Webhook.Translators;
 using Newtonsoft.Json;
+using Raw.Streaming.Webhook.Common;
+using Raw.Streaming.Webhook.Model.Discord;
+using Raw.Streaming.Webhook.Model.Youtube;
+using Raw.Streaming.Webhook.Services;
+using Raw.Streaming.Webhook.Translators;
+using System.IO;
+using System.Linq;
+using System.ServiceModel.Syndication;
+using System.Threading.Tasks;
+using System.Xml.Linq;
+using System.Xml;
+using System;
 
 namespace Raw.Streaming.Webhook.Functions
 {
@@ -59,7 +59,7 @@ namespace Raw.Streaming.Webhook.Functions
 
         [FunctionName(nameof(YoutubeVideoWebhook))]
         [return: ServiceBus("discordnotificationqueue", Connection = "StreamingServiceBus")]
-        public Message YoutubeVideoWebhook(
+        public ServiceBusMessage YoutubeVideoWebhook(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = WebhookEndpoint)] HttpRequest req,
             ILogger logger)
         {
@@ -72,9 +72,9 @@ namespace Raw.Streaming.Webhook.Functions
                 {
                     var notification = _translator.Translate(data);
                     var message = new DiscordMessage(_discordwebhookId, _discordwebhookToken, notification);
-                    return new Message
+                    return new ServiceBusMessage
                     {
-                        Body = message.ToByteArray(),
+                        Body = BinaryData.FromObjectAsJson(message),
                         MessageId = $"youtube-video-{data.VideoId}"
                     };
                 }
@@ -106,7 +106,7 @@ namespace Raw.Streaming.Webhook.Functions
                     Link = item.Links[0].Uri.ToString(),
                     Published = item.PublishDate,
                     Updated = item.LastUpdatedTime,
-                    Author = new Author 
+                    Author = new Author
                     {
                         Name = item.Authors[0].Name,
                         Uri = item.Authors[0].Uri

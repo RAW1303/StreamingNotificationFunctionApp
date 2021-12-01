@@ -1,12 +1,10 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.ServiceBus;
+using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Raw.Streaming.Webhook.Common;
-using Raw.Streaming.Webhook.Model;
+using Raw.Streaming.Webhook.Model.Discord;
 using Raw.Streaming.Webhook.Services;
 using Raw.Streaming.Webhook.Translators;
 
@@ -33,7 +31,7 @@ namespace Raw.Streaming.Webhook.Functions
 
         [FunctionName("NotifyWeeklySchedule")]
         [return: ServiceBus("discordnotificationqueue", Connection = "StreamingServiceBus")]
-        public async Task NotifyWeeklySchedule(
+        public async Task<ServiceBusMessage> NotifyWeeklySchedule(
             [TimerTrigger("%ScheduleWeeklyTimerTrigger%")] TimerInfo timer,
             ILogger logger)
         {
@@ -44,7 +42,12 @@ namespace Raw.Streaming.Webhook.Functions
                 var to = from.AddDays(7);
                 var scheduledStreams = await _scheduleService.GetScheduledStreamsAsync(from, to);
                 var notification = _translator.TranslateWeeklySchedule(scheduledStreams);
-                await _discordNotificationService.SendNotification(_discordwebhookId, _discordwebhookToken, notification);
+                var message = new DiscordMessage(_discordwebhookId, _discordwebhookToken, notification);
+                return new ServiceBusMessage
+                {
+                    Body = BinaryData.FromObjectAsJson(message),
+                    MessageId = $"schedule-weekly-{from:yyyy-MM-dd}"
+                };
             }
             catch (Exception e)
             {
@@ -56,7 +59,7 @@ namespace Raw.Streaming.Webhook.Functions
 
         [FunctionName("NotifyDailySchedule")]
         [return: ServiceBus("discordnotificationqueue", Connection = "StreamingServiceBus")]
-        public async Task NotifyDailySchedule(
+        public async Task<ServiceBusMessage> NotifyDailySchedule(
             [TimerTrigger("%ScheduleDailyTimerTrigger%")] TimerInfo timer,
             ILogger logger)
         {
@@ -69,8 +72,15 @@ namespace Raw.Streaming.Webhook.Functions
                 if (scheduledStreams.Count > 0)
                 {
                     var notification = _translator.TranslateDailySchedule(scheduledStreams);
-                    await _discordNotificationService.SendNotification(_discordwebhookId, _discordwebhookToken, notification);
+                    var message = new DiscordMessage(_discordwebhookId, _discordwebhookToken, notification);
+                    return new ServiceBusMessage
+                    {
+                        Body = BinaryData.FromObjectAsJson(message),
+                        MessageId = $"schedule-daily-{from:yyyy-MM-dd}"
+                    };
                 }
+
+                return null;
             }
             catch (Exception e)
             {

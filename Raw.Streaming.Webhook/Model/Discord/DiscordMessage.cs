@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Text;
-
-namespace Raw.Streaming.Webhook.Model.Discord
+﻿namespace Raw.Streaming.Webhook.Model.Discord
 {
     public class DiscordMessage
     {
@@ -18,11 +15,6 @@ namespace Raw.Streaming.Webhook.Model.Discord
             WebhookId = webhookId;
             WebhookToken = webhookToken;
             Notification = discordNotification;
-        }
-
-        public byte[] ToByteArray()
-        {
-            return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(this));
         }
     }
 }
