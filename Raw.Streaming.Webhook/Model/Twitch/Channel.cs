@@ -14,7 +14,9 @@ namespace Raw.Streaming.Webhook.Model.Twitch
         public string GameId { get; set; }
         [JsonPropertyName("broadcaster_language")]
         public string BroadcasterLanguage { get; set; }
+        [JsonPropertyName("title")]
         public string Title { get; set; }
+        [JsonPropertyName("delay")]
         public string Delay { get; set; }
     }
 }
