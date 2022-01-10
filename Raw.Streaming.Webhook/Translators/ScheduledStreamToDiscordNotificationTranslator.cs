@@ -14,7 +14,6 @@ namespace Raw.Streaming.Webhook.Translators
         {
             return new Notification()
             {
-                Content = "@everyone",
                 Embeds = scheduledStreams.Select(stream =>  
                     new Embed()
                     {
