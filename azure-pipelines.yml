@@ -5,7 +5,10 @@
 
 trigger:
 - main
-- develop
+
+pr:
+- main
+
 
 variables:
   azureSubscription: '0e43496e-dd9f-4359-8a9d-227bc76d5e01'
