@@ -6,7 +6,7 @@ using Raw.Streaming.Webhook.Model.Twitch.EventSub;
 
 namespace Raw.Streaming.Webhook.Translators
 {
-    public class TwitchStreamChangeToDiscordNotificationTranslator
+    public static class TwitchStreamChangeToDiscordNotificationTranslator
     {
         public static Notification Translate(StreamOnlineEvent message, Channel channel, Game game)
         {

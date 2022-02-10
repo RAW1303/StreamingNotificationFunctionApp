@@ -4,7 +4,7 @@ using Raw.Streaming.Webhook.Model.Twitch;
 
 namespace Raw.Streaming.Webhook.Translators
 {
-    public class TwitchClipToDiscordNotificationTranslator
+    public static class TwitchClipToDiscordNotificationTranslator
     {
         public static Notification Translate(Clip twitchClip, Game game)
         {

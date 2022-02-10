@@ -18,16 +18,13 @@ namespace Raw.Streaming.Webhook.Functions
         private readonly string _discordwebhookToken = AppSettings.DiscordClipsWebhookToken;
         private readonly IDiscordNotificationService _discordNotificationService;
         private readonly ITwitchApiService _twitchApiService;
-        private readonly TwitchClipToDiscordNotificationTranslator _translator;
 
         public TwitchClipController(
             IDiscordNotificationService discordNotificationService,
-            ITwitchApiService twitchApiService,
-            TwitchClipToDiscordNotificationTranslator translator)
+            ITwitchApiService twitchApiService)
         {
             _discordNotificationService = discordNotificationService;
             _twitchApiService = twitchApiService;
-            _translator = translator;
         }
 
         [FunctionName("NotifyTwitchClips")]

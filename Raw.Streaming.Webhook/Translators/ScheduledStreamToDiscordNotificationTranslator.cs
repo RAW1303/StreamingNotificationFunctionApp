@@ -6,7 +6,7 @@ using Raw.Streaming.Webhook.Model.Discord;
 
 namespace Raw.Streaming.Webhook.Translators
 {
-    public class ScheduledStreamToDiscordNotificationTranslator
+    public static class ScheduledStreamToDiscordNotificationTranslator
     {
         private const string CALENDAR_URL_TEMPLATE = "https://calendar.google.com/calendar/u/0/embed?mode=WEEK&showPrint=0&showTabs=0&title=Roy%20Weller%20Stream%20Schedule&showCalendars=0&bgcolor=%2300BDFF&src=";
 
