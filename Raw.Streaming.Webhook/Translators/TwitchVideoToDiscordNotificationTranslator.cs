@@ -8,7 +8,7 @@ namespace Raw.Streaming.Webhook.Translators
 {
     public class TwitchVideoToDiscordNotificationTranslator
     {
-        private ILogger<TwitchVideoToDiscordNotificationTranslator> _logger;
+        private readonly ILogger<TwitchVideoToDiscordNotificationTranslator> _logger;
 
         public TwitchVideoToDiscordNotificationTranslator(ILogger<TwitchVideoToDiscordNotificationTranslator> logger)
         {

@@ -10,7 +10,7 @@ namespace Raw.Streaming.Webhook.Translators
     {
         private const string CALENDAR_URL_TEMPLATE = "https://calendar.google.com/calendar/u/0/embed?mode=WEEK&showPrint=0&showTabs=0&title=Roy%20Weller%20Stream%20Schedule&showCalendars=0&bgcolor=%2300BDFF&src=";
 
-        public Notification TranslateDailySchedule(IEnumerable<ScheduledStream> scheduledStreams)
+        public static Notification TranslateDailySchedule(IEnumerable<ScheduledStream> scheduledStreams)
         {
             return new Notification()
             {
@@ -42,9 +42,9 @@ namespace Raw.Streaming.Webhook.Translators
             };
         }
 
-        public Notification TranslateWeeklySchedule(IEnumerable<ScheduledStream> scheduledStreams)
+        public static Notification TranslateWeeklySchedule(IEnumerable<ScheduledStream> scheduledStreams)
         {
-            if(scheduledStreams.Count() < 1)
+            if(!scheduledStreams.Any())
             {
                 return new Notification()
                 {
@@ -84,7 +84,7 @@ namespace Raw.Streaming.Webhook.Translators
             };
         }
 
-        private string GetStreamSummaryString(ScheduledStream stream)
+        private static string GetStreamSummaryString(ScheduledStream stream)
         {
             return $"{stream.Title}\n{stream.Game}\n{stream.Start:HH:mm} - {stream.End:HH:mm} UTC";
         }

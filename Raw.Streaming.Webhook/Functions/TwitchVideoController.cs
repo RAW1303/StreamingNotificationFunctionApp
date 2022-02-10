@@ -41,7 +41,7 @@ namespace Raw.Streaming.Webhook.Functions
                 var broadcasterId = req.Query["broadcaster-id"];
                 var startedAt = DateTime.SpecifyKind(Convert.ToDateTime(req.Query["started-at"]), DateTimeKind.Utc);
                 logger.LogInformation("NotifyTwitchHighlightsHttp execution started");
-                await SendClipsAsync(broadcasterId, startedAt, logger);
+                await SendHighlightsAsync(broadcasterId, startedAt, logger);
                 return new NoContentResult();
             }
             catch (Exception e)
@@ -62,7 +62,7 @@ namespace Raw.Streaming.Webhook.Functions
                 logger.LogInformation("NotifyTwitchHighlights execution started");
                 var startedAt = new DateTime(Math.Max(timer.ScheduleStatus.Last.Ticks, DateTime.UtcNow.AddHours(-25).Ticks));
                 var startedAtUtc = DateTime.SpecifyKind(startedAt, DateTimeKind.Utc);
-                await SendClipsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc, logger);
+                await SendHighlightsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc, logger);
             }
             catch (Exception e)
             {
@@ -71,7 +71,7 @@ namespace Raw.Streaming.Webhook.Functions
             }
         }
 
-        private async Task SendClipsAsync(string broadcasterId, DateTime startedAt, ILogger logger)
+        private async Task SendHighlightsAsync(string broadcasterId, DateTime startedAt, ILogger logger)
         {
             var videos = await _twitchApiService.GetHighlightsByBroadcasterAsync(broadcasterId);
             var filteredVideos = videos.Where(video => video.PublishedAt >= startedAt && video.Viewable == "public").OrderBy(video => video.PublishedAt);

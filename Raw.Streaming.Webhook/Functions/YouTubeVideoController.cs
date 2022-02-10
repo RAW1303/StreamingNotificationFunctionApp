@@ -28,13 +28,10 @@ namespace Raw.Streaming.Webhook.Functions
         private readonly string _discordwebhookId = AppSettings.DiscordVideosWebhookId;
         private readonly string _discordwebhookToken = AppSettings.DiscordVideosWebhookToken;
         private readonly IYoutubeSubscriptionService _subscriptionService;
-        private readonly YoutubeFeedToDiscordNotificationTranslator _translator;
 
         public YouTubeVideoController(
-            IYoutubeSubscriptionService subscriptionService,
-            YoutubeFeedToDiscordNotificationTranslator translator)
+            IYoutubeSubscriptionService subscriptionService)
         {
-            _translator = translator;
             _subscriptionService = subscriptionService;
         }
 
@@ -70,7 +67,7 @@ namespace Raw.Streaming.Webhook.Functions
                 var data = ConvertAtomToSyndication(stream, logger);
                 if (data.IsNewVideo(DateTimeOffset.UtcNow) && !string.IsNullOrWhiteSpace(data.Link))
                 {
-                    var notification = _translator.Translate(data);
+                    var notification = YoutubeFeedToDiscordNotificationTranslator.Translate(data);
                     var message = new DiscordMessage(_discordwebhookId, _discordwebhookToken, notification);
                     return new ServiceBusMessage
                     {

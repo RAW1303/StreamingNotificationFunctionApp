@@ -15,17 +15,11 @@ namespace Raw.Streaming.Webhook.Functions
         private readonly string _discordwebhookId = AppSettings.DiscordScheduleLiveWebhookId;
         private readonly string _discordwebhookToken = AppSettings.DiscordScheduleLiveWebhookToken;
         private readonly IScheduleService _scheduleService;
-        private readonly ScheduledStreamToDiscordNotificationTranslator _translator;
-        private readonly IDiscordNotificationService _discordNotificationService;
 
         public ScheduleController(
-            IScheduleService scheduleService,
-            IDiscordNotificationService discordNotificationService,
-            ScheduledStreamToDiscordNotificationTranslator translator)
+            IScheduleService scheduleService)
         {
             _scheduleService = scheduleService;
-            _discordNotificationService = discordNotificationService;
-            _translator = translator;
         }
 
 
@@ -41,7 +35,7 @@ namespace Raw.Streaming.Webhook.Functions
                 var from = DateTime.Today;
                 var to = from.AddDays(7);
                 var scheduledStreams = await _scheduleService.GetScheduledStreamsAsync(from, to);
-                var notification = _translator.TranslateWeeklySchedule(scheduledStreams);
+                var notification = ScheduledStreamToDiscordNotificationTranslator.TranslateWeeklySchedule(scheduledStreams);
                 var message = new DiscordMessage(_discordwebhookId, _discordwebhookToken, notification);
                 return new ServiceBusMessage
                 {
@@ -71,7 +65,7 @@ namespace Raw.Streaming.Webhook.Functions
                 var scheduledStreams = await _scheduleService.GetScheduledStreamsAsync(from, to);
                 if (scheduledStreams.Count > 0)
                 {
-                    var notification = _translator.TranslateDailySchedule(scheduledStreams);
+                    var notification = ScheduledStreamToDiscordNotificationTranslator.TranslateDailySchedule(scheduledStreams);
                     var message = new DiscordMessage(_discordwebhookId, _discordwebhookToken, notification);
                     return new ServiceBusMessage
                     {

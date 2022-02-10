@@ -8,7 +8,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Raw.Streaming.Webhook.Common;
-using Raw.Streaming.Webhook.Model.Twitch;
 using Raw.Streaming.Webhook.Model.Twitch.EventSub;
 using Raw.Streaming.Webhook.Services;
 using Raw.Streaming.Webhook.Translators;
@@ -26,19 +25,16 @@ namespace Raw.Streaming.Webhook.Functions
         private readonly IDiscordNotificationService _discordNotificationService;
         private readonly ITwitchApiService _twitchApiService;
         private readonly ITwitchSubscriptionService _subscriptionService;
-        private readonly TwitchStreamChangeToDiscordNotificationTranslator _translator;
 
         public TwitchStreamChangeController(
             ITwitchSubscriptionService subscriptionService, 
             IDiscordNotificationService discordNotificationService,
             ITwitchApiService twitchApiService,
-            TwitchStreamChangeToDiscordNotificationTranslator translator,
             ILogger<TwitchStreamChangeController> logger): base(logger, SubscriptionType.StreamOnline)
         {
             _subscriptionService = subscriptionService;
             _discordNotificationService = discordNotificationService;
             _twitchApiService = twitchApiService;
-            _translator = translator;
         }
 
         [FunctionName(nameof(StreamChangeSubscribe))]
@@ -79,7 +75,7 @@ namespace Raw.Streaming.Webhook.Functions
                 _logger.LogInformation("StreamChangeWebhook execution started");
                 var channel = await _twitchApiService.GetChannelInfoAsync(message.BroadcasterUserId);
                 var games = await _twitchApiService.GetGamesAsync(channel.GameId);
-                var notification = _translator.Translate(message, channel, games.First());
+                var notification = TwitchStreamChangeToDiscordNotificationTranslator.Translate(message, channel, games.First());
                 _logger.LogInformation("Sending stream change notification to discord server");
                 await _discordNotificationService.SendNotification(_discordwebhookId, _discordwebhookToken, notification);
                 _logger.LogInformation("StreamChangeSubscribe execution succeeded: Notification sent");

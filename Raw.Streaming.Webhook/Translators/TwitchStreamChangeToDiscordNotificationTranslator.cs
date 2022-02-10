@@ -8,7 +8,7 @@ namespace Raw.Streaming.Webhook.Translators
 {
     public class TwitchStreamChangeToDiscordNotificationTranslator
     {
-        public Notification Translate(StreamOnlineEvent message, Channel channel, Game game)
+        public static Notification Translate(StreamOnlineEvent message, Channel channel, Game game)
         {
             return new Notification()
             {

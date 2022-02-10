@@ -5,7 +5,7 @@ namespace Raw.Streaming.Webhook.Translators
 {
     public class YoutubeFeedToDiscordNotificationTranslator
     {
-        public Notification Translate(YoutubeFeed youtubeFeed)
+        public static Notification Translate(YoutubeFeed youtubeFeed)
         {
             return new Notification()
             {

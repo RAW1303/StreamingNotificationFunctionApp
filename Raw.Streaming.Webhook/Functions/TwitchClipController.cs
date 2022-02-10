@@ -7,7 +7,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Raw.Streaming.Webhook.Common;
-using Raw.Streaming.Webhook.Model.Discord;
 using Raw.Streaming.Webhook.Services;
 using Raw.Streaming.Webhook.Translators;
 
@@ -31,29 +30,6 @@ namespace Raw.Streaming.Webhook.Functions
             _translator = translator;
         }
 
-
-        [FunctionName("NotifyTwitchClipsHttp")]
-        public async Task<IActionResult> NotifyTwitchClipsHttp(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "twitch/notify-clips")] HttpRequest req,
-            ILogger logger)
-        {
-            try
-            {
-                var broadcasterId = req.Query["broadcaster-id"];
-                var startedAt = DateTime.SpecifyKind(Convert.ToDateTime(req.Query["started-at"]), DateTimeKind.Utc);
-                var endedAt = DateTime.SpecifyKind(Convert.ToDateTime(req.Query["ended-at"]), DateTimeKind.Utc);
-                logger.LogInformation("NotifyTwitchClips execution started");
-                var notificationOut = await SendClipsAsync(broadcasterId, startedAt, endedAt, logger);
-                return new OkObjectResult(notificationOut);
-            }
-            catch (Exception e)
-            {
-                logger.LogError($"NotifyTwitchClips execution failed: {e.Message}");
-                throw;
-            }
-        }
-
-
         [FunctionName("NotifyTwitchClips")]
         public async Task NotifyTwitchClips(
             [TimerTrigger("%TwitchClipsTimerTrigger%")] TimerInfo timer,
@@ -65,7 +41,7 @@ namespace Raw.Streaming.Webhook.Functions
                 var startedAt = new DateTime(Math.Max(timer.ScheduleStatus.Last.Ticks, DateTime.UtcNow.AddMinutes(-10).Ticks));
                 var startedAtUtc = DateTime.SpecifyKind(startedAt, DateTimeKind.Utc);
                 var endedAtUtc = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
-                var notificationOut = await SendClipsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc, endedAtUtc, logger);
+                await SendClipsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc, endedAtUtc, logger);
             }
             catch (Exception e)
             {
@@ -74,16 +50,14 @@ namespace Raw.Streaming.Webhook.Functions
             }
         }
 
-        private async Task<Notification> SendClipsAsync(string broadcasterId, DateTime startedAt, DateTime endedAt, ILogger logger)
+        private async Task SendClipsAsync(string broadcasterId, DateTime startedAt, DateTime endedAt, ILogger logger)
         {
             var clips = await _twitchApiService.GetClipsByBroadcasterAsync(broadcasterId, startedAt, endedAt);
             var succeeded = 0;
-            Notification notificationOut = null;
             await Task.WhenAll(clips.OrderBy(x => x.CreatedAt).Select(async clip =>
             {
                 var games = await _twitchApiService.GetGamesAsync(clip.GameId);
-                var notification = _translator.Translate(clip, games.First());
-                notificationOut = notification;
+                var notification = TwitchClipToDiscordNotificationTranslator.Translate(clip, games.First());
                 try
                 {
                     logger.LogInformation($"Clip notification {notification.Embeds[0].Title} started");
@@ -96,7 +70,6 @@ namespace Raw.Streaming.Webhook.Functions
                     logger.LogError($"Clip notification {notification.Embeds[0].Title} failed: {e.Message}");
                 }
             }));
-            return notificationOut;
         }
     }
 }

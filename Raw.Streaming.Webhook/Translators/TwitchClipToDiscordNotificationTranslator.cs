@@ -6,7 +6,7 @@ namespace Raw.Streaming.Webhook.Translators
 {
     public class TwitchClipToDiscordNotificationTranslator
     {
-        public Notification Translate(Clip twitchClip, Game game)
+        public static Notification Translate(Clip twitchClip, Game game)
         {
             return new Notification()
             {
