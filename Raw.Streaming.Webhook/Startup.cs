@@ -28,11 +28,7 @@ namespace Raw.Streaming.Webhook
             builder.Services.AddSingleton<ITwitchSubscriptionService, TwitchSubscriptionService>();
             builder.Services.AddSingleton<IYoutubeSubscriptionService, YoutubeSubscriptionService>();
             builder.Services.AddSingleton<IScheduleService, GoogleCalendarScheduleService>();
-            builder.Services.AddSingleton<TwitchClipToDiscordNotificationTranslator>();
-            builder.Services.AddSingleton<TwitchStreamChangeToDiscordNotificationTranslator>();
             builder.Services.AddSingleton<TwitchVideoToDiscordNotificationTranslator>();
-            builder.Services.AddSingleton<YoutubeFeedToDiscordNotificationTranslator>();
-            builder.Services.AddSingleton<ScheduledStreamToDiscordNotificationTranslator>();
         }
     }
 }
