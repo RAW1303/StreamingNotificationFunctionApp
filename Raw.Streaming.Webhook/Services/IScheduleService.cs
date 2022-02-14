@@ -7,6 +7,6 @@ namespace Raw.Streaming.Webhook.Services
 {
     public interface IScheduleService
     {
-        public Task<IReadOnlyList<ScheduledStream>> GetScheduledStreamsAsync(DateTime from, DateTime to);
+        public Task<IReadOnlyList<StreamEvent>> GetScheduledStreamsAsync(DateTime from, DateTime to);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Raw.Streaming.Webhook.Model
 {
-    public class ScheduledStream
+    public class StreamEvent
     {
         public DateTime Start { get; set; }
         public DateTime End { get; set; }

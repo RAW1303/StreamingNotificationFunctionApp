@@ -16,7 +16,7 @@ namespace Raw.Streaming.Webhook.Services
             _calendarService = calendarService;
         }
 
-        public async Task<IReadOnlyList<ScheduledStream>> GetScheduledStreamsAsync(DateTime from, DateTime to)
+        public async Task<IReadOnlyList<StreamEvent>> GetScheduledStreamsAsync(DateTime from, DateTime to)
         {
             var eventsQuery = _calendarService.Events.List(AppSettings.ScheduleGoogleCalendarId);
             eventsQuery.TimeMin = from;
@@ -25,7 +25,7 @@ namespace Raw.Streaming.Webhook.Services
             eventsQuery.SingleEvents = true;
             var events = await eventsQuery.ExecuteAsync();
             return events.Items.Select(e =>
-            new ScheduledStream()
+            new StreamEvent()
             {
                 Title = e.Summary,
                 Description = e.Description,

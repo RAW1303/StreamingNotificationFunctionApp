@@ -34,8 +34,8 @@ namespace Raw.Streaming.Webhook.Functions
                 logger.LogInformation($"{nameof(NotifyWeeklySchedule)} execution started");
                 var from = DateTime.Today;
                 var to = from.AddDays(7);
-                var scheduledStreams = await _scheduleService.GetScheduledStreamsAsync(from, to);
-                var notification = ScheduledStreamToDiscordNotificationTranslator.TranslateWeeklySchedule(scheduledStreams);
+                var streamEvents = await _scheduleService.GetScheduledStreamsAsync(from, to);
+                var notification = StreamEventToDiscordNotificationTranslator.TranslateWeeklySchedule(streamEvents);
                 var message = new DiscordMessage(_discordwebhookId, _discordwebhookToken, notification);
                 return new ServiceBusMessage
                 {
