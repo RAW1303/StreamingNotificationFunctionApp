@@ -65,7 +65,7 @@ namespace Raw.Streaming.Webhook.Functions
                 var scheduledStreams = await _scheduleService.GetScheduledStreamsAsync(from, to);
                 if (scheduledStreams.Count > 0)
                 {
-                    var notification = ScheduledStreamToDiscordNotificationTranslator.TranslateDailySchedule(scheduledStreams);
+                    var notification = StreamEventToDiscordNotificationTranslator.TranslateDailySchedule(scheduledStreams);
                     var message = new DiscordMessage(_discordwebhookId, _discordwebhookToken, notification);
                     return new ServiceBusMessage
                     {
