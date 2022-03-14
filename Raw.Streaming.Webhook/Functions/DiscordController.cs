@@ -17,6 +17,8 @@ namespace Raw.Streaming.Webhook.Functions
             _discordNotificationService = discordNotificationService;
         }
 
+
+        [Disable("DISABLE_DISCORD_QUEUE_TRIGGER")]
         [FunctionName("DiscordController")]
         public async Task Run([ServiceBusTrigger("%DiscordNotificationQueueName%", Connection = "StreamingServiceBus")] string message, ILogger logger)
         {
