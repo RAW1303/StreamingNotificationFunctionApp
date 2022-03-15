@@ -44,7 +44,7 @@ namespace Raw.Streaming.Discord.Services
 
             if (content != null)
             {
-                var notificationRequestJson = JsonSerializer.Serialize(content);
+                var notificationRequestJson = JsonSerializer.Serialize(content, content.GetType());
                 request.Content = new StringContent(notificationRequestJson, Encoding.UTF8, "application/json");
             }
 

@@ -10,27 +10,28 @@ namespace Raw.Streaming.Discord.Functions
     [ServiceBusAccount("StreamingServiceBus")]
     internal class ServiceBusFunctions
     {
-        private readonly ILogger<ServiceBusFunctions> _logger;
         private readonly IDiscordBotMessageService _discordBotMessageService;
+        private readonly ILogger<ServiceBusFunctions> _logger;
         private readonly string _channelId = AppSettings.SandBoxChannelId;
 
-        public ServiceBusFunctions(IDiscordBotMessageService discordBotMessageService)
+        public ServiceBusFunctions(IDiscordBotMessageService discordBotMessageService, ILogger<ServiceBusFunctions> logger)
         {
+            _logger = logger;
             _discordBotMessageService = discordBotMessageService;
         }
 
         [FunctionName(nameof(ProcessDiscordBotMessageQueue))]
-        public async Task ProcessDiscordBotMessageQueue([ServiceBusTrigger("%DiscordBotMessageQueueName%")] DiscordBotQueueItem myQueueItem, ILogger logger)
+        public async Task ProcessDiscordBotMessageQueue([ServiceBusTrigger("%DiscordBotMessageQueueName%")] DiscordBotQueueItem myQueueItem)
         {
             try
             {
-                logger.LogInformation($"Discord notification started");
-                await _discordBotMessageService.SendDiscordMessageAsync(_channelId, myQueueItem.Message);
-                logger.LogInformation($"Discord notification succeeded");
+                _logger.LogInformation($"Discord notification started");
+                var message = await _discordBotMessageService.SendDiscordMessageAsync(_channelId, myQueueItem.Notification);
+                _logger.LogInformation($"Discord notification succeeded");
             }
             catch (Exception ex)
             {
-                logger.LogError($"Discord notification failed: {ex.Message}");
+                _logger.LogError($"Discord notification failed: {ex.Message}");
                 throw;
             }
         }
