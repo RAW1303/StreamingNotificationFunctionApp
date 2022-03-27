@@ -1,12 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Azure.Messaging.ServiceBus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Raw.Streaming.Webhook.Common;
+using Raw.Streaming.Webhook.Model.Discord;
 using Raw.Streaming.Webhook.Services;
 using Raw.Streaming.Webhook.Translators;
 
@@ -14,21 +17,18 @@ namespace Raw.Streaming.Webhook.Functions
 {
     public class TwitchClipController
     {
-        private readonly string _discordwebhookId = AppSettings.DiscordClipsWebhookId;
-        private readonly string _discordwebhookToken = AppSettings.DiscordClipsWebhookToken;
-        private readonly IDiscordNotificationService _discordNotificationService;
+        private readonly string _discordChannelId = AppSettings.DiscordClipsChannelId;
         private readonly ITwitchApiService _twitchApiService;
 
         public TwitchClipController(
-            IDiscordNotificationService discordNotificationService,
             ITwitchApiService twitchApiService)
         {
-            _discordNotificationService = discordNotificationService;
             _twitchApiService = twitchApiService;
         }
 
         [FunctionName("NotifyTwitchClips")]
-        public async Task NotifyTwitchClips(
+        [return: ServiceBus("%DiscordNotificationQueueName%", Connection = "StreamingServiceBus")]
+        public async Task<IEnumerable<ServiceBusMessage>> NotifyTwitchClips(
             [TimerTrigger("%TwitchClipsTimerTrigger%")] TimerInfo timer,
             ILogger logger)
         {
@@ -38,7 +38,15 @@ namespace Raw.Streaming.Webhook.Functions
                 var startedAt = new DateTime(Math.Max(timer.ScheduleStatus.Last.Ticks, DateTime.UtcNow.AddMinutes(-10).Ticks));
                 var startedAtUtc = DateTime.SpecifyKind(startedAt, DateTimeKind.Utc);
                 var endedAtUtc = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
-                await SendClipsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc, endedAtUtc, logger);
+                var notifications = await GetClipNotificationsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc, endedAtUtc, logger);
+                return notifications.Select(n => {
+                    var message = new DiscordMessage(_discordChannelId, n);
+                    return new ServiceBusMessage
+                    {
+                        Body = BinaryData.FromObjectAsJson(message),
+                        MessageId = $"twitch-clips-{endedAtUtc:s}"
+                    };
+                });
             }
             catch (Exception e)
             {
@@ -47,25 +55,13 @@ namespace Raw.Streaming.Webhook.Functions
             }
         }
 
-        private async Task SendClipsAsync(string broadcasterId, DateTime startedAt, DateTime endedAt, ILogger logger)
+        private async Task<Notification[]> GetClipNotificationsAsync(string broadcasterId, DateTime startedAt, DateTime endedAt, ILogger logger)
         {
             var clips = await _twitchApiService.GetClipsByBroadcasterAsync(broadcasterId, startedAt, endedAt);
-            var succeeded = 0;
-            await Task.WhenAll(clips.OrderBy(x => x.CreatedAt).Select(async clip =>
+            return await Task.WhenAll(clips.OrderBy(x => x.CreatedAt).Select(async clip =>
             {
                 var games = await _twitchApiService.GetGamesAsync(clip.GameId);
-                var notification = TwitchClipToDiscordNotificationTranslator.Translate(clip, games.First());
-                try
-                {
-                    logger.LogInformation($"Clip notification {notification.Embeds[0].Title} started");
-                    await _discordNotificationService.SendNotification(_discordwebhookId, _discordwebhookToken, notification);
-                    succeeded++;
-                    logger.LogInformation($"Clip notification {notification.Embeds[0].Title} succeeded");
-                }
-                catch (Exception e)
-                {
-                    logger.LogError($"Clip notification {notification.Embeds[0].Title} failed: {e.Message}");
-                }
+                return TwitchClipToDiscordNotificationTranslator.Translate(clip, games.First());
             }));
         }
     }

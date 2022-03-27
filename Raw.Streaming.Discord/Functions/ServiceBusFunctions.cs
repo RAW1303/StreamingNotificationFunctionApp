@@ -12,7 +12,6 @@ namespace Raw.Streaming.Discord.Functions
     {
         private readonly IDiscordBotMessageService _discordBotMessageService;
         private readonly ILogger<ServiceBusFunctions> _logger;
-        private readonly string _channelId = AppSettings.SandBoxChannelId;
 
         public ServiceBusFunctions(IDiscordBotMessageService discordBotMessageService, ILogger<ServiceBusFunctions> logger)
         {
@@ -26,7 +25,11 @@ namespace Raw.Streaming.Discord.Functions
             try
             {
                 _logger.LogInformation($"Discord notification started");
-                var message = await _discordBotMessageService.SendDiscordMessageAsync(_channelId, myQueueItem.Notification);
+                foreach (var message in myQueueItem.Messages)
+                {
+                    await _discordBotMessageService.SendDiscordMessageAsync(myQueueItem.ChannelId, message);
+                }
+
                 _logger.LogInformation($"Discord notification succeeded");
             }
             catch (Exception ex)

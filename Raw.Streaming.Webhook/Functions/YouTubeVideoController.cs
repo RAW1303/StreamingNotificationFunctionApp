@@ -25,8 +25,7 @@ namespace Raw.Streaming.Webhook.Functions
 
         private readonly string _webhookTopic = AppSettings.YoutubeVideoTopic;
         private readonly string _channelId = AppSettings.YoutubeChannelId;
-        private readonly string _discordwebhookId = AppSettings.DiscordVideosWebhookId;
-        private readonly string _discordwebhookToken = AppSettings.DiscordVideosWebhookToken;
+        private readonly string _discordChannelId = AppSettings.DiscordVideosChannelId;
         private readonly IYoutubeSubscriptionService _subscriptionService;
 
         public YouTubeVideoController(
@@ -68,7 +67,7 @@ namespace Raw.Streaming.Webhook.Functions
                 if (data.IsNewVideo(DateTimeOffset.UtcNow) && !string.IsNullOrWhiteSpace(data.Link))
                 {
                     var notification = YoutubeFeedToDiscordNotificationTranslator.Translate(data);
-                    var message = new DiscordMessage(_discordwebhookId, _discordwebhookToken, notification);
+                    var message = new DiscordMessage(_discordChannelId, notification);
                     return new ServiceBusMessage
                     {
                         Body = BinaryData.FromObjectAsJson(message),

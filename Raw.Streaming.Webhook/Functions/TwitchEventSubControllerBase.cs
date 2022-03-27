@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using Raw.Streaming.Webhook.Model.Twitch.EventSub;
 using System.Threading.Tasks;
 using System.Text.Json;
+using Raw.Streaming.Webhook.Model.Discord;
+using System;
 
 namespace Raw.Streaming.Webhook.Functions
 {
@@ -23,12 +25,13 @@ namespace Raw.Streaming.Webhook.Functions
             _expectedMessageType = expectedMessageType;
         }
 
-        protected async Task<IActionResult> HandleRequestAsync(HttpRequest req)
+        protected async Task<Notification> HandleRequestAsync(HttpRequest req)
         {
             if(!req.Headers.TryGetValue(MESSAGE_TYPE_HEADER_NAME, out var messageType))
             {
-                _logger.LogError($"{MESSAGE_TYPE_HEADER_NAME} header not present");
-                return new BadRequestResult();
+                var message = $"{MESSAGE_TYPE_HEADER_NAME} header not present";
+                _logger.LogError(message);
+                throw new InvalidOperationException(message);
             }
 
             var requestContentString = await req.ReadAsStringAsync();
@@ -37,7 +40,7 @@ namespace Raw.Streaming.Webhook.Functions
             {
                 var requestContentObject = JsonSerializer.Deserialize<EventSubChallenge>(requestContentString);
                 var challenge = requestContentObject.Challenge;
-                return new OkObjectResult(challenge);
+                return null;
             }
             else if (messageType == _expectedMessageType)
             {
@@ -48,10 +51,10 @@ namespace Raw.Streaming.Webhook.Functions
             else
             {
                 _logger.LogError($"Invalid Request");
-                return new BadRequestResult();
+                throw new InvalidOperationException();
             }
         }
 
-        protected abstract Task<IActionResult> HandleMessageAsync(T message);
+        protected abstract Task<Notification> HandleMessageAsync(T message);
     }
 }

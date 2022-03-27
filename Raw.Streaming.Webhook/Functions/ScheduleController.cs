@@ -12,8 +12,7 @@ namespace Raw.Streaming.Webhook.Functions
 {
     public class ScheduleController
     {
-        private readonly string _discordwebhookId = AppSettings.DiscordScheduleLiveWebhookId;
-        private readonly string _discordwebhookToken = AppSettings.DiscordScheduleLiveWebhookToken;
+        private readonly string _discordChannelId = AppSettings.DiscordScheduleLiveChannelId;
         private readonly IScheduleService _scheduleService;
 
         public ScheduleController(
@@ -36,7 +35,7 @@ namespace Raw.Streaming.Webhook.Functions
                 var to = from.AddDays(7);
                 var streamEvents = await _scheduleService.GetScheduledStreamsAsync(from, to);
                 var notification = StreamEventToDiscordNotificationTranslator.TranslateWeeklySchedule(streamEvents);
-                var message = new DiscordMessage(_discordwebhookId, _discordwebhookToken, notification);
+                var message = new DiscordMessage(_discordChannelId, notification);
                 return new ServiceBusMessage
                 {
                     Body = BinaryData.FromObjectAsJson(message),
@@ -66,7 +65,7 @@ namespace Raw.Streaming.Webhook.Functions
                 if (scheduledStreams.Count > 0)
                 {
                     var notification = StreamEventToDiscordNotificationTranslator.TranslateDailySchedule(scheduledStreams);
-                    var message = new DiscordMessage(_discordwebhookId, _discordwebhookToken, notification);
+                    var message = new DiscordMessage(_discordChannelId, notification);
                     return new ServiceBusMessage
                     {
                         Body = BinaryData.FromObjectAsJson(message),

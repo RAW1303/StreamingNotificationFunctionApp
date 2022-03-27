@@ -4,19 +4,17 @@ namespace Raw.Streaming.Discord.Model
 {
     public class DiscordBotQueueItem
     {
-        public string WebhookId { get; set; }
-        public string WebhookToken { get; set; }
-        public Message Notification { get; set; }
+        public string ChannelId { get; set; }
+        public Message[] Messages { get; set; }
 
         public DiscordBotQueueItem()
         {
         }
 
-        public DiscordBotQueueItem(string webhookId, string webhookToken, Message notification)
+        public DiscordBotQueueItem(string channelId, Message[] messages)
         {
-            WebhookId = webhookId;
-            WebhookToken = webhookToken;
-            Notification = notification;
+            ChannelId = channelId;
+            Messages = messages;
         }
     }
 }

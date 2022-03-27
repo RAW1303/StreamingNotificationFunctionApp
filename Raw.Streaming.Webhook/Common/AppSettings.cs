@@ -4,18 +4,13 @@ namespace Raw.Streaming.Webhook.Common
 {
     static class AppSettings
     {
-        public static string DiscordClipsWebhookId { get; } = Environment.GetEnvironmentVariable("DiscordClipsWebhookId");
-        public static string DiscordClipsWebhookToken { get; } = Environment.GetEnvironmentVariable("DiscordClipsWebhookToken");
+        public static string DiscordClipsChannelId { get; } = Environment.GetEnvironmentVariable("DiscordClipsChannelId");
         public static string DiscordGameBoxSize { get; } = Environment.GetEnvironmentVariable("DiscordGameBoxSize");
-        public static string DiscordHighlightsWebhookId { get; } = Environment.GetEnvironmentVariable("DiscordHighlightsWebhookId");
-        public static string DiscordHighlightsWebhookToken { get; } = Environment.GetEnvironmentVariable("DiscordHighlightsWebhookToken");
+        public static string DiscordHighlightsChannelId { get; } = Environment.GetEnvironmentVariable("DiscordHighlightsChannelId");
         public static string DiscordNotificationGroupIds { get; } = Environment.GetEnvironmentVariable("DiscordNotificationGroupIds");
-        public static string DiscordScheduleLiveWebhookId { get; } = Environment.GetEnvironmentVariable("DiscordScheduleLiveWebhookId");
-        public static string DiscordScheduleLiveWebhookToken { get; } = Environment.GetEnvironmentVariable("DiscordScheduleLiveWebhookToken");
-        public static string DiscordStreamLiveWebhookId { get; } = Environment.GetEnvironmentVariable("DiscordStreamLiveWebhookId");
-        public static string DiscordStreamLiveWebhookToken { get; } = Environment.GetEnvironmentVariable("DiscordStreamLiveWebhookToken");
-        public static string DiscordVideosWebhookId { get; } = Environment.GetEnvironmentVariable("DiscordVideosWebhookId");
-        public static string DiscordVideosWebhookToken { get; } = Environment.GetEnvironmentVariable("DiscordVideosWebhookToken");
+        public static string DiscordScheduleLiveChannelId { get; } = Environment.GetEnvironmentVariable("DiscordScheduleLiveChannelId");
+        public static string DiscordStreamLiveChannelId { get; } = Environment.GetEnvironmentVariable("DiscordStreamLiveChannelId");
+        public static string DiscordVideosChannelId { get; } = Environment.GetEnvironmentVariable("DiscordVideosChannelId");
         public static string DiscordVideoThumbnailSize { get; } = Environment.GetEnvironmentVariable("DiscordVideoThumbnailSize");
         public static string DiscordWebhookUrl { get; } = Environment.GetEnvironmentVariable("DiscordWebhookUrl");
         public static string GoogleCalendarApiKey { get; } = Environment.GetEnvironmentVariable("GoogleCalendarApiKey");

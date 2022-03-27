@@ -6,6 +6,5 @@ namespace Raw.Streaming.Discord
     {
         public static string DiscordApiUrl { get; } = Environment.GetEnvironmentVariable("DiscordApiUrl");
         public static string DiscordBotToken { get; } = Environment.GetEnvironmentVariable("DiscordBotToken");
-        public static string SandBoxChannelId { get; } = Environment.GetEnvironmentVariable("SandBoxChannelId");
     }
 }

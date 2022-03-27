@@ -1,20 +1,20 @@
-﻿namespace Raw.Streaming.Webhook.Model.Discord
+﻿using System.Collections.Generic;
+
+namespace Raw.Streaming.Webhook.Model.Discord
 {
     public class DiscordMessage
     {
-        public string WebhookId { get; set;  }
-        public string WebhookToken { get; set; }
-        public Notification Notification { get; set; }
+        public string ChannelId { get; set; }
+        public IEnumerable<Notification> Messages { get; set; }
 
         public DiscordMessage()
         {
         }
 
-        public DiscordMessage(string webhookId, string webhookToken, Notification discordNotification)
+        public DiscordMessage(string channelId, params Notification[] messages)
         {
-            WebhookId = webhookId;
-            WebhookToken = webhookToken;
-            Notification = discordNotification;
+            ChannelId = channelId;
+            Messages = messages;
         }
     }
 }
