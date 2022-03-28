@@ -12,7 +12,7 @@ namespace Raw.Streaming.Webhook.Translators
         {
             return new Notification()
             {
-                Content = AppSettings.DiscordNotificationGroupIds,
+                Content = $"{AppSettings.DiscordNotificationGroupIds}\nhttps://twitch.tv/{channel.BroadcasterName}",
                 Embeds = new Embed[]
                 {
                     new Embed()
