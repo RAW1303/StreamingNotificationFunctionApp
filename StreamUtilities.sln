@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29209.62
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raw.Streaming.Webhook", "Raw.Streaming.Webhook\Raw.Streaming.Webhook.csproj", "{6BF658FF-2EBB-44E9-8C79-6A429469E554}"
 EndProject
@@ -10,6 +10,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{17DB4137-E473-461E-8C85-5A7E56E31B69}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raw.Streaming.Webhook.Tests", "Raw.Streaming.Webhook.Tests\Raw.Streaming.Webhook.Tests.csproj", "{53D57735-3C0B-40DF-816B-CE51744F340C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raw.Streaming.Discord", "Raw.Streaming.Discord\Raw.Streaming.Discord.csproj", "{4678E16B-93B8-4CC7-B3A6-E0E9146B54A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raw.Streaming.Common", "Raw.Streaming.Common\Raw.Streaming.Common.csproj", "{47AE1E55-8B61-46BF-8A06-6C661A0D08C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +29,14 @@ Global
 		{53D57735-3C0B-40DF-816B-CE51744F340C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53D57735-3C0B-40DF-816B-CE51744F340C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53D57735-3C0B-40DF-816B-CE51744F340C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4678E16B-93B8-4CC7-B3A6-E0E9146B54A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4678E16B-93B8-4CC7-B3A6-E0E9146B54A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4678E16B-93B8-4CC7-B3A6-E0E9146B54A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4678E16B-93B8-4CC7-B3A6-E0E9146B54A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47AE1E55-8B61-46BF-8A06-6C661A0D08C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47AE1E55-8B61-46BF-8A06-6C661A0D08C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47AE1E55-8B61-46BF-8A06-6C661A0D08C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47AE1E55-8B61-46BF-8A06-6C661A0D08C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +44,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{6BF658FF-2EBB-44E9-8C79-6A429469E554} = {17DB4137-E473-461E-8C85-5A7E56E31B69}
 		{53D57735-3C0B-40DF-816B-CE51744F340C} = {D471ABEE-64B9-43CC-95BE-1BFB4F0EA163}
+		{4678E16B-93B8-4CC7-B3A6-E0E9146B54A2} = {17DB4137-E473-461E-8C85-5A7E56E31B69}
+		{47AE1E55-8B61-46BF-8A06-6C661A0D08C3} = {17DB4137-E473-461E-8C85-5A7E56E31B69}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {654A69C6-AFCB-4711-9849-93E22A5569DB}

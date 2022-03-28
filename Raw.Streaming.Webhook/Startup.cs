@@ -23,7 +23,6 @@ namespace Raw.Streaming.Webhook
             builder.Services.AddLogging();
             builder.Services.AddHttpClient();
             builder.Services.AddSingleton(googleCalendarService);
-            builder.Services.AddSingleton<IDiscordNotificationService, DiscordNotificationService>();
             builder.Services.AddSingleton<ITwitchApiService, TwitchApiService>();
             builder.Services.AddSingleton<ITwitchSubscriptionService, TwitchSubscriptionService>();
             builder.Services.AddSingleton<IYoutubeSubscriptionService, YoutubeSubscriptionService>();

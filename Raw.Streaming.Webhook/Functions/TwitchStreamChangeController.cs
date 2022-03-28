@@ -2,12 +2,15 @@ using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Azure.Messaging.ServiceBus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Raw.Streaming.Common.Model.Enums;
 using Raw.Streaming.Webhook.Common;
+using Raw.Streaming.Webhook.Model.Discord;
 using Raw.Streaming.Webhook.Model.Twitch.EventSub;
 using Raw.Streaming.Webhook.Services;
 using Raw.Streaming.Webhook.Translators;
@@ -20,20 +23,15 @@ namespace Raw.Streaming.Webhook.Functions
 
         private readonly string _webhookType = SubscriptionType.StreamOnline;
         private readonly string _broadcasterId = AppSettings.TwitchBroadcasterId;
-        private readonly string _discordwebhookId = AppSettings.DiscordStreamLiveWebhookId;
-        private readonly string _discordwebhookToken = AppSettings.DiscordStreamLiveWebhookToken;
-        private readonly IDiscordNotificationService _discordNotificationService;
         private readonly ITwitchApiService _twitchApiService;
         private readonly ITwitchSubscriptionService _subscriptionService;
 
         public TwitchStreamChangeController(
             ITwitchSubscriptionService subscriptionService, 
-            IDiscordNotificationService discordNotificationService,
             ITwitchApiService twitchApiService,
             ILogger<TwitchStreamChangeController> logger): base(logger, SubscriptionType.StreamOnline)
         {
             _subscriptionService = subscriptionService;
-            _discordNotificationService = discordNotificationService;
             _twitchApiService = twitchApiService;
         }
 
@@ -62,24 +60,28 @@ namespace Raw.Streaming.Webhook.Functions
         }
 
         [FunctionName(nameof(StreamChangeWebhook))]
-        public async Task<IActionResult> StreamChangeWebhook(
+        [return: ServiceBus("%DiscordNotificationQueueName%", Connection = "StreamingServiceBus")]
+        public async Task<ServiceBusMessage> StreamChangeWebhook(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = WebhookEndpoint)] HttpRequest req)
         {
-            return await HandleRequestAsync(req);
+            var from = DateTime.Now;
+            var notification = await HandleRequestAsync(req);
+            var message = new DiscordMessage(MessageType.StreamGoLive, notification);
+            return new ServiceBusMessage
+            {
+                Body = BinaryData.FromObjectAsJson(message),
+                MessageId = $"go-live-{from:yyyy-MM-ddTHH:mm:ss}"
+            };
         }
 
-        protected override async Task<IActionResult> HandleMessageAsync(StreamOnlineEvent message)
+        protected override async Task<Notification> HandleMessageAsync(StreamOnlineEvent message)
         {
             try
             {
                 _logger.LogInformation("StreamChangeWebhook execution started");
                 var channel = await _twitchApiService.GetChannelInfoAsync(message.BroadcasterUserId);
                 var games = await _twitchApiService.GetGamesAsync(channel.GameId);
-                var notification = TwitchStreamChangeToDiscordNotificationTranslator.Translate(message, channel, games.First());
-                _logger.LogInformation("Sending stream change notification to discord server");
-                await _discordNotificationService.SendNotification(_discordwebhookId, _discordwebhookToken, notification);
-                _logger.LogInformation("StreamChangeSubscribe execution succeeded: Notification sent");
-                return new OkResult();
+                return TwitchStreamChangeToDiscordNotificationTranslator.Translate(message, channel, games.First());
             }
             catch (Exception e)
             {
