@@ -1,19 +1,20 @@
-﻿using Raw.Streaming.Discord.Model.DiscordApi;
+﻿using Raw.Streaming.Common.Model.Enums;
+using Raw.Streaming.Discord.Model.DiscordApi;
 
 namespace Raw.Streaming.Discord.Model
 {
     public class DiscordBotQueueItem
     {
-        public string ChannelId { get; set; }
+        public MessageType Type { get; set; }
         public Message[] Messages { get; set; }
 
         public DiscordBotQueueItem()
         {
         }
 
-        public DiscordBotQueueItem(string channelId, Message[] messages)
+        public DiscordBotQueueItem(MessageType type, Message[] messages)
         {
-            ChannelId = channelId;
+            Type = type;
             Messages = messages;
         }
     }

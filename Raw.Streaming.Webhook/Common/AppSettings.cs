@@ -4,15 +4,9 @@ namespace Raw.Streaming.Webhook.Common
 {
     static class AppSettings
     {
-        public static string DiscordClipsChannelId { get; } = Environment.GetEnvironmentVariable("DiscordClipsChannelId");
         public static string DiscordGameBoxSize { get; } = Environment.GetEnvironmentVariable("DiscordGameBoxSize");
-        public static string DiscordHighlightsChannelId { get; } = Environment.GetEnvironmentVariable("DiscordHighlightsChannelId");
         public static string DiscordNotificationGroupIds { get; } = Environment.GetEnvironmentVariable("DiscordNotificationGroupIds");
-        public static string DiscordScheduleLiveChannelId { get; } = Environment.GetEnvironmentVariable("DiscordScheduleLiveChannelId");
-        public static string DiscordStreamLiveChannelId { get; } = Environment.GetEnvironmentVariable("DiscordStreamLiveChannelId");
-        public static string DiscordVideosChannelId { get; } = Environment.GetEnvironmentVariable("DiscordVideosChannelId");
         public static string DiscordVideoThumbnailSize { get; } = Environment.GetEnvironmentVariable("DiscordVideoThumbnailSize");
-        public static string DiscordWebhookUrl { get; } = Environment.GetEnvironmentVariable("DiscordWebhookUrl");
         public static string GoogleCalendarApiKey { get; } = Environment.GetEnvironmentVariable("GoogleCalendarApiKey");
         public static string ScheduleGoogleCalendarId { get; } = Environment.GetEnvironmentVariable("ScheduleGoogleCalendarId");
         public static string StreamAlertContent { get; } = Environment.GetEnvironmentVariable("StreamAlertContent");

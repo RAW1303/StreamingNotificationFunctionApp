@@ -1,19 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using Raw.Streaming.Common.Model.Enums;
+using System.Collections.Generic;
 
 namespace Raw.Streaming.Webhook.Model.Discord
 {
     public class DiscordMessage
     {
-        public string ChannelId { get; set; }
+        public MessageType Type { get; set; }
         public IEnumerable<Notification> Messages { get; set; }
 
         public DiscordMessage()
         {
         }
 
-        public DiscordMessage(string channelId, params Notification[] messages)
+        public DiscordMessage(MessageType type, params Notification[] messages)
         {
-            ChannelId = channelId;
+            Type = type;
             Messages = messages;
         }
     }

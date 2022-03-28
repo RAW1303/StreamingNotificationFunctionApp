@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Raw.Streaming.Common.Model.Enums;
 using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Model.Discord;
 using Raw.Streaming.Webhook.Model.Twitch.EventSub;
@@ -22,7 +23,6 @@ namespace Raw.Streaming.Webhook.Functions
 
         private readonly string _webhookType = SubscriptionType.StreamOnline;
         private readonly string _broadcasterId = AppSettings.TwitchBroadcasterId;
-        private readonly string _discordChannelId = AppSettings.DiscordStreamLiveChannelId;
         private readonly ITwitchApiService _twitchApiService;
         private readonly ITwitchSubscriptionService _subscriptionService;
 
@@ -66,7 +66,7 @@ namespace Raw.Streaming.Webhook.Functions
         {
             var from = DateTime.Now;
             var notification = await HandleRequestAsync(req);
-            var message = new DiscordMessage(_discordChannelId, notification);
+            var message = new DiscordMessage(MessageType.StreamGoLive, notification);
             return new ServiceBusMessage
             {
                 Body = BinaryData.FromObjectAsJson(message),

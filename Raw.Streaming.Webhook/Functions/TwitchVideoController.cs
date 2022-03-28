@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Raw.Streaming.Common.Model.Enums;
 using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Model.Discord;
 using Raw.Streaming.Webhook.Services;
@@ -16,7 +17,6 @@ namespace Raw.Streaming.Webhook.Functions
 {
     public class TwitchHighlightsController
     {
-        private readonly string _discordChannelId = AppSettings.DiscordHighlightsChannelId;
         private readonly ITwitchApiService _twitchApiService;
         private readonly TwitchVideoToDiscordNotificationTranslator _translator;
 
@@ -39,7 +39,7 @@ namespace Raw.Streaming.Webhook.Functions
                 var startedAt = new DateTime(Math.Max(timer.ScheduleStatus.Last.Ticks, DateTime.UtcNow.AddHours(-25).Ticks));
                 var startedAtUtc = DateTime.SpecifyKind(startedAt, DateTimeKind.Utc);
                 var highlights = await GetHighlightsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc, logger);
-                var message = new DiscordMessage(_discordChannelId, highlights.ToArray());
+                var message = new DiscordMessage(MessageType.Video, highlights.ToArray());
             }
             catch (Exception e)
             {

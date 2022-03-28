@@ -4,19 +4,36 @@
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- main
-- feature/*
+  branches:
+    include:
+    - main
+    - feature/*
+  paths:
+    include:
+    - Deployment/raw-streaming-webhook.yml
+    - Raw.Streaming.Common
+    - Raw.Streaming.Webhook
+    - Raw.Streaming.Webhook.Tests
 
 pr:
-- main
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - Deployment/raw-streaming-webhook.yml
+    - Raw.Streaming.Common
+    - Raw.Streaming.Webhook
+    - Raw.Streaming.Webhook.Tests
 
 
 variables:
-  azureSubscription: '0e43496e-dd9f-4359-8a9d-227bc76d5e01'
-  functionAppName: 'RawStreamingWebhook'
   vmImageName: 'windows-2022'
   workingDirectory: '$(System.DefaultWorkingDirectory)'
+  projectName: 'Raw.Streaming.Webhook.csproj'
+  azureSubscription: '0e43496e-dd9f-4359-8a9d-227bc76d5e01'
   resourceGroupName: 'StreamingAutomation'
+  functionAppName: 'RawStreamingWebhook'
   stagingSlotName: 'staging'
 
 stages:
@@ -35,7 +52,7 @@ stages:
       inputs:
         command: 'build'
         projects: |
-          $(workingDirectory)/**/*.csproj
+          $(workingDirectory)/**/${projectName}
         arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
 
     - task: ArchiveFiles@2

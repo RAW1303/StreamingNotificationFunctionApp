@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Raw.Streaming.Common.Model.Enums;
 using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Model.Discord;
 using Raw.Streaming.Webhook.Services;
@@ -17,7 +15,6 @@ namespace Raw.Streaming.Webhook.Functions
 {
     public class TwitchClipController
     {
-        private readonly string _discordChannelId = AppSettings.DiscordClipsChannelId;
         private readonly ITwitchApiService _twitchApiService;
 
         public TwitchClipController(
@@ -40,7 +37,7 @@ namespace Raw.Streaming.Webhook.Functions
                 var endedAtUtc = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
                 var notifications = await GetClipNotificationsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc, endedAtUtc, logger);
                 return notifications.Select(n => {
-                    var message = new DiscordMessage(_discordChannelId, n);
+                    var message = new DiscordMessage(MessageType.Clip, n);
                     return new ServiceBusMessage
                     {
                         Body = BinaryData.FromObjectAsJson(message),

@@ -1,5 +1,6 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using Raw.Streaming.Common.Model.Enums;
 using Raw.Streaming.Discord.Model;
 using Raw.Streaming.Discord.Services;
 using System;
@@ -25,9 +26,10 @@ namespace Raw.Streaming.Discord.Functions
             try
             {
                 _logger.LogInformation($"Discord notification started");
+
                 foreach (var message in myQueueItem.Messages)
                 {
-                    await _discordBotMessageService.SendDiscordMessageAsync(myQueueItem.ChannelId, message);
+                    await _discordBotMessageService.SendDiscordMessageAsync(ResolveChannelId(myQueueItem.Type), message);
                 }
 
                 _logger.LogInformation($"Discord notification succeeded");
@@ -37,6 +39,18 @@ namespace Raw.Streaming.Discord.Functions
                 _logger.LogError($"Discord notification failed: {ex.Message}");
                 throw;
             }
+        }
+
+        private string ResolveChannelId(MessageType messageType)
+        {
+            return messageType switch
+            {
+                MessageType.StreamGoLive => AppSettings.DiscordStreamGoLiveChannelId,
+                MessageType.Clip => AppSettings.DiscordClipChannelId,
+                MessageType.Video => AppSettings.DiscordVideoChannelId,
+                MessageType.Schedule => AppSettings.DiscordScheduleChannelId,
+                _ => throw new ArgumentOutOfRangeException(nameof(messageType), $"Not expected messageType value: {messageType}"),
+            };
         }
     }
 }

@@ -1,0 +1,137 @@
+# .NET Core Function App to Windows on Azure
+# Build a .NET Core function app and deploy it to Azure as a Windows function App.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+  branches:
+    include:
+    - main
+    - feature/*
+  paths:
+    include:
+    - Deployment/raw-streaming-discord.yml
+    - Raw.Streaming.Common
+    - Raw.Streaming.Discord
+
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - Deployment/raw-streaming-discord.yml
+    - Raw.Streaming.Common
+    - Raw.Streaming.Discord
+
+
+variables:
+  vmImageName: 'windows-2022'
+  workingDirectory: '$(System.DefaultWorkingDirectory)'
+  projectName: 'Raw.Streaming.Discord.csproj'
+  azureSubscription: '0e43496e-dd9f-4359-8a9d-227bc76d5e01'
+  resourceGroupName: 'StreamingAutomation'
+  functionAppName: 'RawDiscordBot'
+  stagingSlotName: 'staging'
+
+stages:
+- stage: Build
+  displayName: Build
+
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        command: 'build'
+        projects: |
+          $(workingDirectory)/**/${projectName}
+        arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        replaceExistingArchive: true
+
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      artifact: drop
+
+- stage: Staging
+  displayName: Staging
+  dependsOn: Build
+  condition: succeeded()
+
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: 'Staging'
+    pool:
+      vmImage: $(vmImageName)
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureFunctionApp@1
+            displayName: 'Azure functions app deploy'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: functionApp
+              appName: $(functionAppName)
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+              deployToSlotOrASE: true
+              resourceGroupName: $(resourceGroupName)
+              slotName: $(stagingSlotName)
+              
+          - task: AzureAppServiceManage@0
+            displayName: 'Start Staging Slot'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              action: Start Azure App Service
+              webAppName: $(functionAppName)
+              resourceGroupName: $(resourceGroupName)
+              specifySlotOrASE: true
+              slot: $(stagingSlotName)
+
+- stage: Production
+  displayName: Production
+  dependsOn: Staging
+  condition:  and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+
+  jobs:
+  - deployment: Swap
+    displayName: Swap Slots
+    environment: 'Production'
+    pool:
+      vmImage: $(vmImageName)
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureAppServiceManage@0
+            displayName: 'Swap Staging with Production'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              webAppName: $(functionAppName)
+              resourceGroupName: $(resourceGroupName)
+              sourceSlot: $(stagingSlotName)
+        
+          - task: AzureAppServiceManage@0
+            displayName: 'Stop Staging Slot'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              action: Stop Azure App Service
+              webAppName: $(functionAppName)
+              resourceGroupName: $(resourceGroupName)
+              specifySlotOrASE: true
+              slot: $(stagingSlotName)
