@@ -10,8 +10,8 @@ namespace Raw.Streaming.Webhook.Translators
         {
             var lines = new string[] {
                 $"{AppSettings.DiscordNotificationGroupIds} {channel.BroadcasterName} is live on Twitch!",
-                $":pen: {channel.Title}",
-                $":video-game: {channel.GameName}",
+                $":pencil: {channel.Title}",
+                $":video_game: {channel.GameName}",
                 $":tv: https://twitch.tv/{channel.BroadcasterName}"
             };
 
