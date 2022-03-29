@@ -1,14 +1,12 @@
-﻿using System;
-using Raw.Streaming.Webhook.Common;
+﻿using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Model.Discord;
 using Raw.Streaming.Webhook.Model.Twitch;
-using Raw.Streaming.Webhook.Model.Twitch.EventSub;
 
 namespace Raw.Streaming.Webhook.Translators
 {
     public static class TwitchStreamChangeToDiscordNotificationTranslator
     {
-        public static Notification Translate(StreamOnlineEvent message, Channel channel, Game game)
+        public static Notification Translate(Channel channel)
         {
             var lines = new string[] {
                 $"{AppSettings.DiscordNotificationGroupIds} {channel.BroadcasterName} is live on Twitch!",
