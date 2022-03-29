@@ -80,8 +80,7 @@ namespace Raw.Streaming.Webhook.Functions
             {
                 _logger.LogInformation("StreamChangeWebhook execution started");
                 var channel = await _twitchApiService.GetChannelInfoAsync(message.BroadcasterUserId);
-                var games = await _twitchApiService.GetGamesAsync(channel.GameId);
-                return TwitchStreamChangeToDiscordNotificationTranslator.Translate(message, channel, games.First());
+                return TwitchStreamChangeToDiscordNotificationTranslator.Translate(channel);
             }
             catch (Exception e)
             {

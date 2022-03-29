@@ -49,8 +49,7 @@ stages:
       displayName: Build
       inputs:
         command: 'build'
-        projects: |
-          $(workingDirectory)/**/${projectName}
+        projects: '**/$(projectName)'
         arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
 
     - task: ArchiveFiles@2
