@@ -10,40 +10,16 @@ namespace Raw.Streaming.Webhook.Translators
     {
         public static Notification Translate(StreamOnlineEvent message, Channel channel, Game game)
         {
+            var lines = new string[] {
+                $"{AppSettings.DiscordNotificationGroupIds} {channel.BroadcasterName} is live on Twitch!",
+                $":pen: {channel.Title}",
+                $":video-game: {channel.GameName}",
+                $":tv: https://twitch.tv/{channel.BroadcasterName}"
+            };
+
             return new Notification()
             {
-                Content = $"{AppSettings.DiscordNotificationGroupIds}\nhttps://twitch.tv/{channel.BroadcasterName}",
-                Embeds = new Embed[]
-                {
-                    new Embed()
-                    {
-                        Author = new EmbedAuthor()
-                        {
-                            Name = $"{channel.BroadcasterName} is now streaming on twitch"
-                        },
-                        Title = $"{channel.Title}",
-                        Url = $"https://twitch.tv/{channel.BroadcasterName}",
-                        Color = 6570404,
-                        Fields = new EmbedField[]
-                        {
-                            new EmbedField()
-                            {
-                                Name = "Playing",
-                                Value = game.Name,
-                                Inline = true
-                            }
-                        },
-                        Image = new EmbedImage()
-                        {
-                            Url = new Uri(game.BoxArtUrl.Replace("{width}x{height}", AppSettings.DiscordGameBoxSize)).AbsoluteUri
-                        },
-                        Footer = new EmbedFooter()
-                        {
-                            Text = "Stream started"
-                        },
-                        Timestamp = DateTime.Parse(message.StartedAt)
-                    }
-                }
+                Content = string.Join("\n", lines)
             };
         }
     }
