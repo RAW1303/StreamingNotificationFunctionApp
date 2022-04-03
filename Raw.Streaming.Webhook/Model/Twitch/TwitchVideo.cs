@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Raw.Streaming.Webhook.Model.Twitch
 {
-    public class Video
+    public class TwitchVideo
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

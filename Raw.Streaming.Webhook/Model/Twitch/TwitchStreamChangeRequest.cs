@@ -3,13 +3,13 @@ using System.Text.Json.Serialization;
 
 namespace Raw.Streaming.Webhook.Model.Twitch
 {
-    public class StreamChangeRequest
+    public class TwitchStreamChangeRequest
     {
         [JsonPropertyName("data")]
-        public StreamChange[] Data { get; set; }
+        public TwitchStreamChange[] Data { get; set; }
     }
 
-    public class StreamChange
+    public class TwitchStreamChange
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

@@ -2,7 +2,7 @@
 
 namespace Raw.Streaming.Webhook.Model.Twitch
 {
-    public class Game
+    public class TwitchGame
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

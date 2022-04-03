@@ -1,9 +1,11 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using Raw.Streaming.Common.Model;
 using Raw.Streaming.Common.Model.Enums;
-using Raw.Streaming.Discord.Model;
+using Raw.Streaming.Discord.Model.DiscordApi;
 using Raw.Streaming.Discord.Services;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Raw.Streaming.Discord.Functions
@@ -27,7 +29,9 @@ namespace Raw.Streaming.Discord.Functions
             {
                 _logger.LogInformation($"Discord notification started");
 
-                foreach (var message in myQueueItem.Messages)
+                var messages = TranslateEntities(myQueueItem.Entities);
+
+                foreach (var message in messages)
                 {
                     await _discordBotMessageService.SendDiscordMessageAsync(ResolveChannelId(myQueueItem.Type), message);
                 }
@@ -39,6 +43,11 @@ namespace Raw.Streaming.Discord.Functions
                 _logger.LogError($"Discord notification failed: {ex.Message}");
                 throw;
             }
+        }
+
+        private IEnumerable<Message> TranslateEntities(IEnumerable<Entity> entities)
+        {
+            throw new NotImplementedException();
         }
 
         private string ResolveChannelId(MessageType messageType)

@@ -1,14 +1,14 @@
 ﻿using System;
-using Raw.Streaming.Webhook.Model.Discord;
-using Raw.Streaming.Webhook.Model.Twitch;
+using Raw.Streaming.Common.Model;
+using Raw.Streaming.Discord.Model.DiscordApi;
 
 namespace Raw.Streaming.Webhook.Translators
 {
     public static class TwitchClipToDiscordNotificationTranslator
     {
-        public static Notification Translate(Clip twitchClip, Game game)
+        public static Message Translate(Clip clip)
         {
-            return new Notification()
+            return new Message()
             {
                 Embeds = new Embed[]
                 {
@@ -16,35 +16,35 @@ namespace Raw.Streaming.Webhook.Translators
                     {
                         Author = new EmbedAuthor()
                         {
-                            Name = $"New Clip of {twitchClip.BroadcasterName}"
+                            Name = $"New Clip of {clip.BroadcasterName}"
                         },
-                        Title = twitchClip.Title,
-                        Url = twitchClip.Url,
+                        Title = clip.Title,
+                        Url = clip.Url,
                         Color = 6570404,
                         Fields = new EmbedField[]
                         {
                             new EmbedField()
                             {
                                 Name = "Game",
-                                Value = game.Name,
+                                Value = clip.GameName,
                                 Inline = true
                             },
                             new EmbedField()
                             {
                                 Name = "Created By",
-                                Value = twitchClip.CreatorName,
+                                Value = clip.CreatorName,
                                 Inline = true
                             }
                         },
                         Image = new EmbedImage()
                         {
-                            Url = new Uri(twitchClip.ThumbnailUrl).AbsoluteUri
+                            Url = new Uri(clip.ThumbnailUrl).AbsoluteUri
                         },
                         Footer = new EmbedFooter()
                         {
                             Text = "Clip created"
                         },
-                        Timestamp = twitchClip.CreatedAt
+                        Timestamp = clip.CreatedAt
                     }
                 }
             };

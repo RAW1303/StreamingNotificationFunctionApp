@@ -4,7 +4,6 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Services;
-using Raw.Streaming.Webhook.Translators;
 
 [assembly: FunctionsStartup(typeof(Raw.Streaming.Webhook.Startup))]
 
@@ -27,7 +26,7 @@ namespace Raw.Streaming.Webhook
             builder.Services.AddSingleton<ITwitchSubscriptionService, TwitchSubscriptionService>();
             builder.Services.AddSingleton<IYoutubeSubscriptionService, YoutubeSubscriptionService>();
             builder.Services.AddSingleton<IScheduleService, GoogleCalendarScheduleService>();
-            builder.Services.AddSingleton<TwitchVideoToDiscordNotificationTranslator>();
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
         }
     }
 }
