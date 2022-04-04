@@ -8,10 +8,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Raw.Streaming.Common.Model;
 using Raw.Streaming.Common.Model.Enums;
-using Raw.Streaming.Webhook.Common;
-using Raw.Streaming.Webhook.Model.Discord;
 using Raw.Streaming.Webhook.Services;
-using Raw.Streaming.Webhook.Translators;
 
 namespace Raw.Streaming.Webhook.Functions
 {

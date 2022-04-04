@@ -2,7 +2,6 @@
 using Google.Apis.Services;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Services;
 
 [assembly: FunctionsStartup(typeof(Raw.Streaming.Webhook.Startup))]

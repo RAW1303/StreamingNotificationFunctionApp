@@ -57,7 +57,8 @@ namespace Raw.Streaming.Discord.Functions
                 MessageType.StreamGoLive => AppSettings.DiscordStreamGoLiveChannelId,
                 MessageType.Clip => AppSettings.DiscordClipChannelId,
                 MessageType.Video => AppSettings.DiscordVideoChannelId,
-                MessageType.Schedule => AppSettings.DiscordScheduleChannelId,
+                MessageType.DailySchedule => AppSettings.DiscordScheduleChannelId,
+                MessageType.WeeklySchedule => AppSettings.DiscordScheduleChannelId,
                 _ => throw new ArgumentOutOfRangeException(nameof(messageType), $"Not expected messageType value: {messageType}"),
             };
         }

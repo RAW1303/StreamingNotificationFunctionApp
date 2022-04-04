@@ -5,6 +5,7 @@
         StreamGoLive,
         Clip,
         Video,
-        Schedule
+        DailySchedule,
+        WeeklySchedule
     }
 }

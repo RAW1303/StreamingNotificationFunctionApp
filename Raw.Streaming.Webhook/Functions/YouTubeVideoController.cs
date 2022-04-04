@@ -1,21 +1,20 @@
-﻿using Azure.Messaging.ServiceBus;
+﻿using AutoMapper;
+using Azure.Messaging.ServiceBus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Raw.Streaming.Webhook.Common;
-using Raw.Streaming.Webhook.Model.Discord;
 using Raw.Streaming.Webhook.Model.Youtube;
 using Raw.Streaming.Webhook.Services;
-using Raw.Streaming.Webhook.Translators;
+using System;
 using System.IO;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml;
-using System;
+using Raw.Streaming.Common.Model;
 using Raw.Streaming.Common.Model.Enums;
 
 namespace Raw.Streaming.Webhook.Functions
@@ -27,11 +26,14 @@ namespace Raw.Streaming.Webhook.Functions
         private readonly string _webhookTopic = AppSettings.YoutubeVideoTopic;
         private readonly string _channelId = AppSettings.YoutubeChannelId;
         private readonly IYoutubeSubscriptionService _subscriptionService;
+        private readonly IMapper _mapper;
 
         public YouTubeVideoController(
-            IYoutubeSubscriptionService subscriptionService)
+            IYoutubeSubscriptionService subscriptionService,
+            IMapper mapper)
         {
             _subscriptionService = subscriptionService;
+            _mapper = mapper;
         }
 
         [FunctionName("YoutubeVideoSubscribe")]
@@ -66,12 +68,12 @@ namespace Raw.Streaming.Webhook.Functions
                 var data = ConvertAtomToSyndication(stream, logger);
                 if (data.IsNewVideo(DateTimeOffset.UtcNow) && !string.IsNullOrWhiteSpace(data.Link))
                 {
-                    var notification = YoutubeFeedToDiscordNotificationTranslator.Translate(data);
-                    var message = new DiscordMessage(MessageType.Video, notification);
+                    var video = _mapper.Map<Video>(data);
+                    var queueItem = new DiscordBotQueueItem(MessageType.Video, video);
                     return new ServiceBusMessage
                     {
-                        Body = BinaryData.FromObjectAsJson(message),
-                        MessageId = $"youtube-video-{data.VideoId}"
+                        Body = BinaryData.FromObjectAsJson(queueItem),
+                        MessageId = $"youtube-video-{video.Id}"
                     };
                 }
                 else

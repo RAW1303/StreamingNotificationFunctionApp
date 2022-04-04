@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace Raw.Streaming.Webhook.Common
+namespace Raw.Streaming.Webhook
 {
     static class AppSettings
     {
         public static string DiscordGameBoxSize { get; } = Environment.GetEnvironmentVariable("DiscordGameBoxSize");
-        public static string DiscordNotificationGroupIds { get; } = Environment.GetEnvironmentVariable("DiscordNotificationGroupIds");
         public static string DiscordVideoThumbnailSize { get; } = Environment.GetEnvironmentVariable("DiscordVideoThumbnailSize");
         public static string GoogleCalendarApiKey { get; } = Environment.GetEnvironmentVariable("GoogleCalendarApiKey");
         public static string ScheduleGoogleCalendarId { get; } = Environment.GetEnvironmentVariable("ScheduleGoogleCalendarId");

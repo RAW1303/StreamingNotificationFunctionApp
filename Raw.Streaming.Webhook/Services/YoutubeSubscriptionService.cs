@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.Extensions.Logging;
-using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Exceptions;
 
 namespace Raw.Streaming.Webhook.Services

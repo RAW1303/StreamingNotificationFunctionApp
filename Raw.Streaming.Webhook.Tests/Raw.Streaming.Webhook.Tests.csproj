@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Raw.Streaming.Webhook\Raw.Streaming.Webhook.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Common\" />
+  </ItemGroup>
+
 </Project>
