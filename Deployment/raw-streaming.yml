@@ -36,8 +36,7 @@ stages:
       displayName: Build
       inputs:
         command: 'publish'
-        publishWebProjects: false
-        projects: '**/*.csproj'
+        publishWebProjects: true
         arguments: '-o $(Build.ArtifactStagingDirectory)/Output'
         zipAfterPublish: true
         modifyOutputPath: true
