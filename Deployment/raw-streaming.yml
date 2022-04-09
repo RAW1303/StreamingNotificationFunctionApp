@@ -38,7 +38,7 @@ stages:
         command: 'publish'
         publishWebProjects: false
         projects: '**/*.csproj'
-        arguments: '-o $(Build.ArtifactStagingDirectory)/Output'
+        arguments: '-o $(Build.ArtifactStagingDirectory)'
         zipAfterPublish: true
         modifyOutputPath: true
 
