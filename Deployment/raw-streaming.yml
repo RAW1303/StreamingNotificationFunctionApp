@@ -1,0 +1,47 @@
+trigger:
+  branches:
+    include:
+    - main
+    - feature/*
+    - bugfix/*
+
+pr:
+  branches:
+    include:
+    - main
+    
+variables:
+  vmImageName: 'windows-2022'
+  workingDirectory: '$(System.DefaultWorkingDirectory)'
+  discordBotProjectName: 'Raw.Streaming.Discord.csproj'
+  webhookProjectName: 'Raw.Streaming.Webhook.csproj'
+  azureSubscription: '0e43496e-dd9f-4359-8a9d-227bc76d5e01'
+  resourceGroupName: 'StreamingAutomation'
+  discordBotFunctionAppName: 'RawDiscordBot'
+  webhookFunctionAppName: 'RawStreamingWebhook'
+  stagingSlotName: 'staging'
+  
+stages:
+- stage: Build
+  displayName: Build
+
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        command: 'publish'
+        publishWebProjects: false
+        projects: '**/*.csproj'
+        arguments: '-o $(Build.ArtifactStagingDirectory)/Output'
+        zipAfterPublish: true
+        modifyOutputPath: true
+
+
+    - publish: $(Build.ArtifactStagingDirectory)
+      artifact: drop
