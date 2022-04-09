@@ -88,7 +88,7 @@ stages:
             inputs:
               azureSubscription: '$(azureSubscription)'
               action: Start Azure App Service
-              webAppName: $(functionAppName)
+              webAppName: $(discordBotFunctionAppName)
               resourceGroupName: $(resourceGroupName)
               specifySlotOrASE: true
               slot: $(stagingSlotName)
