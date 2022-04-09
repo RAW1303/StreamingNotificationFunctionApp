@@ -13,8 +13,8 @@ pr:
 variables:
   vmImageName: 'windows-2022'
   workingDirectory: '$(System.DefaultWorkingDirectory)'
-  discordBotProjectName: 'Raw.Streaming.Discord.csproj'
-  webhookProjectName: 'Raw.Streaming.Webhook.csproj'
+  discordBotProjectName: 'Raw.Streaming.Discord'
+  webhookProjectName: 'Raw.Streaming.Webhook'
   azureSubscription: '0e43496e-dd9f-4359-8a9d-227bc76d5e01'
   resourceGroupName: 'StreamingAutomation'
   discordBotFunctionAppName: 'RawDiscordBot'
@@ -36,11 +36,123 @@ stages:
       displayName: Build
       inputs:
         command: 'publish'
-        publishWebProjects: true
+        publishWebProjects: false
+        projects: |
+          '**/$(discordBotProjectName).csproj'
+          '**/$(webhookProjectName).csproj'
         arguments: '-o $(Build.ArtifactStagingDirectory)/Output'
         zipAfterPublish: true
         modifyOutputPath: true
 
-
     - publish: $(Build.ArtifactStagingDirectory)
       artifact: drop
+      
+- stage: Staging
+  displayName: Staging
+  dependsOn: Build
+  condition: succeeded()
+
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: 'Staging'
+    pool:
+      vmImage: $(vmImageName)
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureFunctionApp@1
+            displayName: 'Deploy Discord Bot'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: functionApp
+              appName: $(discordBotFunctionAppName)
+              package: '$(Pipeline.Workspace)/drop/$(discordBotProjectName).zip'
+              deployToSlotOrASE: true
+              resourceGroupName: $(resourceGroupName)
+              slotName: $(stagingSlotName)
+
+          - task: AzureFunctionApp@1
+            displayName: 'Deploy Webhook'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: functionApp
+              appName: $(webhookFunctionAppName)
+              package: '$(Pipeline.Workspace)/drop/$(webhookProjectName).zip'
+              deployToSlotOrASE: true
+              resourceGroupName: $(resourceGroupName)
+              slotName: $(stagingSlotName)
+              
+          - task: AzureAppServiceManage@0
+            displayName: 'Start Discord Bot'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              action: Start Azure App Service
+              webAppName: $(functionAppName)
+              resourceGroupName: $(resourceGroupName)
+              specifySlotOrASE: true
+              slot: $(stagingSlotName)
+              
+          - task: AzureAppServiceManage@0
+            displayName: 'Start Webhook'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              action: Start Azure App Service
+              webAppName: $(webhookFunctionAppName)
+              resourceGroupName: $(resourceGroupName)
+              specifySlotOrASE: true
+              slot: $(stagingSlotName)
+
+- stage: Production
+  displayName: Production
+  dependsOn: Staging
+  condition:  and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+
+  jobs:
+  - deployment: Swap
+    displayName: Swap Slots
+    environment: 'Production'
+    pool:
+      vmImage: $(vmImageName)
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureAppServiceManage@0
+            displayName: 'Swap Discord Bot Staging with Production'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              webAppName: $(discordBotFunctionAppName)
+              resourceGroupName: $(resourceGroupName)
+              sourceSlot: $(stagingSlotName)
+              
+          - task: AzureAppServiceManage@0
+            displayName: 'Swap Webhook App Staging with Production'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              webAppName: $(webhookFunctionAppName)
+              resourceGroupName: $(resourceGroupName)
+              sourceSlot: $(stagingSlotName)
+        
+          - task: AzureAppServiceManage@0
+            displayName: 'Stop Staging Discord Bot'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              action: Stop Azure App Service
+              webAppName: $(discordBotFunctionAppName)
+              resourceGroupName: $(resourceGroupName)
+              specifySlotOrASE: true
+              slot: $(stagingSlotName)
+        
+          - task: AzureAppServiceManage@0
+            displayName: 'Stop Staging Webhook App'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              action: Stop Azure App Service
+              webAppName: $(webhookFunctionAppName)
+              resourceGroupName: $(resourceGroupName)
+              specifySlotOrASE: true
+              slot: $(stagingSlotName)
