@@ -89,6 +89,39 @@ namespace Raw.Streaming.Webhook.Functions
             }
         }
 
+        [FunctionName(nameof(YoutubeVideoWebhookx))]
+        public ServiceBusMessage YoutubeVideoWebhookx(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = $"{WebhookEndpoint}2")] HttpRequest req,
+            ILogger logger)
+        {
+            try
+            {
+                logger.LogInformation($"{nameof(YoutubeVideoWebhook)} execution started");
+                var stream = req.Body;
+                var data = ConvertAtomToSyndication(stream, logger);
+                if (data.IsNewVideo(DateTimeOffset.UtcNow) && !string.IsNullOrWhiteSpace(data.Link))
+                {
+                    var video = _mapper.Map<Video>(data);
+                    var queueItem = new DiscordBotQueueItem(MessageType.Video, video);
+                    return new ServiceBusMessage
+                    {
+                        Body = BinaryData.FromObjectAsJson(queueItem),
+                        MessageId = $"youtube-video-{video.Id}"
+                    };
+                }
+                else
+                {
+                    logger.LogInformation($"{nameof(YoutubeVideoWebhook)} execution succeeded:{data.Title} is an old video so will not notify Discord\nPublished: {data.Published}\nUpdated: {data.Updated}");
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                logger.LogError($"{nameof(YoutubeVideoWebhook)} execution failed: {e.Message}");
+                throw;
+            }
+        }
+
         private static YoutubeFeed ConvertAtomToSyndication(Stream stream, ILogger logger)
         {
             using var xmlReader = XmlReader.Create(stream);
