@@ -65,7 +65,7 @@ namespace Raw.Streaming.Webhook.Functions
         {
             var from = DateTime.Now;
             var goLive = await HandleRequestAsync(req);
-            var message = new DiscordBotQueueItem(MessageType.StreamGoLive, goLive);
+            var message = new DiscordBotQueueItem<GoLive>(MessageType.StreamGoLive, goLive);
             return new ServiceBusMessage
             {
                 Body = BinaryData.FromObjectAsJson(message),

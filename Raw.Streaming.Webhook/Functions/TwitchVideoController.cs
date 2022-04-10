@@ -39,7 +39,7 @@ namespace Raw.Streaming.Webhook.Functions
                 var startedAtUtc = DateTime.SpecifyKind(startedAt, DateTimeKind.Utc);
                 var highlights = await GetHighlightsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc, logger);
                 var videos = _mapper.Map<IEnumerable<Video>>(highlights);
-                var queueItem = new DiscordBotQueueItem(MessageType.Video, videos.ToArray());
+                var queueItem = new DiscordBotQueueItem<Video>(MessageType.Video, videos.ToArray());
                 return new ServiceBusMessage
                 {
                     Body = BinaryData.FromObjectAsJson(queueItem),

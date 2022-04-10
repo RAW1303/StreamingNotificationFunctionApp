@@ -38,7 +38,7 @@ namespace Raw.Streaming.Webhook.Functions
                 var startedAtUtc = DateTime.SpecifyKind(startedAt, DateTimeKind.Utc);
                 var endedAtUtc = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
                 var clips = await GetClipsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc, endedAtUtc, logger);
-                var queueItem = new DiscordBotQueueItem(MessageType.Clip, clips.ToArray());
+                var queueItem = new DiscordBotQueueItem<Clip>(MessageType.Clip, clips.ToArray());
                 return new ServiceBusMessage
                 {
                     Body = BinaryData.FromObjectAsJson(queueItem),
