@@ -25,7 +25,7 @@ namespace Raw.Streaming.Discord.Functions
         }
 
         [FunctionName(nameof(ProcessDiscordBotMessageQueue))]
-        public async Task ProcessDiscordBotMessageQueue([ServiceBusTrigger("%DiscordBotMessageQueueName%")] DiscordBotQueueItem myQueueItem)
+        public async Task ProcessDiscordBotMessageQueue([ServiceBusTrigger("%DiscordBotMessageQueueName%")] DiscordBotQueueItem<Entity> myQueueItem)
         {
             try
             {
