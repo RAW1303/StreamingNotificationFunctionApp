@@ -13,6 +13,7 @@ using Raw.Streaming.Webhook.Services;
 
 namespace Raw.Streaming.Webhook.Functions
 {
+    [ServiceBusAccount("StreamingServiceBus")]
     public class TwitchStreamChangeController : TwitchEventSubControllerBase<StreamOnlineEvent, GoLive>
     {
         private const string WebhookEndpoint = "webhook/twitch/stream-change";
@@ -59,7 +60,7 @@ namespace Raw.Streaming.Webhook.Functions
         }
 
         [FunctionName(nameof(StreamChangeWebhook))]
-        [return: ServiceBus("%DiscordNotificationQueueName%", Connection = "StreamingServiceBus")]
+        [return: ServiceBus("%GoLiveQueueName%")]
         public async Task<ServiceBusMessage> StreamChangeWebhook(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = WebhookEndpoint)] HttpRequest req)
         {

@@ -12,6 +12,7 @@ using Raw.Streaming.Webhook.Services;
 
 namespace Raw.Streaming.Webhook.Functions
 {
+    [ServiceBusAccount("StreamingServiceBus")]
     public class TwitchClipController
     {
         private readonly ITwitchApiService _twitchApiService;
@@ -26,7 +27,7 @@ namespace Raw.Streaming.Webhook.Functions
         }
 
         [FunctionName("NotifyTwitchClips")]
-        [return: ServiceBus("%DiscordNotificationQueueName%", Connection = "StreamingServiceBus")]
+        [return: ServiceBus("%ClipsQueueName%")]
         public async Task<ServiceBusMessage> NotifyTwitchClips(
             [TimerTrigger("%TwitchClipsTimerTrigger%")] TimerInfo timer,
             ILogger logger)

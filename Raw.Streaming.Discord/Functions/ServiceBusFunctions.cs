@@ -1,12 +1,9 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Raw.Streaming.Common.Model;
-using Raw.Streaming.Common.Model.Enums;
-using Raw.Streaming.Discord.Model.DiscordApi;
 using Raw.Streaming.Discord.Services;
 using Raw.Streaming.Discord.Translators;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,55 +21,113 @@ namespace Raw.Streaming.Discord.Functions
             _discordBotMessageService = discordBotMessageService;
         }
 
-        [FunctionName(nameof(ProcessDiscordBotMessageQueue))]
-        public async Task ProcessDiscordBotMessageQueue([ServiceBusTrigger("%DiscordBotMessageQueueName%")] DiscordBotQueueItem<Entity> myQueueItem)
+        [FunctionName(nameof(ProcessGoLiveMessageQueue))]
+        public async Task ProcessGoLiveMessageQueue([ServiceBusTrigger("%GoLiveQueueName%")] DiscordBotQueueItem<GoLive> myQueueItem)
         {
             try
             {
-                _logger.LogInformation($"Discord notification started");
+                _logger.LogInformation($"GoLive notification started");
 
-                var messages = TranslateEntities(myQueueItem.Type, myQueueItem.Entities);
+                var messages = myQueueItem.Entities.Select(x => GoLiveToDiscordMessageTranslator.Translate(x));
 
                 foreach (var message in messages)
                 {
-                    await _discordBotMessageService.SendDiscordMessageAsync(ResolveChannelId(myQueueItem.Type), message);
+                    await _discordBotMessageService.SendDiscordMessageAsync(AppSettings.DiscordStreamGoLiveChannelId, message);
                 }
 
-                _logger.LogInformation($"Discord notification succeeded");
+                _logger.LogInformation($"GoLive notification succeeded");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Discord notification failed: {ex.Message}");
+                _logger.LogError($"GoLive notification failed: {ex.Message}");
                 throw;
             }
         }
 
-        private IEnumerable<Message> TranslateEntities(MessageType messageType, IEnumerable<Entity> entities)
+        [FunctionName(nameof(ProcessClipMessageQueue))]
+        public async Task ProcessClipMessageQueue([ServiceBusTrigger("%ClipsQueueName%")] DiscordBotQueueItem<Clip> myQueueItem)
         {
-            IEnumerable<Message> messages = messageType switch
+            try
             {
-                MessageType.StreamGoLive => entities.Select(x => GoLiveToDiscordMessageTranslator.Translate(x as GoLive)),
-                MessageType.Clip => entities.Select(x => TwitchClipToDiscordMessageTranslator.Translate(x as Clip)),
-                MessageType.Video => entities.Select(x => VideoToDiscordMessageTranslator.Translate(x as Video)),
-                MessageType.DailySchedule => new Message[] { EventToDiscordMessageTranslator.TranslateDailySchedule(entities as IEnumerable<Event>) },
-                MessageType.WeeklySchedule => new Message[] { EventToDiscordMessageTranslator.TranslateWeeklySchedule(entities as IEnumerable<Event>) },
-                _ => throw new ArgumentOutOfRangeException(nameof(messageType), $"Not expected messageType value: {messageType}"),
-            };
+                _logger.LogInformation($"Clips notification started");
 
-            return messages.Where(x => x != null);
+                var messages = myQueueItem.Entities.Select(x => ClipToDiscordMessageTranslator.Translate(x));
+
+                foreach (var message in messages)
+                {
+                    await _discordBotMessageService.SendDiscordMessageAsync(AppSettings.DiscordClipChannelId, message);
+                }
+
+                _logger.LogInformation($"Clips notification succeeded");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Clips notification failed: {ex.Message}");
+                throw;
+            }
         }
 
-        private static string ResolveChannelId(MessageType messageType)
+        [FunctionName(nameof(ProcessVideoMessageQueue))]
+        public async Task ProcessVideoMessageQueue([ServiceBusTrigger("%VideosQueueName%")] DiscordBotQueueItem<Video> myQueueItem)
         {
-            return messageType switch
+            try
             {
-                MessageType.StreamGoLive => AppSettings.DiscordStreamGoLiveChannelId,
-                MessageType.Clip => AppSettings.DiscordClipChannelId,
-                MessageType.Video => AppSettings.DiscordVideoChannelId,
-                MessageType.DailySchedule => AppSettings.DiscordScheduleChannelId,
-                MessageType.WeeklySchedule => AppSettings.DiscordScheduleChannelId,
-                _ => throw new ArgumentOutOfRangeException(nameof(messageType), $"Not expected messageType value: {messageType}"),
-            };
+                _logger.LogInformation($"Videos notification started");
+
+                var messages = myQueueItem.Entities.Select(x => VideoToDiscordMessageTranslator.Translate(x));
+
+                foreach (var message in messages)
+                {
+                    await _discordBotMessageService.SendDiscordMessageAsync(AppSettings.DiscordVideoChannelId, message);
+                }
+
+                _logger.LogInformation($"Videos notification succeeded");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Videos notification failed: {ex.Message}");
+                throw;
+            }
+        }
+
+        [FunctionName(nameof(ProcessDailyScheduleMessageQueue))]
+        public async Task ProcessDailyScheduleMessageQueue([ServiceBusTrigger("%DailyScheduleQueueName%")] DiscordBotQueueItem<Event> myQueueItem)
+        {
+            try
+            {
+                _logger.LogInformation($"DailySchedule notification started");
+
+                var message = EventToDiscordMessageTranslator.TranslateDailySchedule(myQueueItem.Entities);
+
+                await _discordBotMessageService.SendDiscordMessageAsync(AppSettings.DiscordScheduleChannelId, message);
+
+                _logger.LogInformation($"DailySchedule notification succeeded");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"DailySchedule notification failed: {ex.Message}");
+                throw;
+            }
+        }
+
+        [FunctionName(nameof(ProcessWeeklyScheduleMessageQueue))]
+        public async Task ProcessWeeklyScheduleMessageQueue([ServiceBusTrigger("%WeeklyScheduleQueueName%")] DiscordBotQueueItem<Event> myQueueItem)
+        {
+            try
+            {
+                _logger.LogInformation($"WeeklySchedule notification started");
+
+                var message = EventToDiscordMessageTranslator.TranslateWeeklySchedule(myQueueItem.Entities);
+
+                await _discordBotMessageService.SendDiscordMessageAsync(AppSettings.DiscordScheduleChannelId, message);
+
+                _logger.LogInformation($"WeeklySchedule notification succeeded");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"WeeklySchedule notification failed: {ex.Message}");
+                throw;
+            }
         }
     }
 }
