@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml;
 using Raw.Streaming.Common.Model;
-using Raw.Streaming.Common.Model.Enums;
 
 namespace Raw.Streaming.Webhook.Functions
 {
@@ -70,7 +69,7 @@ namespace Raw.Streaming.Webhook.Functions
                 if (data.IsNewVideo(DateTimeOffset.UtcNow) && !string.IsNullOrWhiteSpace(data.Link))
                 {
                     var video = _mapper.Map<Video>(data);
-                    var queueItem = new DiscordBotQueueItem<Video>(MessageType.Video, video);
+                    var queueItem = new DiscordBotQueueItem<Video>(video);
                     return new ServiceBusMessage
                     {
                         Body = BinaryData.FromObjectAsJson(queueItem),

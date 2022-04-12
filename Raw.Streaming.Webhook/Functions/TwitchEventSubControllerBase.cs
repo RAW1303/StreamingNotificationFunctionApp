@@ -38,7 +38,7 @@ namespace Raw.Streaming.Webhook.Functions
             {
                 var requestContentObject = JsonSerializer.Deserialize<EventSubChallenge>(requestContentString);
                 var challenge = requestContentObject.Challenge;
-                return default(T2);
+                return default;
             }
             else if (messageType == _expectedMessageType)
             {

@@ -1,19 +1,19 @@
-﻿using Raw.Streaming.Common.Model.Enums;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Raw.Streaming.Common.Model
 {
+    [ExcludeFromCodeCoverage]
     public class DiscordBotQueueItem<T> where T : Entity
     {
-        public MessageType Type { get; set; }
-        public T[] Entities { get; set; }
+        public IEnumerable<T> Entities { get; set; }
 
         public DiscordBotQueueItem()
         {
+            Entities = new List<T>();
         }
 
-        public DiscordBotQueueItem(MessageType type, params T[] entities)
+        public DiscordBotQueueItem(params T[] entities)
         {
-            Type = type;
             Entities = entities;
         }
     }

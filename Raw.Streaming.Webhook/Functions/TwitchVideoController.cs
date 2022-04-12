@@ -7,7 +7,6 @@ using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Raw.Streaming.Common.Model;
-using Raw.Streaming.Common.Model.Enums;
 using Raw.Streaming.Webhook.Model.Twitch;
 using Raw.Streaming.Webhook.Services;
 
@@ -38,9 +37,9 @@ namespace Raw.Streaming.Webhook.Functions
                 logger.LogInformation("NotifyTwitchHighlights execution started");
                 var startedAt = new DateTime(Math.Max(timer.ScheduleStatus.Last.Ticks, DateTime.UtcNow.AddHours(-25).Ticks));
                 var startedAtUtc = DateTime.SpecifyKind(startedAt, DateTimeKind.Utc);
-                var highlights = await GetHighlightsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc, logger);
+                var highlights = await GetHighlightsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc);
                 var videos = _mapper.Map<IEnumerable<Video>>(highlights);
-                var queueItem = new DiscordBotQueueItem<Video>(MessageType.Video, videos.ToArray());
+                var queueItem = new DiscordBotQueueItem<Video>(videos.ToArray());
                 return new ServiceBusMessage
                 {
                     Body = BinaryData.FromObjectAsJson(queueItem),
@@ -54,7 +53,7 @@ namespace Raw.Streaming.Webhook.Functions
             }
         }
 
-        private async Task<IEnumerable<TwitchVideo>> GetHighlightsAsync(string broadcasterId, DateTime startedAt, ILogger logger)
+        private async Task<IEnumerable<TwitchVideo>> GetHighlightsAsync(string broadcasterId, DateTime startedAt)
         {
             var videos = await _twitchApiService.GetHighlightsByBroadcasterAsync(broadcasterId);
             return videos.Where(video => video.PublishedAt >= startedAt && video.Viewable == "public").OrderBy(video => video.PublishedAt);

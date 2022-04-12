@@ -7,7 +7,6 @@ using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Raw.Streaming.Common.Model;
-using Raw.Streaming.Common.Model.Enums;
 using Raw.Streaming.Webhook.Services;
 
 namespace Raw.Streaming.Webhook.Functions
@@ -40,7 +39,7 @@ namespace Raw.Streaming.Webhook.Functions
                 var to = from.AddDays(7);
                 var streamEvents = await _scheduleService.GetScheduledStreamsAsync(from, to);
                 var events = _mapper.Map<IEnumerable<Event>>(streamEvents);
-                var queueItem = new DiscordBotQueueItem<Event>(MessageType.WeeklySchedule, events.ToArray());
+                var queueItem = new DiscordBotQueueItem<Event>(events.ToArray());
                 return new ServiceBusMessage
                 {
                     Body = BinaryData.FromObjectAsJson(queueItem),
@@ -70,7 +69,7 @@ namespace Raw.Streaming.Webhook.Functions
                 if (scheduledStreams.Count > 0)
                 {
                     var events = _mapper.Map<IEnumerable<Event>>(scheduledStreams);
-                    var queueItem = new DiscordBotQueueItem<Event>(MessageType.DailySchedule, events.ToArray());
+                    var queueItem = new DiscordBotQueueItem<Event>(events.ToArray());
                     return new ServiceBusMessage
                     {
                         Body = BinaryData.FromObjectAsJson(queueItem),

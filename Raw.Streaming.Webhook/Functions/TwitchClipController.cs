@@ -7,7 +7,6 @@ using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Raw.Streaming.Common.Model;
-using Raw.Streaming.Common.Model.Enums;
 using Raw.Streaming.Webhook.Services;
 
 namespace Raw.Streaming.Webhook.Functions
@@ -38,8 +37,8 @@ namespace Raw.Streaming.Webhook.Functions
                 var startedAt = new DateTime(Math.Max(timer.ScheduleStatus.Last.Ticks, DateTime.UtcNow.AddMinutes(-10).Ticks));
                 var startedAtUtc = DateTime.SpecifyKind(startedAt, DateTimeKind.Utc);
                 var endedAtUtc = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
-                var clips = await GetClipsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc, endedAtUtc, logger);
-                var queueItem = new DiscordBotQueueItem<Clip>(MessageType.Clip, clips.ToArray());
+                var clips = await GetClipsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc, endedAtUtc);
+                var queueItem = new DiscordBotQueueItem<Clip>(clips.ToArray());
                 return new ServiceBusMessage
                 {
                     Body = BinaryData.FromObjectAsJson(queueItem),
@@ -53,7 +52,7 @@ namespace Raw.Streaming.Webhook.Functions
             }
         }
 
-        private async Task<IEnumerable<Clip>> GetClipsAsync(string broadcasterId, DateTime startedAt, DateTime endedAt, ILogger logger)
+        private async Task<IEnumerable<Clip>> GetClipsAsync(string broadcasterId, DateTime startedAt, DateTime endedAt)
         {
             var clips = await _twitchApiService.GetClipsByBroadcasterAsync(broadcasterId, startedAt, endedAt);
             var gameIds = clips.Select(x => x.GameId).Distinct();

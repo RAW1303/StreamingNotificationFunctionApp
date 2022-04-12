@@ -7,7 +7,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Raw.Streaming.Common.Model;
-using Raw.Streaming.Common.Model.Enums;
 using Raw.Streaming.Webhook.Model.Twitch.EventSub;
 using Raw.Streaming.Webhook.Services;
 
@@ -66,7 +65,7 @@ namespace Raw.Streaming.Webhook.Functions
         {
             var from = DateTime.Now;
             var goLive = await HandleRequestAsync(req);
-            var message = new DiscordBotQueueItem<GoLive>(MessageType.StreamGoLive, goLive);
+            var message = new DiscordBotQueueItem<GoLive>(goLive);
             return new ServiceBusMessage
             {
                 Body = BinaryData.FromObjectAsJson(message),
