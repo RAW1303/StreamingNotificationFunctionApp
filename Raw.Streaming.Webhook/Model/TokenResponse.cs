@@ -1,7 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Raw.Streaming.Webhook.Model
 {
+    [ExcludeFromCodeCoverage]
     public class TokenResponse
     {
         [JsonPropertyName("access_token")]

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Raw.Streaming.Discord.Model.DiscordApi
 {
+    [ExcludeFromCodeCoverage]
     public class Embed
     {
         [JsonPropertyName("title")]
@@ -42,6 +44,7 @@ namespace Raw.Streaming.Discord.Model.DiscordApi
         public EmbedField[] Fields { get; set; }
     }
 
+    [ExcludeFromCodeCoverage]
     public class EmbedField
     {
         [JsonPropertyName("name")]
@@ -54,24 +57,28 @@ namespace Raw.Streaming.Discord.Model.DiscordApi
         public bool Inline { get; set; }
     }
 
+    [ExcludeFromCodeCoverage]
     public class EmbedAuthor
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }
     }
 
+    [ExcludeFromCodeCoverage]
     public class EmbedImage
     {
         [JsonPropertyName("url")]
         public string Url { get; set; }
     }
 
+    [ExcludeFromCodeCoverage]
     public class EmbedFooter
     {
         [JsonPropertyName("text")]
         public string Text { get; set; }
     }
 
+    [ExcludeFromCodeCoverage]
     public class EmbedVideo
     {
         [JsonPropertyName("url")]
@@ -84,6 +91,7 @@ namespace Raw.Streaming.Discord.Model.DiscordApi
         public int Width { get; set; }
     }
 
+    [ExcludeFromCodeCoverage]
     public class EmbedThumbnail
     {
         [JsonPropertyName("url")]
