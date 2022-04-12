@@ -17,8 +17,8 @@ variables:
   webhookProjectName: 'Raw.Streaming.Webhook'
   azureSubscription: '0e43496e-dd9f-4359-8a9d-227bc76d5e01'
   resourceGroupName: 'StreamingAutomation'
-  discordBotFunctionAppName: 'RawDiscordBot'
-  webhookFunctionAppName: 'RawStreamingWebhook'
+  discordBotFunctionAppName: 'rawstreamingdiscordbot'
+  webhookFunctionAppName: 'RawStreamingOrchestration'
   stagingSlotName: 'staging'
   
 stages:
@@ -82,26 +82,6 @@ stages:
               deployToSlotOrASE: true
               resourceGroupName: $(resourceGroupName)
               slotName: $(stagingSlotName)
-              
-          - task: AzureAppServiceManage@0
-            displayName: 'Start Discord Bot'
-            inputs:
-              azureSubscription: '$(azureSubscription)'
-              action: Start Azure App Service
-              webAppName: $(discordBotFunctionAppName)
-              resourceGroupName: $(resourceGroupName)
-              specifySlotOrASE: true
-              slot: $(stagingSlotName)
-              
-          - task: AzureAppServiceManage@0
-            displayName: 'Start Webhook'
-            inputs:
-              azureSubscription: '$(azureSubscription)'
-              action: Start Azure App Service
-              webAppName: $(webhookFunctionAppName)
-              resourceGroupName: $(resourceGroupName)
-              specifySlotOrASE: true
-              slot: $(stagingSlotName)
 
 - stage: Production
   displayName: Production
@@ -134,23 +114,3 @@ stages:
               webAppName: $(webhookFunctionAppName)
               resourceGroupName: $(resourceGroupName)
               sourceSlot: $(stagingSlotName)
-        
-          - task: AzureAppServiceManage@0
-            displayName: 'Stop Staging Discord Bot'
-            inputs:
-              azureSubscription: '$(azureSubscription)'
-              action: Stop Azure App Service
-              webAppName: $(discordBotFunctionAppName)
-              resourceGroupName: $(resourceGroupName)
-              specifySlotOrASE: true
-              slot: $(stagingSlotName)
-        
-          - task: AzureAppServiceManage@0
-            displayName: 'Stop Staging Webhook App'
-            inputs:
-              azureSubscription: '$(azureSubscription)'
-              action: Stop Azure App Service
-              webAppName: $(webhookFunctionAppName)
-              resourceGroupName: $(resourceGroupName)
-              specifySlotOrASE: true
-              slot: $(stagingSlotName)
