@@ -20,10 +20,4 @@
     <Folder Include="Common\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="TestData\xml\ValidYoutubeFeed.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
