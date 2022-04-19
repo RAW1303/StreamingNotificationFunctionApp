@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Raw.Streaming.Discord.Services;
 
@@ -17,8 +18,8 @@ namespace Raw.Streaming.Discord.Tests
                 .Build();
 
             // Assert
-            Assert.IsNotNull(host);
-            Assert.IsNotNull(host.Services.GetService(typeof(IDiscordBotMessageService)));
+            Assert.That(host, Is.Not.Null);
+            Assert.That(host.Services.GetService(typeof(IDiscordBotMessageService)), Is.Not.Null);
         }
     }
 }

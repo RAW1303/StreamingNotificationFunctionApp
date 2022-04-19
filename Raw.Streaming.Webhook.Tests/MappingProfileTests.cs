@@ -1,9 +1,4 @@
-﻿using AutoMapper;
-using NUnit.Framework;
-using Raw.Streaming.Common.Model;
-using Raw.Streaming.Webhook.Model.Youtube;
-
-namespace Raw.Streaming.Webhook.Tests
+﻿namespace Raw.Streaming.Webhook.Tests
 {
     [TestFixture]
     public class MappingProfileTests

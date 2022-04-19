@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
-using NUnit.Framework;
-using Raw.Streaming.Webhook.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Raw.Streaming.Webhook.Tests
 {   
@@ -22,6 +21,7 @@ namespace Raw.Streaming.Webhook.Tests
             Assert.That(host.Services.GetService(typeof(ITwitchSubscriptionService)), Is.Not.Null);
             Assert.That(host.Services.GetService(typeof(IYoutubeSubscriptionService)), Is.Not.Null);
             Assert.That(host.Services.GetService(typeof(IScheduleService)), Is.Not.Null);
+            Assert.That(host.Services.GetService(typeof(IMapper)), Is.Not.Null);
         }
     }
 }

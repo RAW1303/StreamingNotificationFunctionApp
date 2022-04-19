@@ -1,12 +1,4 @@
-﻿using AutoFixture.NUnit3;
-using AutoMapper;
-using Microsoft.Extensions.Logging;
-using Moq;
-using NUnit.Framework;
-using Raw.Streaming.Common.Model;
-using Raw.Streaming.Webhook.Functions;
-using Raw.Streaming.Webhook.Model;
-using Raw.Streaming.Webhook.Services;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

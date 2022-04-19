@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -12,31 +13,39 @@ using Raw.Streaming.Webhook.Services;
 namespace Raw.Streaming.Webhook.Functions
 {
     [ServiceBusAccount("StreamingServiceBus")]
-    public class TwitchClipController
+    internal class TwitchClipController
     {
         private readonly ITwitchApiService _twitchApiService;
         private readonly IMapper _mapper;
+        private readonly ILogger<TwitchClipController> _logger;
 
         public TwitchClipController(
             ITwitchApiService twitchApiService,
-            IMapper mapper)
+            IMapper mapper,
+            ILogger<TwitchClipController> logger)
         {
             _twitchApiService = twitchApiService;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        [FunctionName("NotifyTwitchClips")]
+        [ExcludeFromCodeCoverage]
+        [FunctionName(nameof(NotifyTwitchClipsTrigger))]
         [return: ServiceBus("%ClipsQueueName%")]
-        public async Task<ServiceBusMessage> NotifyTwitchClips(
-            [TimerTrigger("%TwitchClipsTimerTrigger%")] TimerInfo timer,
-            ILogger logger)
+        public async Task<ServiceBusMessage> NotifyTwitchClipsTrigger(
+            [TimerTrigger("%TwitchClipsTimerTrigger%")] TimerInfo timer)
+        {
+            return await NotifyTwitchClips(timer.ScheduleStatus.Last, timer.ScheduleStatus.Next);
+        }
+
+        public async Task<ServiceBusMessage> NotifyTwitchClips(DateTime last, DateTime next)
         {
             try
             {
-                logger.LogInformation("NotifyTwitchClips execution started");
-                var startedAt = new DateTime(Math.Max(timer.ScheduleStatus.Last.Ticks, DateTime.UtcNow.AddMinutes(-10).Ticks));
+                _logger.LogInformation("NotifyTwitchClips execution started");
+                var startedAt = new DateTime(Math.Max(last.Ticks, next.AddMinutes(-10).Ticks));
                 var startedAtUtc = DateTime.SpecifyKind(startedAt, DateTimeKind.Utc);
-                var endedAtUtc = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
+                var endedAtUtc = DateTime.SpecifyKind(next, DateTimeKind.Utc);
                 var clips = await GetClipsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc, endedAtUtc);
                 var queueItem = new DiscordBotQueueItem<Clip>(clips.ToArray());
                 return new ServiceBusMessage
@@ -47,7 +56,7 @@ namespace Raw.Streaming.Webhook.Functions
             }
             catch (Exception e)
             {
-                logger.LogError($"NotifyTwitchClips execution failed: {e.Message}");
+                _logger.LogError($"NotifyTwitchClips execution failed: {e.Message}");
                 throw;
             }
         }
