@@ -3,7 +3,7 @@ using Raw.Streaming.Discord.Model.DiscordApi;
 
 namespace Raw.Streaming.Discord.Translators
 {
-    public static class VideoToDiscordMessageTranslator
+    internal static class VideoToDiscordMessageTranslator
     {
         public static Message Translate(Video video)
         {

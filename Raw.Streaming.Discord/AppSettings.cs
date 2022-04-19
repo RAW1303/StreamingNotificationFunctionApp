@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Raw.Streaming.Discord
 {
+    [ExcludeFromCodeCoverage]
     internal static class AppSettings
     {
         public static string DiscordApiUrl { get; } = Environment.GetEnvironmentVariable("DiscordApiUrl");

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Raw.Streaming.Discord.Translators
 {
-    public static class EventToDiscordMessageTranslator
+    internal static class EventToDiscordMessageTranslator
     {
         public static Message TranslateDailySchedule(IEnumerable<Event> events)
         {
@@ -39,7 +39,7 @@ namespace Raw.Streaming.Discord.Translators
             };
         }
 
-        public static Message TranslateWeeklySchedule(IEnumerable<Event> scheduledStreams)
+        internal static Message TranslateWeeklySchedule(IEnumerable<Event> scheduledStreams)
         {
             if(!scheduledStreams.Any())
             {

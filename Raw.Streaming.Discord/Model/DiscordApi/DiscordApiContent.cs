@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace Raw.Streaming.Discord.Model.DiscordApi
 {
-    public abstract class DiscordApiContent
+    internal abstract class DiscordApiContent
     {
         public StringContent ToStringContent()
         {

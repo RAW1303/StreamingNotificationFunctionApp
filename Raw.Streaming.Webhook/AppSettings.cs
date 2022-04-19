@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Raw.Streaming.Webhook
 {
-    static class AppSettings
+    [ExcludeFromCodeCoverage]
+    internal static class AppSettings
     {
         public static string GoogleCalendarApiKey { get; } = Environment.GetEnvironmentVariable("GoogleCalendarApiKey");
         public static string ScheduleGoogleCalendarId { get; } = Environment.GetEnvironmentVariable("ScheduleGoogleCalendarId");
