@@ -12,7 +12,6 @@ namespace Raw.Streaming.Webhook
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-
             var googleCalendarService = new CalendarService(new BaseClientService.Initializer()
             {
                 ApiKey = AppSettings.GoogleCalendarApiKey

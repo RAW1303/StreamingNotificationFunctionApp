@@ -1,0 +1,6 @@
+{
+  "stryker-config":
+  {
+      "test-projects": ["./Raw.Streaming.Discord.Tests/Raw.Streaming.Discord.Tests.csproj"]
+  }
+}
