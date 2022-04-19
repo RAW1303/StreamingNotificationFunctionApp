@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -16,26 +17,42 @@ namespace Raw.Streaming.Webhook.Functions
     {
         private readonly IScheduleService _scheduleService;
         private readonly IMapper _mapper;
+        private readonly ILogger<ScheduleController> _logger;
 
         public ScheduleController(
             IScheduleService scheduleService,
-            IMapper mapper)
+            IMapper mapper,
+            ILogger<ScheduleController> logger)
         {
             _scheduleService = scheduleService;
             _mapper = mapper;
+            _logger = logger;
         }
 
+        [ExcludeFromCodeCoverage]
+        [FunctionName(nameof(NotifyDailyScheduleTrigger))]
+        [return: ServiceBus("%DailyScheduleQueueName%")]
+        public async Task<ServiceBusMessage> NotifyDailyScheduleTrigger(
+            [TimerTrigger("%ScheduleDailyTimerTrigger%")] TimerInfo timer)
+        {
+            return await NotifyDailySchedule(timer.ScheduleStatus.Next);
+        }
 
-        [FunctionName("NotifyWeeklySchedule")]
+        [ExcludeFromCodeCoverage]
+        [FunctionName(nameof(NotifyWeeklyScheduleTrigger))]
         [return: ServiceBus("%WeeklyScheduleQueueName%")]
-        public async Task<ServiceBusMessage> NotifyWeeklySchedule(
-            [TimerTrigger("%ScheduleWeeklyTimerTrigger%")] TimerInfo timer,
-            ILogger logger)
+        public async Task<ServiceBusMessage> NotifyWeeklyScheduleTrigger(
+            [TimerTrigger("%ScheduleWeeklyTimerTrigger%")] TimerInfo timer)
+        {
+            return await NotifyWeeklySchedule(timer.ScheduleStatus.Next);
+        }
+
+        public async Task<ServiceBusMessage> NotifyWeeklySchedule(DateTime triggerTime)
         {
             try
             {
-                logger.LogInformation($"{nameof(NotifyWeeklySchedule)} execution started");
-                var from = DateTime.Today;
+                _logger.LogInformation($"{nameof(NotifyWeeklyScheduleTrigger)} execution started");
+                var from = triggerTime.Date;
                 var to = from.AddDays(7);
                 var streamEvents = await _scheduleService.GetScheduledStreamsAsync(from, to);
                 var events = _mapper.Map<IEnumerable<Event>>(streamEvents);
@@ -48,23 +65,18 @@ namespace Raw.Streaming.Webhook.Functions
             }
             catch (Exception e)
             {
-                logger.LogError($"{nameof(NotifyWeeklySchedule)} execution failed: {e.Message}");
+                _logger.LogError($"{nameof(NotifyWeeklyScheduleTrigger)} execution failed: {e.Message}");
                 throw;
             }
         }
 
-
-        [FunctionName("NotifyDailySchedule")]
-        [return: ServiceBus("%DailyScheduleQueueName%")]
-        public async Task<ServiceBusMessage> NotifyDailySchedule(
-            [TimerTrigger("%ScheduleDailyTimerTrigger%")] TimerInfo timer,
-            ILogger logger)
+        public async Task<ServiceBusMessage> NotifyDailySchedule(DateTime triggerTime)
         {
             try
             {
-                var from = DateTime.Today;
+                var from = triggerTime.Date;
                 var to = from.AddDays(1);
-                logger.LogInformation($"{nameof(NotifyWeeklySchedule)} execution started for {from:d}");
+                _logger.LogInformation($"{nameof(NotifyDailySchedule)} execution started for {from:d}");
                 var scheduledStreams = await _scheduleService.GetScheduledStreamsAsync(from, to);
                 if (scheduledStreams.Count > 0)
                 {
@@ -81,9 +93,10 @@ namespace Raw.Streaming.Webhook.Functions
             }
             catch (Exception e)
             {
-                logger.LogError($"{nameof(NotifyWeeklySchedule)} execution failed: {e.Message}");
+                _logger.LogError($"{nameof(NotifyDailySchedule)} execution failed: {e.Message}");
                 throw;
             }
+
         }
     }
 }
