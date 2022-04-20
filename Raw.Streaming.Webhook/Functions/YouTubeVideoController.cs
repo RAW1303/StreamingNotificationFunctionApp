@@ -56,7 +56,7 @@ namespace Raw.Streaming.Webhook.Functions
         }
 
         [FunctionName(nameof(YoutubeVideoWebhook))]
-        [return: ServiceBus("%VideoQueueName%")]
+        [return: ServiceBus("%VideosQueueName%")]
         public ServiceBusMessage YoutubeVideoWebhook(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = WebhookEndpoint)] HttpRequest req,
             ILogger logger)
