@@ -12,8 +12,8 @@ namespace Raw.Streaming.Discord.Services
     {
         private readonly string _discordBotToken = AppSettings.DiscordBotToken;
         private readonly string _discordApiUrl = AppSettings.DiscordApiUrl;
+        private readonly HttpClient _client;
         protected readonly ILogger _logger;
-        protected readonly HttpClient _client;
 
         protected BaseDiscordBotService(ILogger logger, HttpClient httpClient)
         {

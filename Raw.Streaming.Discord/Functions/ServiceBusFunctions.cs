@@ -1,9 +1,10 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using Raw.Streaming.Common.Model.Enums;
-using Raw.Streaming.Discord.Model;
+using Raw.Streaming.Common.Model;
 using Raw.Streaming.Discord.Services;
+using Raw.Streaming.Discord.Translators;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Raw.Streaming.Discord.Functions
@@ -20,37 +21,113 @@ namespace Raw.Streaming.Discord.Functions
             _discordBotMessageService = discordBotMessageService;
         }
 
-        [FunctionName(nameof(ProcessDiscordBotMessageQueue))]
-        public async Task ProcessDiscordBotMessageQueue([ServiceBusTrigger("%DiscordBotMessageQueueName%")] DiscordBotQueueItem myQueueItem)
+        [FunctionName(nameof(ProcessGoLiveMessageQueue))]
+        public async Task ProcessGoLiveMessageQueue([ServiceBusTrigger("%GoLiveQueueName%")] DiscordBotQueueItem<GoLive> myQueueItem)
         {
             try
             {
-                _logger.LogInformation($"Discord notification started");
+                _logger.LogInformation($"GoLive notification started");
 
-                foreach (var message in myQueueItem.Messages)
+                var messages = myQueueItem.Entities.Select(x => GoLiveToDiscordMessageTranslator.Translate(x));
+
+                foreach (var message in messages)
                 {
-                    await _discordBotMessageService.SendDiscordMessageAsync(ResolveChannelId(myQueueItem.Type), message);
+                    await _discordBotMessageService.SendDiscordMessageAsync(AppSettings.DiscordStreamGoLiveChannelId, message);
                 }
 
-                _logger.LogInformation($"Discord notification succeeded");
+                _logger.LogInformation($"GoLive notification succeeded");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Discord notification failed: {ex.Message}");
+                _logger.LogError($"GoLive notification failed: {ex.Message}");
                 throw;
             }
         }
 
-        private string ResolveChannelId(MessageType messageType)
+        [FunctionName(nameof(ProcessClipMessageQueue))]
+        public async Task ProcessClipMessageQueue([ServiceBusTrigger("%ClipsQueueName%")] DiscordBotQueueItem<Clip> myQueueItem)
         {
-            return messageType switch
+            try
             {
-                MessageType.StreamGoLive => AppSettings.DiscordStreamGoLiveChannelId,
-                MessageType.Clip => AppSettings.DiscordClipChannelId,
-                MessageType.Video => AppSettings.DiscordVideoChannelId,
-                MessageType.Schedule => AppSettings.DiscordScheduleChannelId,
-                _ => throw new ArgumentOutOfRangeException(nameof(messageType), $"Not expected messageType value: {messageType}"),
-            };
+                _logger.LogInformation($"Clips notification started");
+
+                var messages = myQueueItem.Entities.Select(x => ClipToDiscordMessageTranslator.Translate(x));
+
+                foreach (var message in messages)
+                {
+                    await _discordBotMessageService.SendDiscordMessageAsync(AppSettings.DiscordClipChannelId, message);
+                }
+
+                _logger.LogInformation($"Clips notification succeeded");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Clips notification failed: {ex.Message}");
+                throw;
+            }
+        }
+
+        [FunctionName(nameof(ProcessVideoMessageQueue))]
+        public async Task ProcessVideoMessageQueue([ServiceBusTrigger("%VideosQueueName%")] DiscordBotQueueItem<Video> myQueueItem)
+        {
+            try
+            {
+                _logger.LogInformation($"Videos notification started");
+
+                var messages = myQueueItem.Entities.Select(x => VideoToDiscordMessageTranslator.Translate(x));
+
+                foreach (var message in messages)
+                {
+                    await _discordBotMessageService.SendDiscordMessageAsync(AppSettings.DiscordVideoChannelId, message);
+                }
+
+                _logger.LogInformation($"Videos notification succeeded");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Videos notification failed: {ex.Message}");
+                throw;
+            }
+        }
+
+        [FunctionName(nameof(ProcessDailyScheduleMessageQueue))]
+        public async Task ProcessDailyScheduleMessageQueue([ServiceBusTrigger("%DailyScheduleQueueName%")] DiscordBotQueueItem<Event> myQueueItem)
+        {
+            try
+            {
+                _logger.LogInformation($"DailySchedule notification started");
+
+                var message = EventToDiscordMessageTranslator.TranslateDailySchedule(myQueueItem.Entities);
+
+                await _discordBotMessageService.SendDiscordMessageAsync(AppSettings.DiscordScheduleChannelId, message);
+
+                _logger.LogInformation($"DailySchedule notification succeeded");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"DailySchedule notification failed: {ex.Message}");
+                throw;
+            }
+        }
+
+        [FunctionName(nameof(ProcessWeeklyScheduleMessageQueue))]
+        public async Task ProcessWeeklyScheduleMessageQueue([ServiceBusTrigger("%WeeklyScheduleQueueName%")] DiscordBotQueueItem<Event> myQueueItem)
+        {
+            try
+            {
+                _logger.LogInformation($"WeeklySchedule notification started");
+
+                var message = EventToDiscordMessageTranslator.TranslateWeeklySchedule(myQueueItem.Entities);
+
+                await _discordBotMessageService.SendDiscordMessageAsync(AppSettings.DiscordScheduleChannelId, message);
+
+                _logger.LogInformation($"WeeklySchedule notification succeeded");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"WeeklySchedule notification failed: {ex.Message}");
+                throw;
+            }
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Google.Apis.Calendar.v3;
-using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Model;
 using System;
 using System.Collections.Generic;

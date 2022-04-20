@@ -1,0 +1,9 @@
+{
+  "stryker-config": {
+    "test-projects": [ "./Raw.Streaming.Discord.Tests/Raw.Streaming.Discord.Tests.csproj" ],
+    "project-info": {
+      "name": "github.com/RAW1303/StreamingNotificationFunctionApp",
+      "module": "Raw.Streaming.Discord"
+    }
+  }
+}

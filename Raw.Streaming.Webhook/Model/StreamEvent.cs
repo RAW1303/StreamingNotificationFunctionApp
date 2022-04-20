@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Raw.Streaming.Webhook.Model
 {
+    [ExcludeFromCodeCoverage]
     public class StreamEvent
     {
         public DateTime Start { get; set; }

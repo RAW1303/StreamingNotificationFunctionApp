@@ -1,8 +1,10 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Raw.Streaming.Webhook.Model.Twitch
 {
-    public class Channel
+    [ExcludeFromCodeCoverage]
+    public class TwitchChannel
     {
         [JsonPropertyName("broadcaster_id")]
         public string BroadcasterId { get; set; }

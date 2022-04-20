@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Raw.Streaming.Webhook.Model.Twitch
 {
-    public class StreamChangeRequest
+    [ExcludeFromCodeCoverage]
+    public class TwitchStreamChangeRequest
     {
         [JsonPropertyName("data")]
-        public StreamChange[] Data { get; set; }
+        public TwitchStreamChange[] Data { get; set; }
     }
 
-    public class StreamChange
+    [ExcludeFromCodeCoverage]
+    public class TwitchStreamChange
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

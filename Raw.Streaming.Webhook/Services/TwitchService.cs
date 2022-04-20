@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Exceptions;
 using Raw.Streaming.Webhook.Model;
 using System.Net.Http;

@@ -1,40 +1,37 @@
-﻿using System.Collections.Generic;
+﻿using Raw.Streaming.Common.Model;
+using Raw.Streaming.Discord.Model.DiscordApi;
+using System.Collections.Generic;
 using System.Linq;
-using Raw.Streaming.Webhook.Common;
-using Raw.Streaming.Webhook.Model;
-using Raw.Streaming.Webhook.Model.Discord;
 
-namespace Raw.Streaming.Webhook.Translators
+namespace Raw.Streaming.Discord.Translators
 {
-    public static class StreamEventToDiscordNotificationTranslator
+    internal static class EventToDiscordMessageTranslator
     {
-        private const string CALENDAR_URL_TEMPLATE = "https://calendar.google.com/calendar/u/0/embed?mode=WEEK&showPrint=0&showTabs=0&title=Roy%20Weller%20Stream%20Schedule&showCalendars=0&bgcolor=%2300BDFF&src=";
-
-        public static Notification TranslateDailySchedule(IEnumerable<StreamEvent> scheduledStreams)
+        public static Message TranslateDailySchedule(IEnumerable<Event> events)
         {
-            return new Notification()
+            return new Message()
             {
-                Embeds = scheduledStreams.Select(stream =>  
+                Embeds = events.Select(e =>
                     new Embed()
                     {
                         Author = new EmbedAuthor()
                         {
                             Name = "Today"
                         },
-                        Title = stream.Title,
-                        Description = HtmlUtilities.ConverHtmlToText(stream.Description),
+                        Title = e.Title,
+                        Description = e.Url,
                         Color = 48639,
                         Fields = new EmbedField[] {
                             new EmbedField()
                             {
                                 Name = "Game",
-                                Value = stream.Game,
+                                Value = e.Game,
                                 Inline = true
                             },
                             new EmbedField()
                             {
                                 Name = "Time",
-                                Value = $"{stream.Start:t} - {stream.End:t} UTC",
+                                Value = $"{e.Start:t} - {e.End:t} UTC",
                                 Inline = true
                             },
                         }
@@ -42,18 +39,17 @@ namespace Raw.Streaming.Webhook.Translators
             };
         }
 
-        public static Notification TranslateWeeklySchedule(IEnumerable<StreamEvent> scheduledStreams)
+        internal static Message TranslateWeeklySchedule(IEnumerable<Event> scheduledStreams)
         {
             if(!scheduledStreams.Any())
             {
-                return new Notification()
+                return new Message()
                 {
                     Embeds = new Embed[]
                     {
                         new Embed()
                         {
                             Title = "This Week",
-                            Url = $"{CALENDAR_URL_TEMPLATE}{AppSettings.ScheduleGoogleCalendarId}",
                             Color = 48639,
                             Description = "No scheduled streams this week. Keep an eye on <#766821120522715141> for unscheduled streams"
                         }
@@ -63,14 +59,13 @@ namespace Raw.Streaming.Webhook.Translators
 
             var streamsByDay = scheduledStreams.GroupBy(x => x.Start.DayOfWeek).ToDictionary(g => g.Key, g=> g.ToList());
 
-            return new Notification()
+            return new Message()
             {
                 Embeds = new Embed[]
                 {
                     new Embed()
                     {
                         Title = "This Week",
-                        Url = $"{CALENDAR_URL_TEMPLATE}{AppSettings.ScheduleGoogleCalendarId}",
                         Color = 48639,
                         Fields = streamsByDay.OrderBy(x => ((int) x.Key + 6) % 7).Select(streams =>
                             new EmbedField()
@@ -84,7 +79,7 @@ namespace Raw.Streaming.Webhook.Translators
             };
         }
 
-        private static string GetStreamSummaryString(StreamEvent stream)
+        private static string GetStreamSummaryString(Event stream)
         {
             return $"{stream.Title}\n{stream.Game}\n{stream.Start:HH:mm} - {stream.End:HH:mm} UTC";
         }

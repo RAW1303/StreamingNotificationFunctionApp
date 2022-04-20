@@ -1,8 +1,10 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Raw.Streaming.Discord.Model.DiscordApi
 {
-    public class Message : DiscordApiContent
+    [ExcludeFromCodeCoverage]
+    internal class Message : DiscordApiContent
     {
         [JsonPropertyName("content")]
         public string Content { get; set; }

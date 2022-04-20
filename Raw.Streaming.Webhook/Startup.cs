@@ -2,11 +2,12 @@
 using Google.Apis.Services;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Services;
-using Raw.Streaming.Webhook.Translators;
+using System.Runtime.CompilerServices;
 
 [assembly: FunctionsStartup(typeof(Raw.Streaming.Webhook.Startup))]
+[assembly: InternalsVisibleTo("Raw.Streaming.Webhook.Tests")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 
 namespace Raw.Streaming.Webhook
 {
@@ -14,7 +15,6 @@ namespace Raw.Streaming.Webhook
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-
             var googleCalendarService = new CalendarService(new BaseClientService.Initializer()
             {
                 ApiKey = AppSettings.GoogleCalendarApiKey
@@ -27,7 +27,7 @@ namespace Raw.Streaming.Webhook
             builder.Services.AddSingleton<ITwitchSubscriptionService, TwitchSubscriptionService>();
             builder.Services.AddSingleton<IYoutubeSubscriptionService, YoutubeSubscriptionService>();
             builder.Services.AddSingleton<IScheduleService, GoogleCalendarScheduleService>();
-            builder.Services.AddSingleton<TwitchVideoToDiscordNotificationTranslator>();
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
         }
     }
 }

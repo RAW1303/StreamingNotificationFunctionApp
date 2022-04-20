@@ -3,7 +3,6 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Raw.Streaming.Webhook.Common;
 using Raw.Streaming.Webhook.Exceptions;
 using Raw.Streaming.Webhook.Model.Twitch.EventSub;
 

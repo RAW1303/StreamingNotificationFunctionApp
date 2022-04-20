@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Raw.Streaming.Webhook.Model.Youtube
 {
+    [ExcludeFromCodeCoverage]
     public class YoutubeFeed
     {
         public string Id { get; set; }
@@ -20,6 +22,7 @@ namespace Raw.Streaming.Webhook.Model.Youtube
         }
     }
 
+    [ExcludeFromCodeCoverage]
     public class Author
     {
         public string Name { get; set; }

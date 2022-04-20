@@ -1,0 +1,9 @@
+{
+  "stryker-config": {
+    "test-projects": [ "./Raw.Streaming.Webhook.Tests/Raw.Streaming.Webhook.Tests.csproj" ],
+    "project-info": {
+      "name": "github.com/RAW1303/StreamingNotificationFunctionApp",
+      "module" :  "Raw.Streaming.Webhook"
+    }
+  }
+}
