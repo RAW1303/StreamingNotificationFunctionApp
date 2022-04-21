@@ -11,6 +11,7 @@ namespace Raw.Streaming.Webhook
         public static string TwitchApiChannelEndpoint { get; } = Environment.GetEnvironmentVariable("TwitchApiChannelEndpoint");
         public static string TwitchApiClipEndpoint { get; } = Environment.GetEnvironmentVariable("TwitchApiClipEndpoint");
         public static string TwitchApiGameEndpoint { get; } = Environment.GetEnvironmentVariable("TwitchApiGameEndpoint");
+        public static string TwitchApiScheduleEndpoint { get; } = Environment.GetEnvironmentVariable("TwitchApiScheduleEndpoint");
         public static string TwitchApiUrl { get; } = Environment.GetEnvironmentVariable("TwitchApiUrl");
         public static string TwitchApiVideoEndpoint { get; } = Environment.GetEnvironmentVariable("TwitchApiVideoEndpoint");
         public static string TwitchBroadcasterId { get; } = Environment.GetEnvironmentVariable("TwitchBroadcasterId");

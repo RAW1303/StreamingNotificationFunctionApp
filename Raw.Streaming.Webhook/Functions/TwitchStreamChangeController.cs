@@ -23,7 +23,7 @@ namespace Raw.Streaming.Webhook.Functions
         private readonly ITwitchSubscriptionService _subscriptionService;
         private readonly IMapper _mapper;
 
-        public TwitchStreamChangeController(
+        internal TwitchStreamChangeController(
             ITwitchSubscriptionService subscriptionService, 
             ITwitchApiService twitchApiService,
             ILogger<TwitchStreamChangeController> logger,

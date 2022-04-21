@@ -18,7 +18,7 @@ namespace Raw.Streaming.Webhook.Functions
         private readonly ITwitchApiService _twitchApiService;
         private readonly IMapper _mapper;
 
-        public TwitchHighlightsController(
+        internal TwitchHighlightsController(
             ITwitchApiService twitchApiService,
             IMapper mapper)
         {
