@@ -20,7 +20,6 @@ namespace Raw.Streaming.Webhook.Tests
             Assert.That(host.Services.GetService(typeof(ITwitchApiService)), Is.Not.Null);
             Assert.That(host.Services.GetService(typeof(ITwitchSubscriptionService)), Is.Not.Null);
             Assert.That(host.Services.GetService(typeof(IYoutubeSubscriptionService)), Is.Not.Null);
-            Assert.That(host.Services.GetService(typeof(IScheduleService)), Is.Not.Null);
             Assert.That(host.Services.GetService(typeof(IMapper)), Is.Not.Null);
         }
     }

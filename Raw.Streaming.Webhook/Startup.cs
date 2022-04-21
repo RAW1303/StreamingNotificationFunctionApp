@@ -26,7 +26,6 @@ namespace Raw.Streaming.Webhook
             builder.Services.AddSingleton<ITwitchApiService, TwitchApiService>();
             builder.Services.AddSingleton<ITwitchSubscriptionService, TwitchSubscriptionService>();
             builder.Services.AddSingleton<IYoutubeSubscriptionService, YoutubeSubscriptionService>();
-            builder.Services.AddSingleton<IScheduleService, GoogleCalendarScheduleService>();
             builder.Services.AddAutoMapper(typeof(MappingProfile));
         }
     }

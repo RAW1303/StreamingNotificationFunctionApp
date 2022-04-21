@@ -15,7 +15,7 @@ namespace Raw.Streaming.Webhook.Model.Twitch
         [JsonPropertyName("vacation")]
         public TwitchScheduleVacation Vacation { get; set; }
         [JsonPropertyName("segments")]
-        public IList<TwitchScheduleSegment> Segments { get; set; }
+        public IList<TwitchScheduleSegment> Segments { get; set; } = new List<TwitchScheduleSegment>();
     }
     internal class TwitchScheduleSegment
     {
