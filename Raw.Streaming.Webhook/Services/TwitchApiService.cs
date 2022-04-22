@@ -68,7 +68,7 @@ namespace Raw.Streaming.Webhook.Services
 
         public async Task<TwitchSchedule> GetScheduleByBroadcasterIdAsync(string broadcasterId, DateTime? startTime = null)
         {
-            var queryString = $"?broadcaster_id={broadcasterId}{startTime:'&start_time='yyyy-MM-ddTHH:mm:ss}";
+            var queryString = $"?broadcaster_id={broadcasterId}{startTime:'&start_time='yyyy-MM-ddTHH:mm:ssK}";
             var scope = "user:read:broadcast";
             _logger.LogInformation($"Calling twitch clip endpoint with query string: {queryString}");
             var response = await SendTwitchApiRequestAsync(_scheduleEndpoint, queryString, scope);
