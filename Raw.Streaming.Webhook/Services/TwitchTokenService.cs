@@ -7,24 +7,29 @@ using System.Threading.Tasks;
 
 namespace Raw.Streaming.Webhook.Services
 {
-    public abstract class TwitchService
+    public class TwitchTokenService : ITwitchTokenService
     {
-        protected readonly HttpClient _client;
-        protected readonly ILogger<TwitchSubscriptionService> _logger;
+        private readonly string _twitchClientId = AppSettings.TwitchClientId;
+        private readonly string _twitchClientSecret = AppSettings.TwitchClientSecret;
 
-        protected TwitchService(ILogger<TwitchSubscriptionService> logger, HttpClient httpClient)
+        private readonly HttpClient _client;
+        private readonly ILogger<TwitchTokenService> _logger;
+
+        public TwitchTokenService(ILogger<TwitchTokenService> logger, HttpClient httpClient)
         {
             _client = httpClient;
             _logger = logger;
         }
 
-        protected async Task<string> GetTwitchToken(string scope)
+        public async Task<string> GetTwitchTokenAsync(string scope)
         {
-            var fullTokenUrl = $"{AppSettings.TwitchTokenUrl}?grant_type=client_credentials&scope={scope}&client_id={AppSettings.TwitchClientId}&client_secret={AppSettings.TwitchClientSecret}";
+            _logger.LogInformation($"Getting Twitch token for clientID '{_twitchClientId}' with scope '{scope}'");
+            var fullTokenUrl = $"{AppSettings.TwitchTokenUrl}?grant_type=client_credentials&scope={scope}&client_id={_twitchClientId}&client_secret={_twitchClientSecret}";
             var request = new HttpRequestMessage(HttpMethod.Post, fullTokenUrl);
             var response = await _client.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
+                _logger.LogError($"Error getting Twitch token for clientID '{_twitchClientId}' with scope '{scope}'");
                 throw new TwitchApiException($"Error getting twitch token: {await response.Content.ReadAsStringAsync()}");
             }
             var responseString = await response.Content.ReadAsStringAsync();

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Raw.Streaming.Webhook.Model.Twitch
 {
+    [ExcludeFromCodeCoverage]
     internal class TwitchSchedule
     {
         [JsonPropertyName("broadcaster_id")]
@@ -17,6 +19,8 @@ namespace Raw.Streaming.Webhook.Model.Twitch
         [JsonPropertyName("segments")]
         public IList<TwitchScheduleSegment> Segments { get; set; } = new List<TwitchScheduleSegment>();
     }
+
+    [ExcludeFromCodeCoverage]
     internal class TwitchScheduleSegment
     {
         [JsonPropertyName("id")]
@@ -35,6 +39,7 @@ namespace Raw.Streaming.Webhook.Model.Twitch
         public bool IsRecurring { get; set; }
     }
 
+    [ExcludeFromCodeCoverage]
     internal class TwitchScheduleVacation
     {
         [JsonPropertyName("start_time")]

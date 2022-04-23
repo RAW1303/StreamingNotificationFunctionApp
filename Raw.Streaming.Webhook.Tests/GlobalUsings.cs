@@ -1,5 +1,6 @@
 ﻿global using AutoFixture.NUnit3;
 global using AutoMapper;
+global using Microsoft.Extensions.Logging;
 global using Moq;
 global using NUnit.Framework;
 global using Raw.Streaming.Webhook.Services;
@@ -8,3 +9,4 @@ global using Raw.Streaming.Webhook.Functions;
 global using Raw.Streaming.Webhook.Model;
 global using Raw.Streaming.Webhook.Model.Twitch;
 global using Raw.Streaming.Webhook.Model.Youtube;
+global using System.Threading.Tasks;
