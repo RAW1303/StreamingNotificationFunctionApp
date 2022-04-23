@@ -5,6 +5,7 @@ global using Moq;
 global using NUnit.Framework;
 global using Raw.Streaming.Webhook.Services;
 global using Raw.Streaming.Common.Model;
+global using Raw.Streaming.Webhook.Exceptions;
 global using Raw.Streaming.Webhook.Functions;
 global using Raw.Streaming.Webhook.Model;
 global using Raw.Streaming.Webhook.Model.Twitch;

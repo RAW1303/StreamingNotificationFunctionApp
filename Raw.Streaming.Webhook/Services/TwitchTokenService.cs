@@ -11,6 +11,7 @@ namespace Raw.Streaming.Webhook.Services
     {
         private readonly string _twitchClientId = AppSettings.TwitchClientId;
         private readonly string _twitchClientSecret = AppSettings.TwitchClientSecret;
+        private readonly string _twitchTokenUrl = AppSettings.TwitchTokenUrl;
 
         private readonly HttpClient _client;
         private readonly ILogger<TwitchTokenService> _logger;
@@ -24,7 +25,7 @@ namespace Raw.Streaming.Webhook.Services
         public async Task<string> GetTwitchTokenAsync(string scope)
         {
             _logger.LogInformation($"Getting Twitch token for clientID '{_twitchClientId}' with scope '{scope}'");
-            var fullTokenUrl = $"{AppSettings.TwitchTokenUrl}?grant_type=client_credentials&scope={scope}&client_id={_twitchClientId}&client_secret={_twitchClientSecret}";
+            var fullTokenUrl = $"{_twitchTokenUrl}?grant_type=client_credentials&scope={scope}&client_id={_twitchClientId}&client_secret={_twitchClientSecret}";
             var request = new HttpRequestMessage(HttpMethod.Post, fullTokenUrl);
             var response = await _client.SendAsync(request);
             if (!response.IsSuccessStatusCode)
