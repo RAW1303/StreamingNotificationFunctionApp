@@ -35,7 +35,7 @@ namespace Raw.Streaming.Webhook.Functions
             try
             {
                 logger.LogInformation("NotifyTwitchHighlights execution started");
-                var startedAt = new DateTime(Math.Max(timer.ScheduleStatus.Last.Ticks, timer.ScheduleStatus.Next.AddHours(-25).Ticks));
+                var startedAt = DateTime.SpecifyKind(new DateTime(Math.Max(timer.ScheduleStatus.Last.Ticks, timer.ScheduleStatus.Next.AddHours(-25).Ticks)), DateTimeKind.Utc);
                 var highlights = await GetHighlightsAsync(AppSettings.TwitchBroadcasterId, startedAt);
                 var videos = _mapper.Map<IEnumerable<Video>>(highlights);
                 var queueItem = new DiscordBotQueueItem<Video>(videos.ToArray());

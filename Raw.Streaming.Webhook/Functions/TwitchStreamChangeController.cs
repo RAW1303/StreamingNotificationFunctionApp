@@ -13,7 +13,7 @@ using Raw.Streaming.Webhook.Services;
 namespace Raw.Streaming.Webhook.Functions
 {
     [ServiceBusAccount("StreamingServiceBus")]
-    public class TwitchStreamChangeController : TwitchEventSubControllerBase<StreamOnlineEvent, GoLive>
+    internal class TwitchStreamChangeController : TwitchEventSubControllerBase<StreamOnlineEvent, GoLive>
     {
         private const string WebhookEndpoint = "webhook/twitch/stream-change";
 
@@ -23,7 +23,7 @@ namespace Raw.Streaming.Webhook.Functions
         private readonly ITwitchSubscriptionService _subscriptionService;
         private readonly IMapper _mapper;
 
-        internal TwitchStreamChangeController(
+        public TwitchStreamChangeController(
             ITwitchSubscriptionService subscriptionService, 
             ITwitchApiService twitchApiService,
             ILogger<TwitchStreamChangeController> logger,

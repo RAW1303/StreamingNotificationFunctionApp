@@ -52,8 +52,8 @@ namespace Raw.Streaming.Webhook.Functions
             try
             {
                 _logger.LogInformation($"{nameof(NotifyWeeklyScheduleTrigger)} execution started");
-                var from = triggerTime.Date;
-                var to = from.AddDays(7);
+                var from = DateTime.SpecifyKind(triggerTime.Date, DateTimeKind.Utc);
+                var to = DateTime.SpecifyKind(from.AddDays(7), DateTimeKind.Utc);
                 var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, from);
                 var filteredSegments = schedule.Segments.Where(seg => seg.StartTime <= to);
                 var events = _mapper.Map<IEnumerable<Event>>(filteredSegments);

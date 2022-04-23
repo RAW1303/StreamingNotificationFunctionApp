@@ -43,7 +43,7 @@ namespace Raw.Streaming.Webhook.Functions
             try
             {
                 _logger.LogInformation("NotifyTwitchClips execution started");
-                var startedAt = new DateTime(Math.Max(last.Ticks, next.AddMinutes(-10).Ticks));
+                var startedAt = DateTime.SpecifyKind(new DateTime(Math.Max(last.Ticks, next.AddMinutes(-10).Ticks)), DateTimeKind.Utc);
                 var clips = await GetClipsAsync(AppSettings.TwitchBroadcasterId, startedAt, next);
                 var queueItem = new DiscordBotQueueItem<Clip>(clips.ToArray());
                 return new ServiceBusMessage
