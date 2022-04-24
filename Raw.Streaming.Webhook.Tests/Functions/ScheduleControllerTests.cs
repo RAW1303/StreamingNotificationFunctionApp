@@ -8,7 +8,7 @@ namespace Raw.Streaming.Webhook.Tests.Functions
     [TestFixture]
     internal class ScheduleControllerTests
     {
-        private Mock<IScheduleService> _scheduleServiceMock;
+        private Mock<ITwitchApiService> _twitchApiServiceMock;
         private Mock<IMapper> _mapperMock;
         private Mock<ILogger<ScheduleController>> _loggerMock;
         private ScheduleController _controller;
@@ -16,19 +16,19 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         [SetUp]
         public void Setup()
         {
-            _scheduleServiceMock = new Mock<IScheduleService>();
+            _twitchApiServiceMock = new Mock<ITwitchApiService>();
             _mapperMock = new Mock<IMapper>();
             _loggerMock = new Mock<ILogger<ScheduleController>>();
-            _controller = new ScheduleController(_scheduleServiceMock.Object, _mapperMock.Object, _loggerMock.Object);
+            _controller = new ScheduleController(_twitchApiServiceMock.Object, _mapperMock.Object, _loggerMock.Object);
         }
 
         [Test, AutoData]
         public async Task NotifyDailySchedule_WhenGetScheduledStreamsAsyncReturnsEmptyList_ReturnsNull(DateTime triggerTime)
         {
             // Arrange
-            _scheduleServiceMock
-                .Setup(x => x.GetScheduledStreamsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(new List<StreamEvent>());
+            _twitchApiServiceMock
+                .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(new TwitchSchedule());
             _mapperMock
                 .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))
                 .Returns(new Event());
@@ -41,12 +41,13 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         }
 
         [Test, AutoData]
-        public async Task NotifyDailySchedule_WhenGetScheduledStreamsAsyncReturnsItems_ReturnsServiceBusMessage(DateTime triggerTime, StreamEvent streamEvent)
+        public async Task NotifyDailySchedule_WhenGetScheduledStreamsAsyncReturnsItems_ReturnsServiceBusMessage(DateTime triggerTime, TwitchScheduleSegment segment)
         {
             // Arrange
-            _scheduleServiceMock
-                .Setup(x => x.GetScheduledStreamsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(new List<StreamEvent>() { streamEvent });
+            segment.StartTime = triggerTime;
+            _twitchApiServiceMock
+                .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(new TwitchSchedule{ Segments = new List<TwitchScheduleSegment>() { segment } });
             _mapperMock
                 .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))
                 .Returns(new Event());
@@ -63,8 +64,8 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         {
             // Arrange
             var exception = new Exception("Test message");
-            _scheduleServiceMock
-                .Setup(x => x.GetScheduledStreamsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            _twitchApiServiceMock
+                .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
                 .ThrowsAsync(exception);
             _mapperMock
                 .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))
@@ -78,9 +79,9 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         public async Task NotifyWeeklySchedule_WhenGetScheduledStreamsAsyncWorks_ReturnsServiceBusMessage(DateTime triggerTime)
         {
             // Arrange
-            _scheduleServiceMock
-                .Setup(x => x.GetScheduledStreamsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(new List<StreamEvent>());
+            _twitchApiServiceMock
+                .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(new TwitchSchedule());
             _mapperMock
                 .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))
                 .Returns(new Event());
@@ -97,8 +98,8 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         {
             // Arrange
             var exception = new Exception("Test message");
-            _scheduleServiceMock
-                .Setup(x => x.GetScheduledStreamsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            _twitchApiServiceMock
+                .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
                 .ThrowsAsync(exception);
             _mapperMock
                 .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))

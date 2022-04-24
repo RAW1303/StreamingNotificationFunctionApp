@@ -18,7 +18,7 @@ namespace Raw.Streaming.Webhook.Functions
         private readonly ITwitchApiService _twitchApiService;
         private readonly IMapper _mapper;
 
-        public TwitchHighlightsController(
+        internal TwitchHighlightsController(
             ITwitchApiService twitchApiService,
             IMapper mapper)
         {
@@ -35,15 +35,14 @@ namespace Raw.Streaming.Webhook.Functions
             try
             {
                 logger.LogInformation("NotifyTwitchHighlights execution started");
-                var startedAt = new DateTime(Math.Max(timer.ScheduleStatus.Last.Ticks, DateTime.UtcNow.AddHours(-25).Ticks));
-                var startedAtUtc = DateTime.SpecifyKind(startedAt, DateTimeKind.Utc);
-                var highlights = await GetHighlightsAsync(AppSettings.TwitchBroadcasterId, startedAtUtc);
+                var startedAt = DateTime.SpecifyKind(new DateTime(Math.Max(timer.ScheduleStatus.Last.Ticks, timer.ScheduleStatus.Next.AddHours(-25).Ticks)), DateTimeKind.Utc);
+                var highlights = await GetHighlightsAsync(AppSettings.TwitchBroadcasterId, startedAt);
                 var videos = _mapper.Map<IEnumerable<Video>>(highlights);
                 var queueItem = new DiscordBotQueueItem<Video>(videos.ToArray());
                 return new ServiceBusMessage
                 {
                     Body = BinaryData.FromObjectAsJson(queueItem),
-                    MessageId = $"twitch-highlights-{startedAtUtc}"
+                    MessageId = $"twitch-highlights-{startedAt}"
                 };
             }
             catch (Exception e)

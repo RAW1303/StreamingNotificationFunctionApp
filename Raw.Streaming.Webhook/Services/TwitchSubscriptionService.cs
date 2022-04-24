@@ -8,12 +8,19 @@ using Raw.Streaming.Webhook.Model.Twitch.EventSub;
 
 namespace Raw.Streaming.Webhook.Services
 {
-    public class TwitchSubscriptionService : TwitchService, ITwitchSubscriptionService
+    internal class TwitchSubscriptionService : ITwitchSubscriptionService
     {
         private readonly string _secret = AppSettings.TwitchSubscriptionSecret;
 
-        public TwitchSubscriptionService(ILogger<TwitchSubscriptionService> logger, HttpClient httpClient): base(logger, httpClient)
+        private readonly HttpClient _client;
+        private readonly ITwitchTokenService _twitchTokenService;
+        private readonly ILogger<TwitchSubscriptionService> _logger;
+
+        public TwitchSubscriptionService(ILogger<TwitchSubscriptionService> logger, ITwitchTokenService twitchTokenService, HttpClient httpClient)
         {
+            _logger = logger;
+            _twitchTokenService = twitchTokenService;
+            _client = httpClient;
         }
 
         public async Task SubscribeAsync<T>(string type, T condition, string callbackUrl) where T: Condition
@@ -26,7 +33,7 @@ namespace Raw.Streaming.Webhook.Services
             };
 
             var scope = "user:read:broadcast";
-            request.Headers.Add("Authorization", $"Bearer {await GetTwitchToken(scope)}");
+            request.Headers.Add("Authorization", $"Bearer {await _twitchTokenService.GetTwitchTokenAsync(scope)}");
             request.Headers.Add("client-id", AppSettings.TwitchClientId);
 
             _logger.LogDebug($"Calling twitch subscription endpoint with content:\n{subscriptionRequestJson}");

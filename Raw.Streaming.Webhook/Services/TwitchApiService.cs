@@ -3,23 +3,33 @@ using Raw.Streaming.Webhook.Exceptions;
 using Raw.Streaming.Webhook.Model.Twitch;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Raw.Streaming.Webhook.Services
 {
-    public class TwitchApiService : TwitchService, ITwitchApiService
+    internal class TwitchApiService : ITwitchApiService
     {
         private readonly string _twitchApiUrl = AppSettings.TwitchApiUrl;
         private readonly string _clientId = AppSettings.TwitchClientId;
         private readonly string _channelEndpoint = AppSettings.TwitchApiChannelEndpoint;
-        private readonly string _gameEndpoint = AppSettings.TwitchApiGameEndpoint;
         private readonly string _clipEndpoint = AppSettings.TwitchApiClipEndpoint;
+        private readonly string _gameEndpoint = AppSettings.TwitchApiGameEndpoint;
+        private readonly string _scheduleEndpoint = AppSettings.TwitchApiScheduleEndpoint;
         private readonly string _videoEndpoint = AppSettings.TwitchApiVideoEndpoint;
 
-        public TwitchApiService(ILogger<TwitchSubscriptionService> logger, HttpClient httpClient) : base(logger, httpClient)
+        private readonly HttpClient _client;
+        private readonly ITwitchTokenService _twitchTokenService;
+        private readonly ILogger<TwitchApiService> _logger;
+
+        public TwitchApiService(ILogger<TwitchApiService> logger, ITwitchTokenService twitchTokenService, HttpClient httpClient)
         {
+            _logger = logger;
+            _twitchTokenService = twitchTokenService;
+            _client = httpClient;
         }
 
         public async Task<TwitchChannel> GetChannelInfoAsync(string broadcasterId)
@@ -27,9 +37,8 @@ namespace Raw.Streaming.Webhook.Services
             var queryString = $"?broadcaster_id={broadcasterId}";
             var scope = "user:read:broadcast";
             _logger.LogInformation($"Calling twitch channel info endpoint with query string: {queryString}");
-            var response = await SendTwitchApiRequestAsync(_channelEndpoint, queryString, scope);
-            var responseObject = JsonSerializer.Deserialize<TwitchApiResponse<TwitchChannel>>(await response.Content.ReadAsStringAsync());
-            return responseObject.Data[0];
+            var response = await SendTwitchApiGetRequestAsync<IList<TwitchChannel>>(_channelEndpoint, queryString, scope);
+            return response.FirstOrDefault();
         }
 
         public async Task<IList<TwitchGame>> GetGamesAsync(params string[] gameIds)
@@ -38,21 +47,17 @@ namespace Raw.Streaming.Webhook.Services
             var queryString = $"?id={gameIdList}";
             var scope = "user:read:broadcast";
             _logger.LogInformation($"Calling twitch game endpoint with query string: {queryString}");
-            var response = await SendTwitchApiRequestAsync(_gameEndpoint, queryString, scope);
-            var responseObject = JsonSerializer.Deserialize<TwitchApiResponse<TwitchGame>>(await response.Content.ReadAsStringAsync());
-            return responseObject.Data;
+            return await SendTwitchApiGetRequestAsync<IList<TwitchGame>>(_gameEndpoint, queryString, scope);
         }
 
         public async Task<IList<TwitchClip>> GetClipsByBroadcasterAsync(string broadcasterId, DateTime? startedAt = null, DateTime? endedAt = null)
         {
             var queryString = $"?broadcaster_id={broadcasterId}";
-            queryString = startedAt.HasValue ? $"{queryString}&started_at={startedAt:yyyy-MM-ddTHH:mm:ssK}" : queryString;
-            queryString = endedAt.HasValue ? $"{queryString}&ended_at={endedAt:yyyy-MM-ddTHH:mm:ssK}" : queryString;
+            queryString = startedAt.HasValue ? $"{queryString}&started_at={UrlEncodeDateTime(startedAt)}" : queryString;
+            queryString = endedAt.HasValue ? $"{queryString}&ended_at={UrlEncodeDateTime(endedAt)}" : queryString;
             var scope = "user:read:broadcast";
             _logger.LogInformation($"Calling twitch clip endpoint with query string: {queryString}");
-            var response = await SendTwitchApiRequestAsync(_clipEndpoint, queryString, scope);
-            var responseObject = JsonSerializer.Deserialize<TwitchApiResponse<TwitchClip>>(await response.Content.ReadAsStringAsync());
-            return responseObject.Data;
+            return await SendTwitchApiGetRequestAsync<IList<TwitchClip>>(_clipEndpoint, queryString, scope);
         }
 
         public async Task<IList<TwitchVideo>> GetHighlightsByBroadcasterAsync(string broadcasterId)
@@ -60,25 +65,39 @@ namespace Raw.Streaming.Webhook.Services
             var queryString = $"?type=highlight&user_id={broadcasterId}";
             var scope = "user:read:broadcast";
             _logger.LogInformation($"Calling twitch clip endpoint with query string: {queryString}");
-            var response = await SendTwitchApiRequestAsync(_videoEndpoint, queryString, scope);
-            var responseObject = JsonSerializer.Deserialize<TwitchApiResponse<TwitchVideo>>(await response.Content.ReadAsStringAsync());
-            return responseObject.Data;
+            return await SendTwitchApiGetRequestAsync<IList<TwitchVideo>>(_videoEndpoint, queryString, scope);
         }
 
-        private async Task<HttpResponseMessage> SendTwitchApiRequestAsync(string endpoint, string queryString, string scope)
+        public async Task<TwitchSchedule> GetScheduleByBroadcasterIdAsync(string broadcasterId, DateTime? startTime = null)
+        {
+            var queryString = $"?broadcaster_id={broadcasterId}";
+            queryString = startTime.HasValue ? $"{queryString}&start_time={UrlEncodeDateTime(startTime)}" : queryString;
+            var scope = "user:read:broadcast";
+            _logger.LogInformation($"Calling twitch clip endpoint with query string: {queryString}");
+            return await SendTwitchApiGetRequestAsync<TwitchSchedule>(_scheduleEndpoint, queryString, scope);
+        }
+
+        private async Task<T> SendTwitchApiGetRequestAsync<T>(string endpoint, string queryString, string scope)
         {
             var fullUrl = $"{_twitchApiUrl}/{endpoint}{queryString}";
             var request = new HttpRequestMessage(HttpMethod.Get, fullUrl);
-            request.Headers.Add("Authorization", $"Bearer {await GetTwitchToken(scope)}");
+            request.Headers.Add("Authorization", $"Bearer {await _twitchTokenService.GetTwitchTokenAsync(scope)}");
             request.Headers.Add("client-id", _clientId);
 
             var response = await _client.SendAsync(request);
+            var responseContent = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError($"Error calling twitch API endpoint: {fullUrl}");
-                throw new TwitchApiException($"Error calling twitch API endpoint: {await response.Content.ReadAsStringAsync()}");
+                throw new TwitchApiException($"Error calling twitch API endpoint: {responseContent}");
             }
-            return response;
+            var responseObject = JsonSerializer.Deserialize<TwitchApiResponse<T>>(responseContent);
+            return responseObject.Data;
+        }
+
+        private static string UrlEncodeDateTime(DateTime? dateTime)
+        {
+            return HttpUtility.UrlEncode($"{dateTime:yyyy-MM-ddTHH:mm:ssK}");
         }
     }
 }

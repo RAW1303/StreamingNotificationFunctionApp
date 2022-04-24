@@ -11,7 +11,11 @@ namespace Raw.Streaming.Webhook
         public MappingProfile()
         {
             CreateMap<TwitchChannel, GoLive>();
-            CreateMap<StreamEvent, Event>()
+            CreateMap<TwitchScheduleSegment, Event>()
+                .ForMember(dest => dest.Start, opt => opt.MapFrom(src => src.StartTime))
+                .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.EndTime))
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
+                .ForMember(dest => dest.Game, opt => opt.MapFrom(src => src.Category.Name))
                 .ForMember(dest => dest.Url, opt => opt.Ignore());
             CreateMap<TwitchClip, Clip>()
                 .ForMember(dest => dest.GameName, opt => opt.Ignore());

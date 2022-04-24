@@ -1,4 +1,6 @@
-﻿namespace Raw.Streaming.Webhook.Tests
+﻿using System;
+
+namespace Raw.Streaming.Webhook.Tests
 {
     [TestFixture]
     public class MappingProfileTests
@@ -22,14 +24,10 @@
             _config.AssertConfigurationIsValid();
         }
 
-        [Test]
-        public void MappingProfile_YoutubeFeedToVideo_Succeeds()
+        [Test, AutoData]
+        public void MappingProfile_YoutubeFeedToVideo_Succeeds(string videoId, string authorName, string link)
         {
             // Arrange
-            var videoId = "TestID";
-            var authorName = "TestAuthor";
-            var link = "Link";
-
             var youtubeFeed = new YoutubeFeed() 
             { 
                 VideoId = videoId, 
@@ -45,6 +43,29 @@
             Assert.That(result, Has.Property("Id").EqualTo(videoId));
             Assert.That(result, Has.Property("AuthorName").EqualTo(authorName));
             Assert.That(result, Has.Property("Url").EqualTo(link));
+        }
+
+        [Test, AutoData]
+        public void MappingProfile_TwitchScheduleToEventList_Succeeds(string title, string categoryName, DateTime startTime, DateTime endTime)
+        {
+            // Arrange
+            var twitchScheduleSegment = new TwitchScheduleSegment()
+            {
+                Category = new TwitchGame { Name = categoryName },
+                StartTime = startTime,
+                EndTime = endTime,
+                Title = title
+            };
+
+            // Act
+            var result = _mapper.Map<Event>(twitchScheduleSegment);
+
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Has.Property("Title").EqualTo(title));
+            Assert.That(result, Has.Property("Game").EqualTo(categoryName));
+            Assert.That(result, Has.Property("Start").EqualTo(startTime));
+            Assert.That(result, Has.Property("End").EqualTo(endTime));
         }
     }
 }

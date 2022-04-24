@@ -13,18 +13,18 @@ using Raw.Streaming.Webhook.Services;
 namespace Raw.Streaming.Webhook.Functions
 {
     [ServiceBusAccount("StreamingServiceBus")]
-    public class ScheduleController
+    internal class ScheduleController
     {
-        private readonly IScheduleService _scheduleService;
+        private readonly ITwitchApiService _twitchApiService;
         private readonly IMapper _mapper;
         private readonly ILogger<ScheduleController> _logger;
 
         public ScheduleController(
-            IScheduleService scheduleService,
+            ITwitchApiService twitchApiService,
             IMapper mapper,
             ILogger<ScheduleController> logger)
         {
-            _scheduleService = scheduleService;
+            _twitchApiService = twitchApiService;
             _mapper = mapper;
             _logger = logger;
         }
@@ -52,10 +52,11 @@ namespace Raw.Streaming.Webhook.Functions
             try
             {
                 _logger.LogInformation($"{nameof(NotifyWeeklyScheduleTrigger)} execution started");
-                var from = triggerTime.Date;
-                var to = from.AddDays(7);
-                var streamEvents = await _scheduleService.GetScheduledStreamsAsync(from, to);
-                var events = _mapper.Map<IEnumerable<Event>>(streamEvents);
+                var from = DateTime.SpecifyKind(triggerTime.Date, DateTimeKind.Utc);
+                var to = DateTime.SpecifyKind(from.AddDays(7), DateTimeKind.Utc);
+                var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, from);
+                var filteredSegments = schedule.Segments.Where(seg => seg.StartTime <= to);
+                var events = _mapper.Map<IEnumerable<Event>>(filteredSegments);
                 var queueItem = new DiscordBotQueueItem<Event>(events.ToArray());
                 return new ServiceBusMessage
                 {
@@ -77,10 +78,11 @@ namespace Raw.Streaming.Webhook.Functions
                 var from = triggerTime.Date;
                 var to = from.AddDays(1);
                 _logger.LogInformation($"{nameof(NotifyDailySchedule)} execution started for {from:d}");
-                var scheduledStreams = await _scheduleService.GetScheduledStreamsAsync(from, to);
-                if (scheduledStreams.Count > 0)
+                var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, from);
+                var filteredSegments = schedule.Segments.Where(seg => seg.StartTime <= to);
+                if (filteredSegments.Any())
                 {
-                    var events = _mapper.Map<IEnumerable<Event>>(scheduledStreams);
+                    var events = _mapper.Map<IEnumerable<Event>>(filteredSegments);
                     var queueItem = new DiscordBotQueueItem<Event>(events.ToArray());
                     return new ServiceBusMessage
                     {
