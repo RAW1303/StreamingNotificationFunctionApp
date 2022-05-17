@@ -35,7 +35,7 @@ namespace Raw.Streaming.Webhook.Functions
         public async Task<ServiceBusMessage> NotifyDailyScheduleTrigger(
             [TimerTrigger("%ScheduleDailyTimerTrigger%")] TimerInfo timer)
         {
-            return await NotifyDailySchedule(timer.ScheduleStatus.Next);
+            return await NotifyDailySchedule(DateTime.UtcNow);
         }
 
         [ExcludeFromCodeCoverage]
@@ -44,14 +44,14 @@ namespace Raw.Streaming.Webhook.Functions
         public async Task<ServiceBusMessage> NotifyWeeklyScheduleTrigger(
             [TimerTrigger("%ScheduleWeeklyTimerTrigger%")] TimerInfo timer)
         {
-            return await NotifyWeeklySchedule(timer.ScheduleStatus.Next);
+            return await NotifyWeeklySchedule(DateTime.UtcNow);
         }
 
         public async Task<ServiceBusMessage> NotifyWeeklySchedule(DateTime triggerTime)
         {
             try
             {
-                _logger.LogInformation($"{nameof(NotifyWeeklyScheduleTrigger)} execution started");
+                _logger.LogInformation($"{nameof(NotifyWeeklySchedule)} execution started");
                 var from = DateTime.SpecifyKind(triggerTime.Date, DateTimeKind.Utc);
                 var to = DateTime.SpecifyKind(from.AddDays(7), DateTimeKind.Utc);
                 var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, from);
@@ -66,7 +66,7 @@ namespace Raw.Streaming.Webhook.Functions
             }
             catch (Exception e)
             {
-                _logger.LogError($"{nameof(NotifyWeeklyScheduleTrigger)} execution failed: {e.Message}");
+                _logger.LogError($"{nameof(NotifyWeeklySchedule)} execution failed: {e.Message}");
                 throw;
             }
         }
