@@ -129,5 +129,25 @@ namespace Raw.Streaming.Discord.Functions
                 throw;
             }
         }
+
+        [FunctionName(nameof(ProcessEventMessageQueue))]
+        public async Task ProcessEventMessageQueue([ServiceBusTrigger("EventQueueName%")] DiscordBotQueueItem<Event> myQueueItem)
+        {
+            try
+            {
+                _logger.LogInformation($"{nameof(ProcessEventMessageQueue)} notification started");
+
+                var message = EventToDiscordMessageTranslator.TranslateWeeklySchedule(myQueueItem.Entities);
+
+                await _discordBotMessageService.SendDiscordMessageAsync(AppSettings.DiscordScheduleChannelId, message);
+
+                _logger.LogInformation($"{nameof(ProcessEventMessageQueue)} notification succeeded");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(ProcessEventMessageQueue)} notification failed: {ex.Message}");
+                throw;
+            }
+        }
     }
 }
