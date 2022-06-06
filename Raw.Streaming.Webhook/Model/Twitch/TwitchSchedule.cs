@@ -26,13 +26,13 @@ namespace Raw.Streaming.Webhook.Model.Twitch
         [JsonPropertyName("id")]
         public string Id { get; set; }
         [JsonPropertyName("start_time")]
-        public DateTime StartTime { get; set; }
+        public DateTimeOffset StartTime { get; set; }
         [JsonPropertyName("end_time")]
-        public DateTime? EndTime { get; set; }
+        public DateTimeOffset? EndTime { get; set; }
         [JsonPropertyName("title")]
         public string Title { get; set; }
         [JsonPropertyName("canceled_until")]
-        public DateTime? CancelledUntil { get; set; }
+        public DateTimeOffset? CancelledUntil { get; set; }
         [JsonPropertyName("category")]
         public TwitchGame Category { get; set; }
         [JsonPropertyName("is_recurring")]
@@ -43,8 +43,8 @@ namespace Raw.Streaming.Webhook.Model.Twitch
     internal class TwitchScheduleVacation
     {
         [JsonPropertyName("start_time")]
-        public DateTime StartTime { get; set; }
+        public DateTimeOffset StartTime { get; set; }
         [JsonPropertyName("end_time")]
-        public DateTime EndTime { get; set; }
+        public DateTimeOffset EndTime { get; set; }
     }
 }

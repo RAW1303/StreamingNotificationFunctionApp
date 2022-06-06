@@ -9,8 +9,8 @@ namespace Raw.Streaming.Webhook.Services
     {
         Task<TwitchChannel> GetChannelInfoAsync(string broadcasterId);
         Task<IList<TwitchGame>> GetGamesAsync(params string[] gameIds);
-        Task<IList<TwitchClip>> GetClipsByBroadcasterAsync(string broadcasterId, DateTime? startedAt = null, DateTime? endedAt = null);
+        Task<IList<TwitchClip>> GetClipsByBroadcasterAsync(string broadcasterId, DateTimeOffset? startedAt = null, DateTimeOffset? endedAt = null);
         Task<IList<TwitchVideo>> GetHighlightsByBroadcasterAsync(string broadcasterId);
-        Task<TwitchSchedule> GetScheduleByBroadcasterIdAsync(string broadcasterId, DateTime? startTime = null);
+        Task<TwitchSchedule> GetScheduleByBroadcasterIdAsync(string broadcasterId, DateTimeOffset? startTime = null);
     }
 }

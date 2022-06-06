@@ -1,4 +1,5 @@
 ﻿using Raw.Streaming.Common.Model;
+using Raw.Streaming.Discord.Extensions;
 using Raw.Streaming.Discord.Model.DiscordApi;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace Raw.Streaming.Discord.Translators
                             new EmbedField()
                             {
                                 Name = "Time",
-                                Value = $"{e.Start:t} - {e.End:t} UTC",
+                                Value = $"{e.Start.ToDiscordShortTime()} - {e.End.ToDiscordShortTime()}",
                                 Inline = true
                             },
                         }
@@ -81,7 +82,7 @@ namespace Raw.Streaming.Discord.Translators
 
         private static string GetStreamSummaryString(Event stream)
         {
-            return $"{stream.Title}\n{stream.Game}\n{stream.Start:HH:mm} - {stream.End:HH:mm} UTC";
+            return $"{stream.Title}\n{stream.Game}\n{stream.Start.ToDiscordShortTime()} - {stream.End.ToDiscordShortTime()}";
         }
     }
 }

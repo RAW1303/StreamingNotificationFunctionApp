@@ -17,25 +17,32 @@ namespace Raw.Streaming.Webhook.Functions
     {
         private readonly ITwitchApiService _twitchApiService;
         private readonly IMapper _mapper;
+        private readonly ILogger<TwitchHighlightsController> _logger;
 
         internal TwitchHighlightsController(
             ITwitchApiService twitchApiService,
-            IMapper mapper)
+            IMapper mapper,
+            ILogger<TwitchHighlightsController> logger)
         {
             _twitchApiService = twitchApiService;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [FunctionName("NotifyTwitchHighlights")]
         [return: ServiceBus("%VideoQueueName%")]
-        public async Task<ServiceBusMessage> NotifyTwitchHighlights(
-            [TimerTrigger("%TwitchHighlightsTimerTrigger%")] TimerInfo timer,
-            ILogger logger)
+        public async Task<ServiceBusMessage> NotifyTwitchHighlightsTrigger(
+            [TimerTrigger("%TwitchHighlightsTimerTrigger%")] TimerInfo timer)
         {
+                return await NotifyTwitchHighlights(timer.ScheduleStatus.Last, timer.ScheduleStatus.Next);
+        }
+
+        public async Task<ServiceBusMessage> NotifyTwitchHighlights(DateTimeOffset last, DateTimeOffset next)
+        { 
             try
             {
-                logger.LogInformation("NotifyTwitchHighlights execution started");
-                var startedAt = DateTime.SpecifyKind(new DateTime(Math.Max(timer.ScheduleStatus.Last.Ticks, timer.ScheduleStatus.Next.AddHours(-25).Ticks)), DateTimeKind.Utc);
+                _logger.LogInformation("NotifyTwitchHighlights execution started");
+                var startedAt = last > next.AddHours(-25) ? last : next.AddHours(-25);
                 var highlights = await GetHighlightsAsync(AppSettings.TwitchBroadcasterId, startedAt);
                 var videos = _mapper.Map<IEnumerable<Video>>(highlights);
                 var queueItem = new DiscordBotQueueItem<Video>(videos.ToArray());
@@ -47,12 +54,12 @@ namespace Raw.Streaming.Webhook.Functions
             }
             catch (Exception e)
             {
-                logger.LogError($"NotifyTwitchHighlights execution failed: {e.Message}");
+                _logger.LogError($"NotifyTwitchHighlights execution failed: {e.Message}");
                 throw;
             }
         }
 
-        private async Task<IEnumerable<TwitchVideo>> GetHighlightsAsync(string broadcasterId, DateTime startedAt)
+        private async Task<IEnumerable<TwitchVideo>> GetHighlightsAsync(string broadcasterId, DateTimeOffset startedAt)
         {
             var videos = await _twitchApiService.GetHighlightsByBroadcasterAsync(broadcasterId);
             return videos.Where(video => video.PublishedAt >= startedAt && video.Viewable == "public").OrderBy(video => video.PublishedAt);

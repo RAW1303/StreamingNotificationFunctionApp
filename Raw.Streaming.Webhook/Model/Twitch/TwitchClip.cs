@@ -14,7 +14,7 @@ namespace Raw.Streaming.Webhook.Model.Twitch
         [JsonPropertyName("broadcaster_name")]
         public string BroadcasterName { get; set; }
         [JsonPropertyName("created_at")]
-        public DateTime CreatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
         [JsonPropertyName("creator_id")]
         public string CreatorId { get; set; }
         [JsonPropertyName("creator_name")]

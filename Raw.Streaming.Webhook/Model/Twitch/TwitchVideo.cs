@@ -11,7 +11,7 @@ namespace Raw.Streaming.Webhook.Model.Twitch
         public string Id { get; set; }
 
         [JsonPropertyName("created_at")]
-        public DateTime CreatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
 
         [JsonPropertyName("description")]
         public string Description { get; set; }
@@ -23,7 +23,7 @@ namespace Raw.Streaming.Webhook.Model.Twitch
         public string Language { get; set; }
 
         [JsonPropertyName("published_at")]
-        public DateTime PublishedAt { get; set; }
+        public DateTimeOffset PublishedAt { get; set; }
 
         [JsonPropertyName("thumbnail_url")]
         public string ThumbnailUrl { get; set; }

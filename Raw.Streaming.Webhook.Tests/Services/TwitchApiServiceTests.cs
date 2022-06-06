@@ -125,8 +125,8 @@ namespace Raw.Streaming.Webhook.Tests.Services
         {
             // Arrange
             var channelId = "TestId";
-            var startTimeString = "2022-04-23T23:11:45";
-            var startTime = DateTime.SpecifyKind(DateTime.Parse(startTimeString), DateTimeKind.Utc);
+            var startTimeString = "2022-04-23T23:11:45Z";
+            var startTime = DateTimeOffset.Parse(startTimeString);
             var content = new TwitchApiResponse<IList<TwitchClip>> { Data = clips };
             SetupMockHttpMessageHandler(HttpStatusCode.OK, content);
 
@@ -153,10 +153,10 @@ namespace Raw.Streaming.Webhook.Tests.Services
         {
             // Arrange
             var channelId = "TestId";
-            var startTimeString = "2022-04-23T23:11:45";
-            var startTime = DateTime.SpecifyKind(DateTime.Parse(startTimeString), DateTimeKind.Utc);
-            var endTimeString = "2022-04-24T02:16:45";
-            var endTime = DateTime.SpecifyKind(DateTime.Parse(endTimeString), DateTimeKind.Utc);
+            var startTimeString = "2022-04-23T23:11:45Z";
+            var startTime = DateTimeOffset.Parse(startTimeString);
+            var endTimeString = "2022-04-24T02:16:45Z";
+            var endTime = DateTimeOffset.Parse(endTimeString);
             var content = new TwitchApiResponse<IList<TwitchClip>> { Data = clips };
             SetupMockHttpMessageHandler(HttpStatusCode.OK, content);
 
@@ -233,8 +233,8 @@ namespace Raw.Streaming.Webhook.Tests.Services
         {
             // Arrange
             var channelId = "TestId";
-            var startTimeString = "2022-04-23T23:11:45";
-            var startTime = DateTime.SpecifyKind(DateTime.Parse(startTimeString), DateTimeKind.Utc);
+            var startTimeString = "2022-04-23T23:11:45Z";
+            var startTime = DateTimeOffset.Parse(startTimeString);
             var content = new TwitchApiResponse<TwitchSchedule> { Data = schedule };
             SetupMockHttpMessageHandler(HttpStatusCode.OK, content);
 

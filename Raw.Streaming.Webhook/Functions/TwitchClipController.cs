@@ -38,12 +38,12 @@ namespace Raw.Streaming.Webhook.Functions
             return await NotifyTwitchClips(timer.ScheduleStatus.Last, timer.ScheduleStatus.Next);
         }
 
-        public async Task<ServiceBusMessage> NotifyTwitchClips(DateTime last, DateTime next)
+        public async Task<ServiceBusMessage> NotifyTwitchClips(DateTimeOffset last, DateTimeOffset next)
         {
             try
             {
                 _logger.LogInformation("NotifyTwitchClips execution started");
-                var startedAt = DateTime.SpecifyKind(new DateTime(Math.Max(last.Ticks, next.AddMinutes(-10).Ticks)), DateTimeKind.Utc);
+                var startedAt = last > next.AddMinutes(-10) ? last : next.AddMinutes(-10);
                 var clips = await GetClipsAsync(AppSettings.TwitchBroadcasterId, startedAt, next);
                 var queueItem = new DiscordBotQueueItem<Clip>(clips.ToArray());
                 return new ServiceBusMessage
@@ -59,7 +59,7 @@ namespace Raw.Streaming.Webhook.Functions
             }
         }
 
-        private async Task<IEnumerable<Clip>> GetClipsAsync(string broadcasterId, DateTime startedAt, DateTime endedAt)
+        private async Task<IEnumerable<Clip>> GetClipsAsync(string broadcasterId, DateTimeOffset startedAt, DateTimeOffset endedAt)
         {
             var clips = await _twitchApiService.GetClipsByBroadcasterAsync(broadcasterId, startedAt, endedAt);
             var gameIds = clips.Select(x => x.GameId).Distinct();

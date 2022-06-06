@@ -63,7 +63,7 @@ namespace Raw.Streaming.Webhook.Functions
         public async Task<ServiceBusMessage> StreamChangeWebhook(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = WebhookEndpoint)] HttpRequest req)
         {
-            var from = DateTime.Now;
+            var from = DateTimeOffset.Now;
             var goLive = await HandleRequestAsync(req);
             var message = new DiscordBotQueueItem<GoLive>(goLive);
             return new ServiceBusMessage
