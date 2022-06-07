@@ -1,9 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Raw.Streaming.Webhook.Tests.Functions
+﻿namespace Raw.Streaming.Webhook.Tests.Functions
 {
     [TestFixture]
     internal class TwitchClipControllerTests

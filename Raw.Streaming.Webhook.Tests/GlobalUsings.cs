@@ -10,4 +10,6 @@ global using Raw.Streaming.Webhook.Functions;
 global using Raw.Streaming.Webhook.Model;
 global using Raw.Streaming.Webhook.Model.Twitch;
 global using Raw.Streaming.Webhook.Model.Youtube;
+global using System;
+global using System.Collections.Generic;
 global using System.Threading.Tasks;

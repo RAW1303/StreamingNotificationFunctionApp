@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Raw.Streaming.Webhook.Tests
+﻿namespace Raw.Streaming.Webhook.Tests
 {
     [TestFixture]
     public class MappingProfileTests
