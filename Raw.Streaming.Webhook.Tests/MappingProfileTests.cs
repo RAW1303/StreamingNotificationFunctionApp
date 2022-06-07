@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Raw.Streaming.Webhook.Tests
+﻿namespace Raw.Streaming.Webhook.Tests
 {
     [TestFixture]
     public class MappingProfileTests
@@ -46,7 +44,7 @@ namespace Raw.Streaming.Webhook.Tests
         }
 
         [Test, AutoData]
-        public void MappingProfile_TwitchScheduleToEventList_Succeeds(string title, string categoryName, DateTime startTime, DateTime endTime)
+        public void MappingProfile_TwitchScheduleToEventList_Succeeds(string title, string categoryName, DateTimeOffset startTime, DateTimeOffset endTime)
         {
             // Arrange
             var twitchScheduleSegment = new TwitchScheduleSegment()

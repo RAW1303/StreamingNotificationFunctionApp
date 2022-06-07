@@ -36,7 +36,7 @@ namespace Raw.Streaming.Webhook.Model.Twitch
         public int ViewerCount { get; set; }
 
         [JsonPropertyName("started_at")]
-        public DateTime StartedAt { get; set; }
+        public DateTimeOffset StartedAt { get; set; }
 
         [JsonPropertyName("language")]
         public string Language { get; set; }

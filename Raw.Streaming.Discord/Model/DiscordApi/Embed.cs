@@ -20,7 +20,7 @@ namespace Raw.Streaming.Discord.Model.DiscordApi
         public string Url { get; set; }
 
         [JsonPropertyName("timestamp")]
-        public DateTime? Timestamp { get; set; }
+        public DateTimeOffset? Timestamp { get; set; }
 
         [JsonPropertyName("color")]
         public int Color { get; set; }
