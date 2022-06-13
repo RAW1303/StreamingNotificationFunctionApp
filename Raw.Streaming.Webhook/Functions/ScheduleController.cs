@@ -8,6 +8,7 @@ using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Raw.Streaming.Common.Model;
+using Raw.Streaming.Webhook.Model.Twitch;
 using Raw.Streaming.Webhook.Services;
 
 namespace Raw.Streaming.Webhook.Functions
@@ -55,7 +56,7 @@ namespace Raw.Streaming.Webhook.Functions
                 var from = triggerTime;
                 var to = from.AddDays(7);
                 var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, from);
-                var filteredSegments = schedule.Segments.Where(seg => seg.StartTime <= to);
+                var filteredSegments = FilterScheduleSegments(schedule, to);
                 var events = _mapper.Map<IEnumerable<Event>>(filteredSegments);
                 var queueItem = new DiscordBotQueueItem<Event>(events.ToArray());
                 return new ServiceBusMessage
@@ -79,7 +80,7 @@ namespace Raw.Streaming.Webhook.Functions
                 var to = from.AddDays(1);
                 _logger.LogInformation($"{nameof(NotifyDailySchedule)} execution started for {from:d}");
                 var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, from);
-                var filteredSegments = schedule.Segments.Where(seg => seg.StartTime <= to);
+                var filteredSegments = FilterScheduleSegments(schedule, to);
                 if (filteredSegments.Any())
                 {
                     var events = _mapper.Map<IEnumerable<Event>>(filteredSegments);
@@ -99,6 +100,11 @@ namespace Raw.Streaming.Webhook.Functions
                 throw;
             }
 
+        }
+
+        private IEnumerable<TwitchScheduleSegment> FilterScheduleSegments(TwitchSchedule schedule, DateTimeOffset toDateTime)
+        {
+            return schedule.Segments.Where(seg => seg.StartTime <= toDateTime && (seg.EndTime < schedule.Vacation.StartTime || seg.StartTime > schedule.Vacation.EndTime));
         }
     }
 }
