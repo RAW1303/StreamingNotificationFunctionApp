@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace Raw.Streaming.Webhook.Model.Twitch
@@ -18,6 +19,17 @@ namespace Raw.Streaming.Webhook.Model.Twitch
         public TwitchScheduleVacation Vacation { get; set; }
         [JsonPropertyName("segments")]
         public IList<TwitchScheduleSegment> Segments { get; set; } = new List<TwitchScheduleSegment>();
+
+        public IEnumerable<TwitchScheduleSegment> SegmentsExcludingVaction
+        { 
+            get
+            {
+                if(Vacation?.StartTime == null)
+                    return Segments;
+
+                return Segments.Where(x => x.EndTime < Vacation.StartTime || x.StartTime > Vacation.EndTime);
+            }
+        }
     }
 
     [ExcludeFromCodeCoverage]
