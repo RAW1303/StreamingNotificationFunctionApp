@@ -19,8 +19,6 @@ stages:
   displayName: Build
   jobs:
   - template: templates/jobs/build.yml
-    parameters: 
-      vmImageName: $(vmImageName)
       
 - stage: PreProd
   displayName: PreProd
@@ -32,7 +30,6 @@ stages:
   jobs:
   - template: templates/jobs/deploy.yml
     parameters: 
-      vmImageName: $(vmImageName)
       environment: $(environmemt)
       azureSubscription: $(azureSubscription)
       resourceGroupName: $(resourceGroupName)
@@ -47,7 +44,6 @@ stages:
   jobs:
   - template: templates/jobs/deploy.yml
     parameters: 
-      vmImageName: $(vmImageName)
       environment: $(environmemt)
       azureSubscription: $(azureSubscription)
       resourceGroupName: $(resourceGroupName)
