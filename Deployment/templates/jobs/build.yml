@@ -7,7 +7,7 @@ jobs:
 - job: Build
   displayName: Build
   pool:
-    vmImage: $(vmImageName)
+    vmImage: ${{ parameters.vmImageName }}
 
   steps:
   - task: DotNetCoreCLI@2

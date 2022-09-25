@@ -18,9 +18,9 @@ parameters:
 jobs:
 - deployment: Deploy
   displayName: Deploy
-  environment: $(environment)
+  environment: ${{ parameters.environment }}
   pool:
-    vmImage: $(vmImageName)
+    vmImage: ${{ parameters.vmImageName }}
 
   strategy:
     runOnce:
@@ -29,17 +29,17 @@ jobs:
         - task: AzureFunctionApp@1
           displayName: 'Deploy Discord Bot'
           inputs:
-            azureSubscription: '$(azureSubscription)'
+            azureSubscription: ${{ parameters.azureSubscription }}
             appType: functionApp
-            appName: '$(resourceGroupName)$(discordBotFunctionAppSuffix)'
+            appName: '${{ parameters.resourceGroupName }}${{ parameters.discordBotFunctionAppSuffix }}'
             package: '$(Pipeline.Workspace)/drop/Raw.Streaming.Discord.zip'
-            resourceGroupName: $(resourceGroupName)
+            resourceGroupName: ${{ parameters.resourceGroupName }}
 
         - task: AzureFunctionApp@1
           displayName: 'Deploy Orchestrator'
           inputs:
-            azureSubscription: '$(azureSubscription)'
+            azureSubscription: ${{ parameters.azureSubscription }}
             appType: functionApp
-            appName: '$(resourceGroupName)$(orchestrationAppSuffix)'
-            package: '$(Pipeline.Workspace)/drop/Raw.Streaming.Webhook.zip'
-            resourceGroupName: $(resourceGroupName)
+            appName: '${{ parameters.resourceGroupName }}${{ parameters.orchestrationAppSuffix }}'
+            package: '$(Pipeline.Workspace)/drop/Raw.Streaming.Discord.zip'
+            resourceGroupName: ${{ parameters.resourceGroupName }}
