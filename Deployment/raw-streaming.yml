@@ -30,7 +30,7 @@ stages:
   jobs:
   - template: templates/jobs/deploy.yml
     parameters: 
-      environment: $(environmemt)
+      environment: $(environment)
       azureSubscription: $(azureSubscription)
       resourceGroupName: $(resourceGroupName)
 
@@ -44,6 +44,6 @@ stages:
   jobs:
   - template: templates/jobs/deploy.yml
     parameters: 
-      environment: $(environmemt)
+      environment: $(environment)
       azureSubscription: $(azureSubscription)
       resourceGroupName: $(resourceGroupName)
