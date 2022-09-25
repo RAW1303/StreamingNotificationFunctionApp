@@ -51,6 +51,7 @@ jobs:
         - task: AzureResourceManagerTemplateDeployment@3
           displayName: Deploy Infrastructure
           inputs:
+            azureResourceManagerConnection: ${{ parameters.azureServiceConnection }}
             azureSubscription: ${{ parameters.azureSubscription }}
             deploymentScope: 'Resource Group'
             action: 'Create Or Update Resource Group'
