@@ -1,4 +1,6 @@
 variables:
+  vmImageName: 'windows-2022'
+  azureSubscription: '0e43496e-dd9f-4359-8a9d-227bc76d5e01'
   location: 'UK South'
   discordApiUrl: 'https://discord.com/api'
   discordNotificationGroupIds: '@here'
