@@ -1,3 +1,2 @@
 variables:
-  environment: Production
   resourceGroupName: RawStreaming
