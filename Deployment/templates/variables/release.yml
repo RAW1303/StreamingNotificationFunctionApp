@@ -11,6 +11,7 @@ variables:
   twitchApiClipEndpoint: 'clips'
   twitchApiGameEndpoint: 'games'
   twitchApiScheduleEndpoint: 'schedule'
+  twitchApiUrl: 'https://api.twitch.tv/helix'
   twitchApiVideoEndpoint: 'videos'
   twitchBroadcasterId: '47011840'
   twitchClientId: 'wgcj4g7fngz9xt1jert4ck4led5c58'
