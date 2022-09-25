@@ -64,10 +64,10 @@ jobs:
               -storageAccountName '${{ parameters.resourceGroupName }}${{ parameters.storageAccountSuffix }}'
               -serviceBusName '${{ parameters.resourceGroupName }}${{ parameters.serviceBusSuffix }}'
               -applicationInsightsName '${{ parameters.resourceGroupName }}${{ parameters.applicationInsightsSuffix }}'
-              -discordBotSettings ${{ parameters.discordBotSettings }}
-              -orchestratorSettings ${{ parameters.orchestratorSettings }}
-              -discordBotSecrets ${{ parameters.discordBotSecrets }}
-              -orchestratorSecrets ${{ parameters.orchestratorSecrets }}
+              -discordBotSettings ${{ convertToJson(parameters.discordBotSettings) }}
+              -orchestratorSettings ${{ convertToJson(parameters.orchestratorSettings) }}
+              -discordBotSecrets ${{ convertToJson(parameters.discordBotSecrets) }}
+              -orchestratorSecrets ${{ convertToJson(parameters.orchestratorSecrets) }}
 
         - task: AzureFunctionApp@1
           displayName: 'Deploy Discord Bot'
