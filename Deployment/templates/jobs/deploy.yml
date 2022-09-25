@@ -32,7 +32,7 @@ jobs:
             azureSubscription: '$(azureSubscription)'
             appType: functionApp
             appName: '$(resourceGroupName)$(discordBotFunctionAppSuffix)'
-            package: '$(Pipeline.Workspace)/drop/'Raw.Streaming.Discord'.zip'
+            package: '$(Pipeline.Workspace)/drop/Raw.Streaming.Discord.zip'
             resourceGroupName: $(resourceGroupName)
 
         - task: AzureFunctionApp@1
@@ -41,5 +41,5 @@ jobs:
             azureSubscription: '$(azureSubscription)'
             appType: functionApp
             appName: '$(resourceGroupName)$(orchestrationAppSuffix)'
-            package: '$(Pipeline.Workspace)/drop/'Raw.Streaming.Webhook'.zip'
+            package: '$(Pipeline.Workspace)/drop/Raw.Streaming.Webhook.zip'
             resourceGroupName: $(resourceGroupName)
