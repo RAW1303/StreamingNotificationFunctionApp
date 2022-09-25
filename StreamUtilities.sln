@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raw.Streaming.Discord", "Ra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raw.Streaming.Common", "Raw.Streaming.Common\Raw.Streaming.Common.csproj", "{47AE1E55-8B61-46BF-8A06-6C661A0D08C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raw.Streaming.Discord.Tests", "Raw.Streaming.Discord.Tests\Raw.Streaming.Discord.Tests.csproj", "{39FF72E1-4809-43E0-98C0-50CA409DA26C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raw.Streaming.Discord.Tests", "Raw.Streaming.Discord.Tests\Raw.Streaming.Discord.Tests.csproj", "{39FF72E1-4809-43E0-98C0-50CA409DA26C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

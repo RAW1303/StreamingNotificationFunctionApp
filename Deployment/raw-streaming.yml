@@ -12,112 +12,42 @@ pr:
     
 variables:
   vmImageName: 'windows-2022'
-  workingDirectory: '$(System.DefaultWorkingDirectory)'
-  discordBotProjectName: 'Raw.Streaming.Discord'
-  webhookProjectName: 'Raw.Streaming.Webhook'
   azureSubscription: '0e43496e-dd9f-4359-8a9d-227bc76d5e01'
-  resourceGroupName: 'StreamingAutomation'
-  discordBotFunctionAppName: 'rawstreamingdiscordbot'
-  webhookFunctionAppName: 'RawStreamingOrchestration'
-  stagingSlotName: 'staging'
   
 stages:
 - stage: Build
   displayName: Build
-
   jobs:
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: $(vmImageName)
-
-    steps:
-    - task: DotNetCoreCLI@2
-      displayName: Run unit tests
-      inputs:
-        command: test
-        projects: '**/*Tests/*.csproj'
-        arguments: '--configuration $(buildConfiguration)'
-
-    - task: DotNetCoreCLI@2
-      displayName: Publish
-      inputs:
-        command: 'publish'
-        publishWebProjects: false
-        projects: '**/*.csproj'
-        arguments: '-o $(Build.ArtifactStagingDirectory)'
-        zipAfterPublish: true
-        modifyOutputPath: true
-
-    - publish: $(Build.ArtifactStagingDirectory)
-      artifact: drop
+  - template: templates/jobs/build.yml
+    paramters: 
+      vmImageName: $(vmImageName)
       
-- stage: Staging
-  displayName: Staging
+- stage: PreProd
+  displayName: PreProd
   dependsOn: Build
   condition: succeeded()
-
+  variables: 
+  - template: templates/variables/preprod.yml
+  - group: PreProd
   jobs:
-  - deployment: Deploy
-    displayName: Deploy
-    environment: 'Staging'
-    pool:
-      vmImage: $(vmImageName)
-
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: AzureFunctionApp@1
-            displayName: 'Deploy Discord Bot'
-            inputs:
-              azureSubscription: '$(azureSubscription)'
-              appType: functionApp
-              appName: $(discordBotFunctionAppName)
-              package: '$(Pipeline.Workspace)/drop/$(discordBotProjectName).zip'
-              deployToSlotOrASE: true
-              resourceGroupName: $(resourceGroupName)
-              slotName: $(stagingSlotName)
-
-          - task: AzureFunctionApp@1
-            displayName: 'Deploy Webhook'
-            inputs:
-              azureSubscription: '$(azureSubscription)'
-              appType: functionApp
-              appName: $(webhookFunctionAppName)
-              package: '$(Pipeline.Workspace)/drop/$(webhookProjectName).zip'
-              deployToSlotOrASE: true
-              resourceGroupName: $(resourceGroupName)
-              slotName: $(stagingSlotName)
+  - template: templates/jobs/deploy.yml
+    paramters: 
+      vmImageName: $(vmImageName)
+      environment: $(environmemt)
+      azureSubscription: $(azureSubscription)
+      resourceGroupName: $(resourceGroupName)
 
 - stage: Production
   displayName: Production
   dependsOn: Staging
   condition:  and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-
+  variables: 
+  - template: templates/variables/production.yml
+  - group: Production
   jobs:
-  - deployment: Swap
-    displayName: Swap Slots
-    environment: 'Production'
-    pool:
-      vmImage: $(vmImageName)
-
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: AzureAppServiceManage@0
-            displayName: 'Swap Discord Bot Staging with Production'
-            inputs:
-              azureSubscription: '$(azureSubscription)'
-              webAppName: $(discordBotFunctionAppName)
-              resourceGroupName: $(resourceGroupName)
-              sourceSlot: $(stagingSlotName)
-              
-          - task: AzureAppServiceManage@0
-            displayName: 'Swap Webhook App Staging with Production'
-            inputs:
-              azureSubscription: '$(azureSubscription)'
-              webAppName: $(webhookFunctionAppName)
-              resourceGroupName: $(resourceGroupName)
-              sourceSlot: $(stagingSlotName)
+  - template: templates/jobs/deploy.yml
+    paramters: 
+      vmImageName: $(vmImageName)
+      environment: $(environmemt)
+      azureSubscription: $(azureSubscription)
+      resourceGroupName: $(resourceGroupName)

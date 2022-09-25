@@ -1,0 +1,47 @@
+parameters:
+- name: vmImageName
+  type: string
+  default: 'windows-2022'
+- name: environment
+  type: string
+- name: azureSubscription
+  type: string
+- name: resourceGroupName
+  type: string
+
+
+variables:
+  discordBotFunctionAppSuffix: 'DiscordBot'
+  orchestrationAppSuffix: 'Orchestration'
+  discordBotProjectName: 'Raw.Streaming.Discord'
+  webhookProjectName: 'Raw.Streaming.Webhook'
+
+
+jobs:
+- deployment: Deploy
+  displayName: Deploy
+  environment: $(environment)
+  pool:
+    vmImage: $(vmImageName)
+
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - task: AzureFunctionApp@1
+          displayName: 'Deploy Discord Bot'
+          inputs:
+            azureSubscription: '$(azureSubscription)'
+            appType: functionApp
+            appName: '$(resourceGroupName)$(discordBotFunctionAppSuffix)'
+            package: '$(Pipeline.Workspace)/drop/$(discordBotProjectName).zip'
+            resourceGroupName: $(resourceGroupName)
+
+        - task: AzureFunctionApp@1
+          displayName: 'Deploy Orchestrator'
+          inputs:
+            azureSubscription: '$(azureSubscription)'
+            appType: functionApp
+            appName: '$(resourceGroupName)$(orchestrationAppSuffix)'
+            package: '$(Pipeline.Workspace)/drop/$(webhookProjectName).zip'
+            resourceGroupName: $(resourceGroupName)
