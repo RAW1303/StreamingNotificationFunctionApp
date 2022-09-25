@@ -1,6 +1,8 @@
 parameters:
 - name: environment
   type: string
+- name: azureServiceConnection
+  type: string
 - name: azureSubscription
   type: string
 - name: resourceGroupName
