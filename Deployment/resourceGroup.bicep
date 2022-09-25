@@ -131,7 +131,7 @@ resource keyVaultSecrets 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = [for s
 }]
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' = {
-  name: storageAccountName
+  name: toLower(storageAccountName)
   location: location
   kind: 'StorageV2'
   sku: {

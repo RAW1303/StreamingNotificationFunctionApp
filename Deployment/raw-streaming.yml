@@ -11,8 +11,7 @@ pr:
     - main
     
 variables:
-  vmImageName: 'windows-2022'
-  azureSubscription: '0e43496e-dd9f-4359-8a9d-227bc76d5e01'
+- template: templates/variables/release.yml
   
 stages:
 - stage: Build
@@ -33,6 +32,36 @@ stages:
       environment: PreProd
       azureSubscription: $(azureSubscription)
       resourceGroupName: $(resourceGroupName)
+      location: $(location)
+      discordBotSettings:
+        DiscordApiUrl: $(discordApiUrl)
+        DiscordNotificationGroupIds: $(discordNotificationGroupIds)
+        DiscordScheduleChannelId: $(discordScheduleChannelId)
+        DiscordStreamGoLiveChannelId: $(discordStreamGoLiveChannelId)
+        DiscordVideoChannelId: $(discordVideoChannelId)
+      orchestratorSettings:
+        ScheduleDailyTimerTrigger: $(scheduleDailyTimerTrigger)
+        ScheduleWeeklyTimerTrigger: $(scheduleWeeklyTimerTrigger)
+        TwitchApiChannelEndpoint: $(twitchApiChannelEndpoint)
+        TwitchApiClipEndpoint: $(twitchApiClipEndpoint)
+        TwitchApiGameEndpoint: $(twitchApiGameEndpoint)
+        TwitchApiScheduleEndpoint: $(twitchApiScheduleEndpoint)
+        TwitchApiUrl: $(twitchApiUrl)
+        TwitchApiVideoEndpoint: $(twitchApiVideoEndpoint)
+        TwitchBroadcasterId: $(twitchBroadcasterId)
+        TwitchClientId: $(twitchClientId)
+        TwitchClipsTimerTrigger: $(twitchClipsTimerTrigger)
+        TwitchHighlightsTimerTrigger: $(twitchHighlightsTimerTrigger)
+        TwitchStreamChangeTopic: $(twitchStreamChangeTopic)
+        TwitchSubscriptionUrl: $(twitchSubscriptionUrl)
+        TwitchTokenUrl: $(twitchTokenUrl)
+        YoutubeChannelId: $(youtubeChannelId)
+        YoutubeSubscriptionUrl: $(youtubeSubscriptionUrl)
+        YoutubeVideoTopic: $(youtubeVideoTopic)
+      discordBotSecrets:
+        DiscordBotToken: $(DiscordBotToken)
+      orchestratorSecrets:
+        TwitchClientSecret: $(TwitchApiClientSecret)
 
 - stage: Production
   displayName: Production

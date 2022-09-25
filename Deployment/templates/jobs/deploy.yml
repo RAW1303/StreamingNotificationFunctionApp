@@ -5,9 +5,31 @@ parameters:
   type: string
 - name: resourceGroupName
   type: string
+- name: location
+  type: string
+- name: discordBotSettings
+  type: object
+- name: orchestratorSettings
+  type: object
+- name: discordBotSecrets
+  type: object
+- name: orchestratorSecrets
+  type: object
 - name: vmImageName
   type: string
   default: 'windows-2022'
+- name: keyVaultSuffix
+  type: string
+  default: 'KV'
+- name: storageAccountSuffix
+  type: string
+  default: 'SA'
+- name: serviceBusSuffix
+  type: string
+  default: 'SB'
+- name: applicationInsightsSuffix
+  type: string
+  default: 'AI'
 - name: discordBotFunctionAppSuffix
   type: string
   default: 'DiscordBotFA'
@@ -26,6 +48,27 @@ jobs:
     runOnce:
       deploy:
         steps:
+        - task: AzureResourceManagerTemplateDeployment@3
+          displayName: Deploy Infrastructure
+          inputs:
+            azureSubscription: ${{ parameters.azureSubscription }}
+            deploymentScope: 'Resource Group'
+            action: 'Create Or Update Resource Group'
+            resourceGroupName: '$(resourceGroupName)'
+            location: ${{ parameters.location }}
+            templateLocation: 'Linked artifact'
+            csmFile: 'resourceGroup.bicep'
+            deploymentMode: 'Incremental'
+            overrideParameters: | 
+              -keyVaultName '${{ parameters.resourceGroupName }}${{ parameters.keyVaultSuffix }}'
+              -storageAccountName '${{ parameters.resourceGroupName }}${{ parameters.storageAccountSuffix }}'
+              -serviceBusName '${{ parameters.resourceGroupName }}${{ parameters.serviceBusSuffix }}'
+              -applicationInsightsName '${{ parameters.resourceGroupName }}${{ parameters.applicationInsightsSuffix }}'
+              -discordBotSettings ${{ parameters.discordBotSettings }}
+              -orchestratorSettings ${{ parameters.orchestratorSettings }}
+              -discordBotSecrets ${{ parameters.discordBotSecrets }}
+              -orchestratorSecrets ${{ parameters.orchestratorSecrets }}
+
         - task: AzureFunctionApp@1
           displayName: 'Deploy Discord Bot'
           inputs:
