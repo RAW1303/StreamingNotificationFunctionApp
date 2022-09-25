@@ -60,7 +60,7 @@ jobs:
             resourceGroupName: ${{ parameters.resourceGroupName }}
             location: ${{ parameters.location }}
             templateLocation: 'Linked artifact'
-            csmFile: '.\Deployment\resourceGroup.bicep'
+            csmFile: '$(Build.SourcesDirectory)\Deployment\resources\resourceGroup.bicep'
             deploymentMode: 'Incremental'
             overrideParameters: | 
               -keyVaultName '${{ parameters.resourceGroupName }}${{ parameters.keyVaultSuffix }}'

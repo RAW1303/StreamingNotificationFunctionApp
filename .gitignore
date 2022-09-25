@@ -263,4 +263,4 @@ __pycache__/
 *.pyc
 /Raw.Streaming.Webhook/Properties
 StrykerOutput
-Deployment/resourceGroup.parameters.json
+Deployment/resources/resourceGroup.parameters.json
