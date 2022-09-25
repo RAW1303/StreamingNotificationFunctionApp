@@ -76,3 +76,33 @@ stages:
       environment: Production
       azureSubscription: $(azureSubscription)
       resourceGroupName: $(resourceGroupName)
+      location: $(location)
+      discordBotSettings:
+        DiscordApiUrl: $(discordApiUrl)
+        DiscordNotificationGroupIds: $(discordNotificationGroupIds)
+        DiscordScheduleChannelId: $(discordScheduleChannelId)
+        DiscordStreamGoLiveChannelId: $(discordStreamGoLiveChannelId)
+        DiscordVideoChannelId: $(discordVideoChannelId)
+      orchestratorSettings:
+        ScheduleDailyTimerTrigger: $(scheduleDailyTimerTrigger)
+        ScheduleWeeklyTimerTrigger: $(scheduleWeeklyTimerTrigger)
+        TwitchApiChannelEndpoint: $(twitchApiChannelEndpoint)
+        TwitchApiClipEndpoint: $(twitchApiClipEndpoint)
+        TwitchApiGameEndpoint: $(twitchApiGameEndpoint)
+        TwitchApiScheduleEndpoint: $(twitchApiScheduleEndpoint)
+        TwitchApiUrl: $(twitchApiUrl)
+        TwitchApiVideoEndpoint: $(twitchApiVideoEndpoint)
+        TwitchBroadcasterId: $(twitchBroadcasterId)
+        TwitchClientId: $(twitchClientId)
+        TwitchClipsTimerTrigger: $(twitchClipsTimerTrigger)
+        TwitchHighlightsTimerTrigger: $(twitchHighlightsTimerTrigger)
+        TwitchStreamChangeTopic: $(twitchStreamChangeTopic)
+        TwitchSubscriptionUrl: $(twitchSubscriptionUrl)
+        TwitchTokenUrl: $(twitchTokenUrl)
+        YoutubeChannelId: $(youtubeChannelId)
+        YoutubeSubscriptionUrl: $(youtubeSubscriptionUrl)
+        YoutubeVideoTopic: $(youtubeVideoTopic)
+      discordBotSecrets:
+        DiscordBotToken: $(DiscordBotToken)
+      orchestratorSecrets:
+        TwitchClientSecret: $(TwitchApiClientSecret)
