@@ -54,7 +54,7 @@ jobs:
             azureSubscription: ${{ parameters.azureSubscription }}
             deploymentScope: 'Resource Group'
             action: 'Create Or Update Resource Group'
-            resourceGroupName: '$(resourceGroupName)'
+            resourceGroupName: ${{ parameters.resourceGroupName }}
             location: ${{ parameters.location }}
             templateLocation: 'Linked artifact'
             csmFile: 'resourceGroup.bicep'
