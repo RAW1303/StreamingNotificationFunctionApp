@@ -10,10 +10,10 @@ parameters:
   default: 'windows-2022'
 - name: discordBotFunctionAppSuffix
   type: string
-  default: 'DiscordBot'
+  default: 'DiscordBotFA'
 - name: orchestrationAppSuffix
   type: string
-  default: 'Orchestration'
+  default: 'OrchestrationFA'
 
 jobs:
 - deployment: Deploy
