@@ -63,12 +63,12 @@ jobs:
             csmFile: '$(Pipeline.Workspace)/infrastructure/resourceGroup.bicep'
             deploymentMode: 'Incremental'
             overrideParameters:
-              -keyVaultName '${{ parameters.resourceGroupName }}${{ parameters.keyVaultSuffix }}'
-              -storageAccountName '${{ parameters.resourceGroupName }}${{ parameters.storageAccountSuffix }}'
-              -serviceBusName '${{ parameters.resourceGroupName }}${{ parameters.serviceBusSuffix }}'
-              -applicationInsightsName '${{ parameters.resourceGroupName }}${{ parameters.applicationInsightsSuffix }}'
-              -discordBotFunctionAppName '${{ parameters.resourceGroupName }}${{ parameters.discordBotFunctionAppSuffix }}'
-              -orchestratorFunctionAppName '${{ parameters.resourceGroupName }}${{ parameters.orchestrationAppSuffix }}'
+              -keyVaultName "${{ parameters.resourceGroupName }}${{ parameters.keyVaultSuffix }}"
+              -storageAccountName "${{ parameters.resourceGroupName }}${{ parameters.storageAccountSuffix }}"
+              -serviceBusName "${{ parameters.resourceGroupName }}${{ parameters.serviceBusSuffix }}"
+              -applicationInsightsName "${{ parameters.resourceGroupName }}${{ parameters.applicationInsightsSuffix }}"
+              -discordBotFunctionAppName "${{ parameters.resourceGroupName }}${{ parameters.discordBotFunctionAppSuffix }}"
+              -orchestratorFunctionAppName "${{ parameters.resourceGroupName }}${{ parameters.orchestrationAppSuffix }}"
               -discordBotSettings ${{ convertToJson(parameters.discordBotSettings) }}
               -orchestratorSettings ${{ convertToJson(parameters.orchestratorSettings) }}
               -discordBotSecrets ${{ convertToJson(parameters.discordBotSecrets) }}
