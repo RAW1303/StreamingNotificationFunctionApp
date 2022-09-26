@@ -62,7 +62,7 @@ jobs:
             templateLocation: 'Linked artifact'
             csmFile: '$(Pipeline.Workspace)/infrastructure/resourceGroup.bicep'
             deploymentMode: 'Incremental'
-            overrideParameters: | 
+            overrideParameters:
               -keyVaultName '${{ parameters.resourceGroupName }}${{ parameters.keyVaultSuffix }}'
               -storageAccountName '${{ parameters.resourceGroupName }}${{ parameters.storageAccountSuffix }}'
               -serviceBusName '${{ parameters.resourceGroupName }}${{ parameters.serviceBusSuffix }}'
