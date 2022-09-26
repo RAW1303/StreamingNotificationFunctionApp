@@ -46,7 +46,7 @@ var commonAppSettings = [
   }
   {
     name: 'StreamingServiceBus__fullyQualifiedNamespace'
-    value: '${serviceBusNamespace.name}.servicebus.windows.net;'
+    value: '${serviceBusNamespace.name}.servicebus.windows.net'
   }
   {
     name: 'VideoQueueName'
