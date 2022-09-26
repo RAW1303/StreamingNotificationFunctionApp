@@ -67,6 +67,8 @@ jobs:
               -storageAccountName '${{ parameters.resourceGroupName }}${{ parameters.storageAccountSuffix }}'
               -serviceBusName '${{ parameters.resourceGroupName }}${{ parameters.serviceBusSuffix }}'
               -applicationInsightsName '${{ parameters.resourceGroupName }}${{ parameters.applicationInsightsSuffix }}'
+              -discordBotFunctionAppName '${{ parameters.resourceGroupName }}${{ parameters.discordBotFunctionAppSuffix }}'
+              -orchestratorFunctionAppName '${{ parameters.resourceGroupName }}${{ parameters.orchestrationAppSuffix }}'
               -discordBotSettings ${{ convertToJson(parameters.discordBotSettings) }}
               -orchestratorSettings ${{ convertToJson(parameters.orchestratorSettings) }}
               -discordBotSecrets ${{ convertToJson(parameters.discordBotSecrets) }}
