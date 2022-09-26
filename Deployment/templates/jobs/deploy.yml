@@ -60,7 +60,7 @@ jobs:
             resourceGroupName: ${{ parameters.resourceGroupName }}
             location: ${{ parameters.location }}
             templateLocation: 'Linked artifact'
-            csmFile: '**/resourceGroup.bicep'
+            csmFile: '$(Pipeline.Workspace)/infrastructure/resourceGroup.bicep'
             deploymentMode: 'Incremental'
             overrideParameters: | 
               -keyVaultName '${{ parameters.resourceGroupName }}${{ parameters.keyVaultSuffix }}'
@@ -78,7 +78,7 @@ jobs:
             azureSubscription: ${{ parameters.azureSubscription }}
             appType: functionApp
             appName: '${{ parameters.resourceGroupName }}${{ parameters.discordBotFunctionAppSuffix }}'
-            package: '$(Pipeline.Workspace)/drop/Raw.Streaming.Discord.zip'
+            package: '$(Pipeline.Workspace)/code/Raw.Streaming.Discord.zip'
             resourceGroupName: ${{ parameters.resourceGroupName }}
 
         - task: AzureFunctionApp@1
@@ -87,5 +87,5 @@ jobs:
             azureSubscription: ${{ parameters.azureSubscription }}
             appType: functionApp
             appName: '${{ parameters.resourceGroupName }}${{ parameters.orchestrationAppSuffix }}'
-            package: '$(Pipeline.Workspace)/drop/Raw.Streaming.Discord.zip'
+            package: '$(Pipeline.Workspace)/code/Raw.Streaming.Discord.zip'
             resourceGroupName: ${{ parameters.resourceGroupName }}
