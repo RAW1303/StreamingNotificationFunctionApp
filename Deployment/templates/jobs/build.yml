@@ -10,6 +10,12 @@ jobs:
     vmImage: ${{ parameters.vmImageName }}
 
   steps:
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: '$(Build.SourcesDirectory)/Deployment/Resources/resourceGroup.bicep'
+      artifactType: 'pipeline'
+      artifactName: 'infrastructure'
+
   - task: DotNetCoreCLI@2
     displayName: Run unit tests
     inputs:
@@ -25,6 +31,9 @@ jobs:
       arguments: '-o $(Build.ArtifactStagingDirectory)'
       zipAfterPublish: true
       modifyOutputPath: true
-
-  - publish: $(Build.ArtifactStagingDirectory)
-    artifact: drop
+    
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)'
+      artifactType: 'pipeline'
+      artifactName: 'code'
