@@ -89,5 +89,5 @@ jobs:
             azureSubscription: ${{ parameters.azureSubscription }}
             appType: functionApp
             appName: '${{ parameters.resourceGroupName }}${{ parameters.orchestrationAppSuffix }}'
-            package: '$(Pipeline.Workspace)/code/Raw.Streaming.Discord.zip'
+            package: '$(Pipeline.Workspace)/code/Raw.Streaming.Webhook.zip'
             resourceGroupName: ${{ parameters.resourceGroupName }}
