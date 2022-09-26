@@ -1,5 +1,5 @@
 variables:
-  resourceGroupName: RawStreamingPreProd
+  resourceGroupName: RawStreamPpd
   discordClipChannelId: '771066982765297764'
   discordScheduleChannelId: '771066982765297764'
   discordStreamGoLiveChannelId: '771066982765297764'
