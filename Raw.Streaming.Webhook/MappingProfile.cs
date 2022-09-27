@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Raw.Streaming.Common.Model;
-using Raw.Streaming.Webhook.Model;
 using Raw.Streaming.Webhook.Model.Twitch;
 using Raw.Streaming.Webhook.Model.Youtube;
 
@@ -12,6 +11,7 @@ namespace Raw.Streaming.Webhook
         {
             CreateMap<TwitchChannel, GoLive>();
             CreateMap<TwitchScheduleSegment, Event>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => $"TwitchEvent_{src.Id}"))
                 .ForMember(dest => dest.Start, opt => opt.MapFrom(src => src.StartTime))
                 .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.EndTime))
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))

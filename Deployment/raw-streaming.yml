@@ -41,6 +41,7 @@ stages:
         DiscordStreamGoLiveChannelId: $(discordStreamGoLiveChannelId)
         DiscordVideoChannelId: $(discordVideoChannelId)
       orchestratorSettings:
+        EventScheduleTimerTrigger: $(eventScheduleTimerTrigger)
         ScheduleDailyTimerTrigger: $(scheduleDailyTimerTrigger)
         ScheduleWeeklyTimerTrigger: $(scheduleWeeklyTimerTrigger)
         TwitchApiChannelEndpoint: $(twitchApiChannelEndpoint)
@@ -86,6 +87,7 @@ stages:
         DiscordStreamGoLiveChannelId: $(discordStreamGoLiveChannelId)
         DiscordVideoChannelId: $(discordVideoChannelId)
       orchestratorSettings:
+        EventScheduleTimerTrigger: $(eventScheduleTimerTrigger)
         ScheduleDailyTimerTrigger: $(scheduleDailyTimerTrigger)
         ScheduleWeeklyTimerTrigger: $(scheduleWeeklyTimerTrigger)
         TwitchApiChannelEndpoint: $(twitchApiChannelEndpoint)

@@ -5,6 +5,7 @@ variables:
   location: 'UK South'
   discordApiUrl: 'https://discord.com/api'
   discordNotificationGroupIds: '@here'
+  eventScheduleTimerTrigger: '0 0 8 * * *'
   scheduleDailyTimerTrigger: '0 0 9 * * *'
   scheduleWeeklyTimerTrigger: '0 0 8 * * Mon'
   twitchApiChannelEndpoint: 'channels'

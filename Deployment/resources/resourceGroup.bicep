@@ -15,7 +15,34 @@ param orchestratorSecrets object
 
 var allSecrets = union(discordBotSecrets, orchestratorSecrets)
 
-var commonAppSettings = [
+var queueSettings = [
+  {
+    name: 'ClipsQueueName'
+    value: 'clips'
+  }
+  {
+    name: 'DailyScheduleQueueName'
+    value: 'dailyschedule'
+  }
+  {
+    name: 'EventScheduleQueueName'
+    value: 'eventschedule'
+  }
+  {
+    name: 'GoLiveQueueName'
+    value: 'golive'
+  }
+  {
+    name: 'VideoQueueName'
+    value: 'videos'
+  }
+  {
+    name: 'WeeklyScheduleQueueName'
+    value: 'weeklyschedule'
+  }
+]
+
+var commonAppSettings = concat(queueSettings, [
   {
     name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
     value: applicationInsights.properties.InstrumentationKey
@@ -23,14 +50,6 @@ var commonAppSettings = [
   {
     name: 'AzureWebJobsStorage'
     value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${storageAccount.listKeys().keys[0].value}'
-  }
-  {
-    name: 'ClipsQueueName'
-    value: clipsQueue.name
-  }
-  {
-    name: 'DailyScheduleQueueName'
-    value: dailyScheduleQueue.name
   }
   {
     name: 'FUNCTIONS_EXTENSION_VERSION'
@@ -41,16 +60,8 @@ var commonAppSettings = [
     value: 'dotnet'
   }
   {
-    name: 'GoLiveQueueName'
-    value: goLiveQueue.name
-  }
-  {
     name: 'StreamingServiceBus__fullyQualifiedNamespace'
     value: '${serviceBusNamespace.name}.servicebus.windows.net'
-  }
-  {
-    name: 'VideoQueueName'
-    value: videoQueue.name
   }
   {
     name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
@@ -60,11 +71,7 @@ var commonAppSettings = [
     name: 'WEBSITE_RUN_FROM_PACKAGE'
     value: '1'
   }
-  {
-    name: 'WeeklyScheduleQueueName'
-    value: weeklyScheduleQueue.name
-  }
-]
+])
 
 var discordBotAppSettings = [for setting in items(discordBotSettings): {
   name: setting.key
@@ -86,28 +93,20 @@ var orchestratorSecretAppSettings = [for secret in items(orchestratorSecrets): {
   value: '@Microsoft.KeyVault(SecretUri=https://${keyVault.name}.vault.azure.net/secrets/${secret.key})'
 }]
 
-var queueProperties = {
-  lockDuration: 'PT5M'
-  maxSizeInMegabytes: 1024
-  requiresDuplicateDetection: false
-  requiresSession: false
-  defaultMessageTimeToLive: 'P10675199DT2H48M5.4775807S'
-  deadLetteringOnMessageExpiration: false
-  duplicateDetectionHistoryTimeWindow: 'PT10M'
-  maxDeliveryCount: 10
-  autoDeleteOnIdle: 'P10675199DT2H48M5.4775807S'
-  enablePartitioning: false
-  enableExpress: false
-}
-
-var hostingPlanSku = {
-    name: 'Y1'
-    tier: 'Dynamic'
-    size: 'Y1'
-    family: 'Y'
-    capacity: 0
-}
-
+var functionAppProperties = [
+  {
+    name: discordBotFunctionAppName
+    settings: discordBotAppSettings
+    secrets: discordBotSecretAppSettings
+    sbRoleId: serviceBusDataReceiver.id
+  }
+  {
+    name: orchestratorFunctionAppName
+    settings: orchestratorAppSettings
+    secrets: orchestratorSecretAppSettings
+    sbRoleId: serviceBusDataSender.id
+  }
+]
 
 resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
   name: keyVaultName
@@ -156,99 +155,61 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2021-11-01' = {
   }
 }
 
-resource clipsQueue 'Microsoft.ServiceBus/namespaces/queues@2022-01-01-preview' = {
+resource queues 'Microsoft.ServiceBus/namespaces/queues@2022-01-01-preview' = [for queue in (queueSettings): {
   parent: serviceBusNamespace
-  name: 'clips'
-  properties: queueProperties
-}
+  name: queue.value
+  properties: {
+    lockDuration: 'PT5M'
+    maxSizeInMegabytes: 1024
+    requiresDuplicateDetection: true
+    requiresSession: false
+    defaultMessageTimeToLive: 'P10675199DT2H48M5.4775807S'
+    deadLetteringOnMessageExpiration: false
+    duplicateDetectionHistoryTimeWindow: 'PT10M'
+    maxDeliveryCount: 10
+    autoDeleteOnIdle: 'P10675199DT2H48M5.4775807S'
+    enablePartitioning: false
+    enableExpress: false
+  }
+}]
 
-resource dailyScheduleQueue 'Microsoft.ServiceBus/namespaces/queues@2022-01-01-preview' = {
-  parent: serviceBusNamespace
-  name: 'dailyschedule'
-  properties: queueProperties
-}
-
-resource goLiveQueue 'Microsoft.ServiceBus/namespaces/queues@2022-01-01-preview' = {
-  parent: serviceBusNamespace
-  name: 'golive'
-  properties: queueProperties
-}
-
-resource videoQueue 'Microsoft.ServiceBus/namespaces/queues@2022-01-01-preview' = {
-  parent: serviceBusNamespace
-  name: 'videos'
-  properties: queueProperties
-}
-
-resource weeklyScheduleQueue 'Microsoft.ServiceBus/namespaces/queues@2022-01-01-preview' = {
-  parent: serviceBusNamespace
-  name: 'weeklyschedule'
-  properties: queueProperties
-}
-
-resource discordBotHostingPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
-  name: discordBotFunctionAppName
+resource hostingPlans 'Microsoft.Web/serverfarms@2022-03-01' = [for functionApp in (functionAppProperties): {
+  name: functionApp.Name
   location: location
-  sku: hostingPlanSku
+  sku: {
+    name: 'Y1'
+    tier: 'Dynamic'
+    size: 'Y1'
+    family: 'Y'
+    capacity: 0
+  }
   properties: {
     computeMode: 'Dynamic'
   }
-}
+}]
 
-resource orchestratorHostingPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
-  name: orchestratorFunctionAppName
-  location: location
-  sku: hostingPlanSku
-  properties: {
-    computeMode: 'Dynamic'
-  }
-}
-
-resource discordBotFunctionApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: discordBotFunctionAppName
+resource functionApps 'Microsoft.Web/sites@2022-03-01' = [for (functionApp, i) in (functionAppProperties): {
+  name: functionApp.name
   location: location
   kind: 'functionapp'
   identity:{
     type:'SystemAssigned'
   }
   properties: {
-    serverFarmId: discordBotHostingPlan.id
+    serverFarmId: hostingPlans[i].id
     clientAffinityEnabled: false
     siteConfig: {
       alwaysOn: false
-      appSettings: concat(commonAppSettings, discordBotSecretAppSettings, discordBotAppSettings, [
+      appSettings: concat(commonAppSettings, functionApp.settings, functionApp.secrets, [
         {
           name: 'WEBSITE_CONTENTSHARE'
-          value: toLower(discordBotFunctionAppName)
+          value: toLower(functionApp.name)
         }
       ])
     }
     httpsOnly: true
   }
-}
-
-resource orchestratorFunctionApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: orchestratorFunctionAppName
-  location: location
-  kind: 'functionapp'
-  identity:{
-    type:'SystemAssigned'
-  }
-  properties: {
-    serverFarmId: orchestratorHostingPlan.id
-    clientAffinityEnabled: false
-    siteConfig: {
-      alwaysOn: false
-      appSettings: concat(commonAppSettings, orchestratorSecretAppSettings, orchestratorAppSettings, [
-        {
-          name: 'WEBSITE_CONTENTSHARE'
-          value: toLower(orchestratorFunctionAppName)
-        }
-      ])
-    }
-    httpsOnly: true
-  }
-}
+}]
 
 @description('This is the built-in Key Vault Secrets User. See https://docs.microsoft.com/en-gb/azure/role-based-access-control/built-in-roles#key-vault-secrets-user')
 resource keyVaultSecretsUserRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
@@ -268,42 +229,22 @@ resource serviceBusDataSender 'Microsoft.Authorization/roleDefinitions@2018-01-0
   name: '69a216fc-b8fb-44d8-bc22-1f3c2cd27a39'
 }
 
-resource orchestratorKeyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(keyVault.id, orchestratorFunctionApp.id, keyVaultSecretsUserRoleDefinition.id)
+resource functionAppKeyVaultRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for (functionApp, i) in (functionAppProperties): {
+  name: guid(keyVault.id, functionApps[i].id, keyVaultSecretsUserRoleDefinition.id)
   scope: keyVault
   properties: {
     roleDefinitionId: keyVaultSecretsUserRoleDefinition.id
-    principalId: orchestratorFunctionApp.identity.principalId
+    principalId: functionApps[i].identity.principalId
     principalType: 'ServicePrincipal'
   }
-}
+}]
 
-resource discordBotKeyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(keyVault.id, discordBotFunctionApp.id, keyVaultSecretsUserRoleDefinition.id)
-  scope: keyVault
-  properties: {
-    roleDefinitionId: keyVaultSecretsUserRoleDefinition.id
-    principalId: discordBotFunctionApp.identity.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
-resource orchestratorServiceBusRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(serviceBusNamespace.id, orchestratorFunctionApp.id, serviceBusDataSender.id)
+resource functionAppServiceBusRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for (functionApp, i) in (functionAppProperties): {
+  name: guid(serviceBusNamespace.id, functionApps[i].id, functionApp.sbRoleId)
   scope: serviceBusNamespace
   properties: {
-    roleDefinitionId: serviceBusDataSender.id
-    principalId: orchestratorFunctionApp.identity.principalId
+    roleDefinitionId: functionApp.sbRoleId
+    principalId: functionApps[i].identity.principalId
     principalType: 'ServicePrincipal'
   }
-}
-
-resource discordBotServiceBusRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(serviceBusNamespace.id, discordBotFunctionApp.id, serviceBusDataReceiver.id)
-  scope: serviceBusNamespace
-  properties: {
-    roleDefinitionId: serviceBusDataReceiver.id
-    principalId: discordBotFunctionApp.identity.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
+}]

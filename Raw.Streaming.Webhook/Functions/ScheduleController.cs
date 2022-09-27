@@ -35,7 +35,7 @@ namespace Raw.Streaming.Webhook.Functions
         public async Task<ServiceBusMessage> NotifyDailyScheduleTrigger(
             [TimerTrigger("%ScheduleDailyTimerTrigger%")] TimerInfo timer)
         {
-            return await NotifyDailySchedule(DateTime.UtcNow);
+            return await NotifyDailySchedule(DateTimeOffset.UtcNow);
         }
 
         [ExcludeFromCodeCoverage]
@@ -44,7 +44,16 @@ namespace Raw.Streaming.Webhook.Functions
         public async Task<ServiceBusMessage> NotifyWeeklyScheduleTrigger(
             [TimerTrigger("%ScheduleWeeklyTimerTrigger%")] TimerInfo timer)
         {
-            return await NotifyWeeklySchedule(DateTime.UtcNow);
+            return await NotifyWeeklySchedule(DateTimeOffset.UtcNow);
+        }
+
+        [ExcludeFromCodeCoverage]
+        [FunctionName(nameof(UpdateEventScheduleTrigger))]
+        [return: ServiceBus("%EventScheduleQueueName%")]
+        public async Task<ServiceBusMessage> UpdateEventScheduleTrigger(
+            [TimerTrigger("%EventScheduleTimerTrigger%")] TimerInfo timer)
+        {
+            return await UpdateEventSchedule(DateTimeOffset.UtcNow);
         }
 
         public async Task<ServiceBusMessage> NotifyWeeklySchedule(DateTimeOffset triggerTime)
@@ -96,6 +105,28 @@ namespace Raw.Streaming.Webhook.Functions
             catch (Exception e)
             {
                 _logger.LogError($"{nameof(NotifyDailySchedule)} execution failed: {e.Message}");
+                throw;
+            }
+
+        }
+
+        public async Task<ServiceBusMessage> UpdateEventSchedule(DateTimeOffset triggerTime)
+        {
+            try
+            {
+                _logger.LogInformation($"{nameof(UpdateEventSchedule)} execution started for {triggerTime}");
+                var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, triggerTime);
+                var events = _mapper.Map<IEnumerable<Event>>(schedule);
+                var queueItem = new DiscordBotQueueItem<Event>(events.ToArray());
+                return new ServiceBusMessage
+                {
+                    Body = BinaryData.FromObjectAsJson(queueItem),
+                    MessageId = $"event-schedule-{triggerTime:yyyy-MM-ddTHH:mm:ss}"
+                };
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"{nameof(UpdateEventSchedule)} execution failed: {e.Message}");
                 throw;
             }
 
