@@ -1,9 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Raw.Streaming.Webhook.Tests.Functions
+﻿namespace Raw.Streaming.Webhook.Tests.Functions
 {
     [TestFixture]
     internal class TwitchClipControllerTests
@@ -23,11 +18,11 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         }
 
         [Test, AutoData]
-        public async Task NotifyTwitchClips_WhenTwitchApiServiceSuccessful_ReturnsServiceBusMessage(DateTime last, DateTime next)
+        public async Task NotifyTwitchClips_WhenTwitchApiServiceSuccessful_ReturnsServiceBusMessage(DateTimeOffset last, DateTimeOffset next)
         {
             // Arrange
             _twitchApiService
-                .Setup(x => x.GetClipsByBroadcasterAsync(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .Setup(x => x.GetClipsByBroadcasterAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()))
                 .ReturnsAsync(new List<TwitchClip>());
             _twitchApiService
                 .Setup(x => x.GetGamesAsync(It.IsAny<string[]>()))
@@ -48,11 +43,11 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         public async Task NotifyTwitchClips_WhenTwitchApiServiceSuccessful_CallsGetClipsByBroadcasterAsyncWithCorrectDateTimes(string lastString, string nextString, string expectedString)
         {
             // Arrange
-            var last = DateTime.Parse(lastString);
-            var next = DateTime.Parse(nextString);
-            var expected = DateTime.Parse(expectedString);
+            var last = DateTimeOffset.Parse(lastString);
+            var next = DateTimeOffset.Parse(nextString);
+            var expected = DateTimeOffset.Parse(expectedString);
             _twitchApiService
-                .Setup(x => x.GetClipsByBroadcasterAsync(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .Setup(x => x.GetClipsByBroadcasterAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()))
                 .ReturnsAsync(new List<TwitchClip>());
             _twitchApiService
                 .Setup(x => x.GetGamesAsync(It.IsAny<string[]>()))
@@ -69,12 +64,12 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         }
 
         [Test, AutoData]
-        public void NotifyTwitchClips_WhenGetClipsByBroadcasterAsyncThrowsException_ThrowsException(DateTime last, DateTime next)
+        public void NotifyTwitchClips_WhenGetClipsByBroadcasterAsyncThrowsException_ThrowsException(DateTimeOffset last, DateTimeOffset next)
         {
             // Arrange
             var exception = new Exception("Test message");
             _twitchApiService
-                .Setup(x => x.GetClipsByBroadcasterAsync(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .Setup(x => x.GetClipsByBroadcasterAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()))
                 .ThrowsAsync(exception);
             _twitchApiService
                 .Setup(x => x.GetGamesAsync(It.IsAny<string[]>()))
@@ -88,12 +83,12 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         }
 
         [Test, AutoData]
-        public void NotifyTwitchClips_WhenGetGamesAsyncThrowsException_ThrowsException(DateTime last, DateTime next)
+        public void NotifyTwitchClips_WhenGetGamesAsyncThrowsException_ThrowsException(DateTimeOffset last, DateTimeOffset next)
         {
             // Arrange
             var exception = new Exception("Test message");
             _twitchApiService
-                .Setup(x => x.GetClipsByBroadcasterAsync(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .Setup(x => x.GetClipsByBroadcasterAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()))
                 .ReturnsAsync(new List<TwitchClip>());
             _twitchApiService
                 .Setup(x => x.GetGamesAsync(It.IsAny<string[]>()))

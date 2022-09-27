@@ -1,0 +1,39 @@
+parameters:
+- name: vmImageName
+  type: string
+  default: 'windows-2022'
+
+jobs:
+- job: Build
+  displayName: Build
+  pool:
+    vmImage: ${{ parameters.vmImageName }}
+
+  steps:
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: '$(Build.SourcesDirectory)/Deployment/Resources/resourceGroup.bicep'
+      artifactType: 'pipeline'
+      artifactName: 'infrastructure'
+
+  - task: DotNetCoreCLI@2
+    displayName: Run unit tests
+    inputs:
+      command: test
+      projects: '**/*Tests/*.csproj'
+
+  - task: DotNetCoreCLI@2
+    displayName: Publish
+    inputs:
+      command: 'publish'
+      publishWebProjects: false
+      projects: '**/*.csproj'
+      arguments: '-o $(Build.ArtifactStagingDirectory)'
+      zipAfterPublish: true
+      modifyOutputPath: true
+    
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)'
+      artifactType: 'pipeline'
+      artifactName: 'code'

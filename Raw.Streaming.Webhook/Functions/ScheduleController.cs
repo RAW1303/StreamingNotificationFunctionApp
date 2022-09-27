@@ -47,15 +47,15 @@ namespace Raw.Streaming.Webhook.Functions
             return await NotifyWeeklySchedule(DateTime.UtcNow);
         }
 
-        public async Task<ServiceBusMessage> NotifyWeeklySchedule(DateTime triggerTime)
+        public async Task<ServiceBusMessage> NotifyWeeklySchedule(DateTimeOffset triggerTime)
         {
             try
             {
                 _logger.LogInformation($"{nameof(NotifyWeeklySchedule)} execution started");
-                var from = DateTime.SpecifyKind(triggerTime.Date, DateTimeKind.Utc);
-                var to = DateTime.SpecifyKind(from.AddDays(7), DateTimeKind.Utc);
+                var from = triggerTime;
+                var to = from.AddDays(7);
                 var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, from);
-                var filteredSegments = schedule.Segments.Where(seg => seg.StartTime <= to);
+                var filteredSegments = schedule.SegmentsExcludingVaction.Where(seg => seg.StartTime <= to);
                 var events = _mapper.Map<IEnumerable<Event>>(filteredSegments);
                 var queueItem = new DiscordBotQueueItem<Event>(events.ToArray());
                 return new ServiceBusMessage
@@ -71,7 +71,7 @@ namespace Raw.Streaming.Webhook.Functions
             }
         }
 
-        public async Task<ServiceBusMessage> NotifyDailySchedule(DateTime triggerTime)
+        public async Task<ServiceBusMessage> NotifyDailySchedule(DateTimeOffset triggerTime)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace Raw.Streaming.Webhook.Functions
                 var to = from.AddDays(1);
                 _logger.LogInformation($"{nameof(NotifyDailySchedule)} execution started for {from:d}");
                 var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, from);
-                var filteredSegments = schedule.Segments.Where(seg => seg.StartTime <= to);
+                var filteredSegments = schedule.SegmentsExcludingVaction.Where(seg => seg.StartTime <= to);
                 if (filteredSegments.Any())
                 {
                     var events = _mapper.Map<IEnumerable<Event>>(filteredSegments);

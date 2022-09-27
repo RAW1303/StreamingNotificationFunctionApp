@@ -7,7 +7,7 @@ namespace Raw.Streaming.Common.Model
     {
         public string? Id { get; set; }
         public string? BroadcasterName { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
         public string? CreatorName { get; set; }
         public string? EmbedUrl { get; set; }
         public string? GameName { get; set; }

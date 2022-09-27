@@ -1,12 +1,6 @@
-﻿using AutoFixture.NUnit3;
-using Microsoft.Extensions.Logging;
-using Moq;
-using NUnit.Framework;
-using Raw.Streaming.Common.Model;
-using Raw.Streaming.Discord.Functions;
+﻿using Raw.Streaming.Discord.Functions;
 using Raw.Streaming.Discord.Model.DiscordApi;
 using Raw.Streaming.Discord.Services;
-using System;
 
 namespace Raw.Streaming.Webhook.Tests.Functions
 {

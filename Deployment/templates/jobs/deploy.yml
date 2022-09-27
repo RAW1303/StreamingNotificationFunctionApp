@@ -1,0 +1,93 @@
+parameters:
+- name: environment
+  type: string
+- name: azureServiceConnection
+  type: string
+- name: azureSubscription
+  type: string
+- name: resourceGroupName
+  type: string
+- name: location
+  type: string
+- name: discordBotSettings
+  type: object
+- name: orchestratorSettings
+  type: object
+- name: discordBotSecrets
+  type: object
+- name: orchestratorSecrets
+  type: object
+- name: vmImageName
+  type: string
+  default: 'windows-2022'
+- name: keyVaultSuffix
+  type: string
+  default: 'KV'
+- name: storageAccountSuffix
+  type: string
+  default: 'SA'
+- name: serviceBusSuffix
+  type: string
+  default: 'SB'
+- name: applicationInsightsSuffix
+  type: string
+  default: 'AI'
+- name: discordBotFunctionAppSuffix
+  type: string
+  default: 'DiscordBotFA'
+- name: orchestrationAppSuffix
+  type: string
+  default: 'OrchestrationFA'
+
+jobs:
+- deployment: Deploy
+  displayName: Deploy
+  environment: ${{ parameters.environment }}
+  pool:
+    vmImage: ${{ parameters.vmImageName }}
+
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - task: AzureResourceManagerTemplateDeployment@3
+          displayName: Deploy Infrastructure
+          inputs:
+            azureResourceManagerConnection: ${{ parameters.azureServiceConnection }}
+            azureSubscription: ${{ parameters.azureSubscription }}
+            deploymentScope: 'Resource Group'
+            action: 'Create Or Update Resource Group'
+            resourceGroupName: ${{ parameters.resourceGroupName }}
+            location: ${{ parameters.location }}
+            templateLocation: 'Linked artifact'
+            csmFile: '$(Pipeline.Workspace)/infrastructure/resourceGroup.bicep'
+            deploymentMode: 'Incremental'
+            overrideParameters:
+              -keyVaultName "${{ parameters.resourceGroupName }}${{ parameters.keyVaultSuffix }}"
+              -storageAccountName "${{ parameters.resourceGroupName }}${{ parameters.storageAccountSuffix }}"
+              -serviceBusName "${{ parameters.resourceGroupName }}${{ parameters.serviceBusSuffix }}"
+              -applicationInsightsName "${{ parameters.resourceGroupName }}${{ parameters.applicationInsightsSuffix }}"
+              -discordBotFunctionAppName "${{ parameters.resourceGroupName }}${{ parameters.discordBotFunctionAppSuffix }}"
+              -orchestratorFunctionAppName "${{ parameters.resourceGroupName }}${{ parameters.orchestrationAppSuffix }}"
+              -discordBotSettings ${{ convertToJson(parameters.discordBotSettings) }}
+              -orchestratorSettings ${{ convertToJson(parameters.orchestratorSettings) }}
+              -discordBotSecrets ${{ convertToJson(parameters.discordBotSecrets) }}
+              -orchestratorSecrets ${{ convertToJson(parameters.orchestratorSecrets) }}
+
+        - task: AzureFunctionApp@1
+          displayName: 'Deploy Discord Bot'
+          inputs:
+            azureSubscription: ${{ parameters.azureSubscription }}
+            appType: functionApp
+            appName: '${{ parameters.resourceGroupName }}${{ parameters.discordBotFunctionAppSuffix }}'
+            package: '$(Pipeline.Workspace)/code/Raw.Streaming.Discord.zip'
+            resourceGroupName: ${{ parameters.resourceGroupName }}
+
+        - task: AzureFunctionApp@1
+          displayName: 'Deploy Orchestrator'
+          inputs:
+            azureSubscription: ${{ parameters.azureSubscription }}
+            appType: functionApp
+            appName: '${{ parameters.resourceGroupName }}${{ parameters.orchestrationAppSuffix }}'
+            package: '$(Pipeline.Workspace)/code/Raw.Streaming.Webhook.zip'
+            resourceGroupName: ${{ parameters.resourceGroupName }}

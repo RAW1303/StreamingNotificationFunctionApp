@@ -50,7 +50,7 @@ namespace Raw.Streaming.Webhook.Services
             return await SendTwitchApiGetRequestAsync<IList<TwitchGame>>(_gameEndpoint, queryString, scope);
         }
 
-        public async Task<IList<TwitchClip>> GetClipsByBroadcasterAsync(string broadcasterId, DateTime? startedAt = null, DateTime? endedAt = null)
+        public async Task<IList<TwitchClip>> GetClipsByBroadcasterAsync(string broadcasterId, DateTimeOffset? startedAt = null, DateTimeOffset? endedAt = null)
         {
             var queryString = $"?broadcaster_id={broadcasterId}";
             queryString = startedAt.HasValue ? $"{queryString}&started_at={UrlEncodeDateTime(startedAt)}" : queryString;
@@ -68,7 +68,7 @@ namespace Raw.Streaming.Webhook.Services
             return await SendTwitchApiGetRequestAsync<IList<TwitchVideo>>(_videoEndpoint, queryString, scope);
         }
 
-        public async Task<TwitchSchedule> GetScheduleByBroadcasterIdAsync(string broadcasterId, DateTime? startTime = null)
+        public async Task<TwitchSchedule> GetScheduleByBroadcasterIdAsync(string broadcasterId, DateTimeOffset? startTime = null)
         {
             var queryString = $"?broadcaster_id={broadcasterId}";
             queryString = startTime.HasValue ? $"{queryString}&start_time={UrlEncodeDateTime(startTime)}" : queryString;
@@ -95,9 +95,9 @@ namespace Raw.Streaming.Webhook.Services
             return responseObject.Data;
         }
 
-        private static string UrlEncodeDateTime(DateTime? dateTime)
+        private static string UrlEncodeDateTime(DateTimeOffset? dateTime)
         {
-            return HttpUtility.UrlEncode($"{dateTime:yyyy-MM-ddTHH:mm:ssK}");
+            return HttpUtility.UrlEncode($"{dateTime.Value.UtcDateTime:yyyy-MM-ddTHH:mm:ssK}");
         }
     }
 }

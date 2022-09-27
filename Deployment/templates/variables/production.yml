@@ -1,0 +1,6 @@
+variables:
+  resourceGroupName: RawStream
+  discordClipChannelId: '769724698640384020'
+  discordScheduleChannelId: '844887317566455888'
+  discordStreamGoLiveChannelId: '766821120522715141'
+  discordVideoChannelId: '843610462440783893'
