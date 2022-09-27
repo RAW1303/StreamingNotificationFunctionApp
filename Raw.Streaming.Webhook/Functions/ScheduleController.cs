@@ -116,8 +116,8 @@ namespace Raw.Streaming.Webhook.Functions
             {
                 _logger.LogInformation($"{nameof(UpdateEventSchedule)} execution started for {triggerTime}");
                 var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, triggerTime);
-                var events = _mapper.Map<IEnumerable<Event>>(schedule);
                 var filteredSegments = schedule.SegmentsExcludingVaction.Where(seg => !seg.IsRecurring);
+                var events = _mapper.Map<IEnumerable<Event>>(filteredSegments);
                 var queueItem = new DiscordBotQueueItem<Event>(events.ToArray());
                 return new ServiceBusMessage
                 {
