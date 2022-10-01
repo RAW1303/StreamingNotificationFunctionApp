@@ -60,7 +60,7 @@ namespace Raw.Streaming.Webhook.Functions
         {
             try
             {
-                _logger.LogInformation($"{nameof(NotifyWeeklySchedule)} execution started");
+                _logger.LogInformation($"{nameof(NotifyWeeklySchedule)} execution started for {triggerTime}");
                 var from = triggerTime;
                 var to = from.AddDays(7);
                 var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, from);
@@ -84,9 +84,9 @@ namespace Raw.Streaming.Webhook.Functions
         {
             try
             {
+                _logger.LogInformation($"{nameof(NotifyDailySchedule)} execution started for {triggerTime}");
                 var from = triggerTime.Date;
                 var to = from.AddDays(1);
-                _logger.LogInformation($"{nameof(NotifyDailySchedule)} execution started for {from:d}");
                 var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, from);
                 var filteredSegments = schedule.SegmentsExcludingVaction.Where(seg => seg.StartTime <= to);
                 if (filteredSegments.Any())
@@ -116,9 +116,9 @@ namespace Raw.Streaming.Webhook.Functions
             {
                 _logger.LogInformation($"{nameof(UpdateEventSchedule)} execution started for {triggerTime}");
                 var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, triggerTime);
-                var filteredSegments = schedule.SegmentsExcludingVaction.Where(seg => !seg.IsRecurring);
-                var events = _mapper.Map<IEnumerable<Event>>(filteredSegments);
-                var queueItem = new DiscordBotQueueItem<Event>(events.ToArray());
+                var events = _mapper.Map<IEnumerable<Event>>(schedule);
+                var filteredEvents = events.Where(x => !x.IsRecurring);
+                var queueItem = new DiscordBotQueueItem<Event>(filteredEvents.ToArray());
                 return new ServiceBusMessage
                 {
                     Body = BinaryData.FromObjectAsJson(queueItem),

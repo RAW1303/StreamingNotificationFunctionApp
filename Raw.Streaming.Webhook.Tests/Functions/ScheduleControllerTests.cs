@@ -103,7 +103,5 @@
             // Act & Assert
             Assert.That(() => _controller.NotifyWeeklySchedule(triggerTime), Throws.Exception.EqualTo(exception));
         }
-
-
     }
 }

@@ -11,5 +11,6 @@ namespace Raw.Streaming.Common.Model
         public string? Title { get; set; }
         public string? Game { get; set; }
         public string? Url { get; set; }
+        public bool IsRecurring { get; set; }
     }
 }
