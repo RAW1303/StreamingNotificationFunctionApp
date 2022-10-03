@@ -27,8 +27,10 @@ jobs:
     inputs:
       SonarCloud: 'SonarCloud'
       organization: 'raw13'
-      scannerMode: 'MSBuild'
-      projectKey: 'RAW1303_StreamingNotificationFunctionApp'
+      scannerMode: 'CLI'
+      configMode: 'manual'
+      cliProjectKey: 'RAW1303_StreamingNotificationFunctionApp'
+      cliSources: '.'
 
   - task: DotNetCoreCLI@2
     displayName: Run unit tests
