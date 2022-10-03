@@ -15,12 +15,21 @@ jobs:
       targetPath: '$(Build.SourcesDirectory)/Deployment/Resources/resourceGroup.bicep'
       artifactType: 'pipeline'
       artifactName: 'infrastructure'
+      
+  - task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'SonarCloud'
+    organization: 'raw13'
+    scannerMode: 'MSBuild'
+    projectKey: 'RAW1303_StreamingNotificationFunctionApp'
 
   - task: DotNetCoreCLI@2
     displayName: Run unit tests
     inputs:
       command: test
       projects: '**/*Tests/*.csproj'
+      
+  - task: SonarCloudAnalyze@1
 
   - task: DotNetCoreCLI@2
     displayName: Publish
@@ -37,3 +46,7 @@ jobs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
       artifactType: 'pipeline'
       artifactName: 'code'
+      
+  - task: SonarCloudPublish@1
+    inputs:
+      pollingTimeoutSec: '300'
