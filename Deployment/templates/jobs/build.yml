@@ -17,11 +17,11 @@ jobs:
       artifactName: 'infrastructure'
       
   - task: SonarCloudPrepare@1
-  inputs:
-    SonarCloud: 'SonarCloud'
-    organization: 'raw13'
-    scannerMode: 'MSBuild'
-    projectKey: 'RAW1303_StreamingNotificationFunctionApp'
+    inputs:
+      SonarCloud: 'SonarCloud'
+      organization: 'raw13'
+      scannerMode: 'MSBuild'
+      projectKey: 'RAW1303_StreamingNotificationFunctionApp'
 
   - task: DotNetCoreCLI@2
     displayName: Run unit tests
