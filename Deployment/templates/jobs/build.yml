@@ -35,6 +35,14 @@ jobs:
     inputs:
       command: test
       projects: '**/*Tests/*.csproj'
+      publishTestResults: true
+      arguments: '--collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura'
+  
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish code coverage report'
+    inputs:
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
       
   - task: SonarCloudAnalyze@1
 
