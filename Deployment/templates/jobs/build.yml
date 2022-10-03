@@ -16,6 +16,13 @@ jobs:
       artifactType: 'pipeline'
       artifactName: 'infrastructure'
       
+  - task: DotNetCoreCLI@2
+    displayName: 'Install dotnet-stryker'
+    inputs:
+      command: custom
+      custom: tool
+      arguments: install dotnet-stryker --tool-path $(Agent.BuildDirectory)/tools
+      
   - task: SonarCloudPrepare@1
     inputs:
       SonarCloud: 'SonarCloud'
@@ -40,12 +47,33 @@ jobs:
       arguments: '-o $(Build.ArtifactStagingDirectory)'
       zipAfterPublish: true
       modifyOutputPath: true
-    
+      
   - task: PublishPipelineArtifact@1
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
       artifactType: 'pipeline'
       artifactName: 'code'
+      
+  - task: Powershell@2
+    displayName: 'Run dotnet-stryker'
+    inputs:
+      workingDirectory: '$(Build.SourcesDirectory)/Raw.Streaming.Discord.Tests'
+      targetType: 'inline'
+      pwsh: true
+      script: $(Agent.BuildDirectory)/tools/dotnet-stryker
+      
+  - task: Powershell@2
+    displayName: 'Run dotnet-stryker'
+    inputs:
+      workingDirectory: '$(Build.SourcesDirectory)/Raw.Streaming.Webhook.Tests'
+      targetType: 'inline'
+      pwsh: true
+      script: $(Agent.BuildDirectory)/tools/dotnet-stryker
+      
+  - task: PublishMutationReport@0
+    displayName: 'Publish Mutation Test Report'
+    inputs:
+      reportPattern: '**/mutation-report.html'
       
   - task: SonarCloudPublish@1
     inputs:
