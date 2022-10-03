@@ -70,7 +70,7 @@ jobs:
       pwsh: true
       script: $(Agent.BuildDirectory)/tools/dotnet-stryker
       
-  - task: PublishMutationReport@0
+  - task: PublishMutationReport@1
     displayName: 'Publish Mutation Test Report'
     inputs:
       reportPattern: '**/mutation-report.html'
