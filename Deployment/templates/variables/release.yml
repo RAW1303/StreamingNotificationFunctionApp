@@ -4,6 +4,7 @@ variables:
   azureSubscription: '0e43496e-dd9f-4359-8a9d-227bc76d5e01'
   location: 'UK South'
   discordApiUrl: 'https://discord.com/api'
+  discordGuildId: '766813645937967124'
   discordNotificationGroupIds: '@here'
   eventScheduleTimerTrigger: '0 0 8 * * *'
   scheduleDailyTimerTrigger: '0 0 9 * * *'

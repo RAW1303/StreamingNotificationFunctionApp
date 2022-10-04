@@ -5,26 +5,26 @@ using System.Text.Json.Serialization;
 namespace Raw.Streaming.Discord.Model.DiscordApi
 {
     [ExcludeFromCodeCoverage]
-    internal class GuildScheduledEvent
+    internal class GuildScheduledEvent : DiscordApiContent
     {
         [JsonPropertyName("id")]
-        public int Id { get; set; }
+        public string Id { get; set; }
         [JsonPropertyName("guild_id")]
-        public int GuildId { get; set; }
+        public string GuildId { get; set; }
         [JsonPropertyName("channel_id")]
-        public int ChannelId { get; set; }
+        public string? ChannelId { get; set; }
         [JsonPropertyName("creator_id")]
-        public int CreatorId { get; set; }
+        public string? CreatorId { get; set; }
         [JsonPropertyName("name")]
         public string Name { get; set; }
         [JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         [JsonPropertyName("image")]
-        public string Image { get; set; }
+        public string? Image { get; set; }
         [JsonPropertyName("scheduled_start_time")]
-        public DateTime ScheduledStartTime { get; set; }
+        public DateTimeOffset ScheduledStartTime { get; set; }
         [JsonPropertyName("scheduled_end_time")]
-        public DateTime ScheduledEndTime { get; set; }
+        public DateTimeOffset ScheduledEndTime { get; set; }
         [JsonPropertyName("privacy_level")]
         public GuildScheduledEventPrivacyLevel PrivacyLevel { get; set; }
         [JsonPropertyName("status")]

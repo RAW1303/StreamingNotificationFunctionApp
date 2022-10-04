@@ -3,6 +3,7 @@ using Raw.Streaming.Discord.Exceptions;
 using Raw.Streaming.Discord.Model.DiscordApi;
 using System.Net.Http;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -21,19 +22,24 @@ namespace Raw.Streaming.Discord.Services
             _logger = logger;
         }
 
-        protected async Task<HttpResponseMessage> SendDiscordApiGetRequestAsync(string endpoint, string queryString = null)
+        protected async Task<HttpResponseMessage> SendDiscordApiGetRequestAsync(string endpoint)
         {
-            return await SendDiscordApiRequestAsync(endpoint, queryString, HttpMethod.Get);
+            return await SendDiscordApiRequestAsync(endpoint, null, HttpMethod.Get);
         }
 
-        protected async Task<HttpResponseMessage> SendDiscordApiPostRequestAsync(string endpoint, string queryString = null)
+        protected async Task<HttpResponseMessage> SendDiscordApiPostRequestAsync(string endpoint, DiscordApiContent content = null)
         {
-            return await SendDiscordApiRequestAsync(endpoint, queryString, HttpMethod.Post);
+            return await SendDiscordApiRequestAsync(endpoint, null, HttpMethod.Post, content);
         }
 
-        protected async Task<HttpResponseMessage> SendDiscordApiPostRequestAsync(string endpoint, DiscordApiContent content, string queryString = null)
+        protected async Task<HttpResponseMessage> SendDiscordApiPatchRequestAsync(string endpoint, DiscordApiContent content = null)
         {
-            return await SendDiscordApiRequestAsync(endpoint, queryString, HttpMethod.Post, content);
+            return await SendDiscordApiRequestAsync(endpoint, null, HttpMethod.Patch, content);
+        }
+
+        protected async Task<HttpResponseMessage> SendDiscordApiDeleteRequestAsync(string endpoint)
+        {
+            return await SendDiscordApiRequestAsync(endpoint, null, HttpMethod.Delete);
         }
 
         private async Task<HttpResponseMessage> SendDiscordApiRequestAsync(string endpoint, string queryString, HttpMethod method, DiscordApiContent content = null)

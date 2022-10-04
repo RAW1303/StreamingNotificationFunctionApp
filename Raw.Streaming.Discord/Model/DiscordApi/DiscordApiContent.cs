@@ -8,7 +8,7 @@ namespace Raw.Streaming.Discord.Model.DiscordApi
     {
         public StringContent ToStringContent()
         {
-            var notificationRequestJson = JsonSerializer.Serialize(this, this.GetType());
+            var notificationRequestJson = JsonSerializer.Serialize(this, GetType());
             return new StringContent(notificationRequestJson, Encoding.UTF8, "application/json");
         }
     }

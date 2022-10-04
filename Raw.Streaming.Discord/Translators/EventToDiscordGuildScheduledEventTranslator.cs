@@ -10,5 +10,17 @@ namespace Raw.Streaming.Discord.Translators
         {
             return new List<GuildScheduledEvent>();
         }
+
+        public static GuildScheduledEvent Translate(Event eventModel)
+        {
+            return new GuildScheduledEvent()
+            {
+                Name = eventModel.Title,
+                Description = $"{eventModel.Game}\n{eventModel.Id}",
+                ScheduledStartTime = eventModel.Start.DateTime,
+                ScheduledEndTime = eventModel.End.DateTime,
+                EntityMetadata = new GuildScheduledEventEntityMetadata() { Location = eventModel.Url }
+            };
+        }
     }
 }
