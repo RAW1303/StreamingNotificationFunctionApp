@@ -1,17 +1,29 @@
 ﻿using Microsoft.Extensions.Logging;
+using Raw.Streaming.Common.Model;
 using Raw.Streaming.Discord.Model.DiscordApi;
+using Raw.Streaming.Discord.Translators;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Raw.Streaming.Discord.Services;
 
-internal class DiscordBotEventService : BaseDiscordBotService, IDiscordBotEventService
+internal class DiscordEventService : BaseDiscordApiService, IDiscordEventService
 {
-    public DiscordBotEventService(ILogger<DiscordBotEventService> logger, HttpClient httpClient) : base(logger, httpClient)
+    public DiscordEventService(ILogger<DiscordEventService> logger, HttpClient httpClient) : base(logger, httpClient)
     {
+    }
+
+    public async Task<IEnumerable<GuildScheduledEvent>> SyncScheduledEvents(string guildId, IEnumerable<Event> events)
+    {
+        var sourceIdParameterName = "SourceId";
+        var existingEvents = await GetScheduledEvents(guildId);
+        var eventsToAdd = EventToDiscordGuildScheduledEventTranslator.Translate(sourceIdParameterName, events.Where(x => !existingEvents.Any(y => y.HasDescriptionParameter(sourceIdParameterName, x.Id))));
+        var tasks = eventsToAdd.Select(x => CreateScheduledEvent(guildId, x));
+        return await Task.WhenAll(tasks);
     }
 
     public async Task<IEnumerable<GuildScheduledEvent>> GetScheduledEvents(string guildId)

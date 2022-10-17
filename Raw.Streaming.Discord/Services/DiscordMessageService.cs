@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Raw.Streaming.Discord.Services
 {
-    internal class DiscordBotMessageService : BaseDiscordBotService, IDiscordBotMessageService
+    internal class DiscordMessageService : BaseDiscordApiService, IDiscordMessageService
     {
-        public DiscordBotMessageService(ILogger<DiscordBotMessageService> logger, HttpClient httpClient) : base(logger, httpClient)
+        public DiscordMessageService(ILogger<DiscordMessageService> logger, HttpClient httpClient) : base(logger, httpClient)
         {
         }
 
