@@ -7,23 +7,25 @@ namespace Raw.Streaming.Webhook.Tests.Functions
     [TestFixture]
     internal class ServiceBusFunctionsTests
     {
-        private Mock<IDiscordBotMessageService> _discordBotMessageService;
+        private Mock<IDiscordEventService> _discordEventService;
+        private Mock<IDiscordMessageService> _discordMessageService;
         private Mock<ILogger<ServiceBusFunctions>> _loggerMock;
         private ServiceBusFunctions _controller;
 
         [SetUp]
         public void Setup()
         {
-            _discordBotMessageService = new Mock<IDiscordBotMessageService>();
+            _discordEventService = new Mock<IDiscordEventService>();
+            _discordMessageService = new Mock<IDiscordMessageService>();
             _loggerMock = new Mock<ILogger<ServiceBusFunctions>>();
-            _controller = new ServiceBusFunctions(_discordBotMessageService.Object, _loggerMock.Object);
+            _controller = new ServiceBusFunctions(_discordEventService.Object, _discordMessageService.Object, _loggerMock.Object);
         }
 
         [Test, AutoData]
         public void ProcessGoLiveMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(GoLive goLive)
         {
             // Arrange
-            _discordBotMessageService
+            _discordMessageService
                 .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
                 .ReturnsAsync(new Message());
             var queueMessage = new DiscordBotQueueItem<GoLive>(goLive);
@@ -37,7 +39,7 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         {
             // Arrange
             var exception = new Exception("Test message");
-            _discordBotMessageService
+            _discordMessageService
                 .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
                 .ThrowsAsync(exception);
             var queueMessage = new DiscordBotQueueItem<GoLive>(goLive);
@@ -50,7 +52,7 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         public void ProcessClipMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Clip[] clips)
         {
             // Arrange
-            _discordBotMessageService
+            _discordMessageService
                 .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
                 .ReturnsAsync(new Message());
             var queueMessage = new DiscordBotQueueItem<Clip>(clips);
@@ -64,7 +66,7 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         {
             // Arrange
             var exception = new Exception("Test message");
-            _discordBotMessageService
+            _discordMessageService
                 .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
                 .ThrowsAsync(exception);
             var queueMessage = new DiscordBotQueueItem<Clip>(clips);
@@ -77,7 +79,7 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         public void ProcessVideoMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Video[] videos)
         {
             // Arrange
-            _discordBotMessageService
+            _discordMessageService
                 .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
                 .ReturnsAsync(new Message());
             var queueMessage = new DiscordBotQueueItem<Video>(videos);
@@ -91,7 +93,7 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         {
             // Arrange
             var exception = new Exception("Test message");
-            _discordBotMessageService
+            _discordMessageService
                 .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
                 .ThrowsAsync(exception);
             var queueMessage = new DiscordBotQueueItem<Video>(videos);
@@ -104,7 +106,7 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         public void ProcessDailyScheduleMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Event[] events)
         {
             // Arrange
-            _discordBotMessageService
+            _discordMessageService
                 .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
                 .ReturnsAsync(new Message());
             var queueMessage = new DiscordBotQueueItem<Event>(events);
@@ -118,7 +120,7 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         {
             // Arrange
             var exception = new Exception("Test message");
-            _discordBotMessageService
+            _discordMessageService
                 .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
                 .ThrowsAsync(exception);
             var queueMessage = new DiscordBotQueueItem<Event>(events);
@@ -131,7 +133,7 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         public void ProcessWeeklyScheduleMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Event[] events)
         {
             // Arrange
-            _discordBotMessageService
+            _discordMessageService
                 .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
                 .ReturnsAsync(new Message());
             var queueMessage = new DiscordBotQueueItem<Event>(events);
@@ -145,7 +147,7 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         {
             // Arrange
             var exception = new Exception("Test message");
-            _discordBotMessageService
+            _discordMessageService
                 .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
                 .ThrowsAsync(exception);
             var queueMessage = new DiscordBotQueueItem<Event>(events);

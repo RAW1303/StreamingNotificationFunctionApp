@@ -15,7 +15,8 @@ namespace Raw.Streaming.Discord
         {
             builder.Services.AddLogging();
             builder.Services.AddHttpClient();
-            builder.Services.AddSingleton<IDiscordBotMessageService, DiscordBotMessageService>();
+            builder.Services.AddSingleton<IDiscordEventService, DiscordEventService>();
+            builder.Services.AddSingleton<IDiscordMessageService, DiscordMessageService>();
         }
     }
 }

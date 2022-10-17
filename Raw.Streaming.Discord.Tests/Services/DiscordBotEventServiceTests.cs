@@ -14,8 +14,8 @@ namespace Raw.Streaming.Webhook.Tests.Functions;
 internal class DiscordBotEventServiceTests
 {
     private Mock<HttpMessageHandler> _mockHttpMessageHandler;
-    private Mock<ILogger<DiscordBotEventService>> _loggerMock;
-    private DiscordBotEventService _service;
+    private Mock<ILogger<DiscordEventService>> _loggerMock;
+    private DiscordEventService _service;
 
     private readonly string _discordApiUrl = "https://test.com";
     private readonly string _discordBotToken = "t3stt0k3n";
@@ -30,10 +30,10 @@ internal class DiscordBotEventServiceTests
     [SetUp]
     public void SetUp()
     {
-        _loggerMock = new Mock<ILogger<DiscordBotEventService>>();
+        _loggerMock = new Mock<ILogger<DiscordEventService>>();
         _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
         var httpClient = new HttpClient(_mockHttpMessageHandler.Object);
-        _service = new DiscordBotEventService(_loggerMock.Object, httpClient);
+        _service = new DiscordEventService(_loggerMock.Object, httpClient);
     }
 
     [Test]
