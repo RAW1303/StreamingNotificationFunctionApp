@@ -16,7 +16,7 @@ internal class DiscordApiService : IDiscordApiService
     private readonly HttpClient _client;
     private readonly ILogger _logger;
 
-    public DiscordApiService(ILogger logger, HttpClient httpClient)
+    public DiscordApiService(HttpClient httpClient, ILogger<DiscordApiService> logger)
     {
         _client = httpClient;
         _logger = logger;

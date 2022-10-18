@@ -33,7 +33,7 @@ internal class DiscordApiServiceTests
         _loggerMock = new Mock<ILogger<DiscordApiService>>();
         _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
         var httpClient = new HttpClient(_mockHttpMessageHandler.Object);
-        _service = new DiscordApiService(_loggerMock.Object, httpClient);
+        _service = new DiscordApiService(httpClient, _loggerMock.Object);
     }
 
     [Test]
