@@ -36,6 +36,7 @@ stages:
       location: $(location)
       discordBotSettings:
         DiscordApiUrl: $(discordApiUrl)
+        DiscordBotApplicationId: $(discordBotApplicationId)
         DiscordGuildId: $(discordGuildId)
         DiscordNotificationGroupIds: $(discordNotificationGroupIds)
         DiscordScheduleChannelId: $(discordScheduleChannelId)
@@ -84,6 +85,7 @@ stages:
       location: $(location)
       discordBotSettings:
         DiscordApiUrl: $(discordApiUrl)
+        DiscordBotApplicationId: $(discordBotApplicationId)
         DiscordNotificationGroupIds: $(discordNotificationGroupIds)
         DiscordScheduleChannelId: $(discordScheduleChannelId)
         DiscordStreamGoLiveChannelId: $(discordStreamGoLiveChannelId)

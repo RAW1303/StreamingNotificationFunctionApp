@@ -36,33 +36,6 @@ namespace Raw.Streaming.Discord.Model.DiscordApi
         public int? EntityId { get; set; }
         [JsonPropertyName("entity_metadata")]
         public GuildScheduledEventEntityMetadata EntityMetadata { get; set; }
-
-        public bool HasDescriptionParameter(string name)
-        {
-            return GetDescriptionLines().Any(x => x.StartsWith(name));
-        }
-
-        public bool HasDescriptionParameter(string name, string value)
-        {
-            return HasDescriptionParameter(name) && GetDescriptionParameter(name) == value;
-        }
-
-        public string GetDescriptionParameter(string name)
-        {
-            return GetDescriptionLines()
-                .First(x => x.StartsWith(name))
-                .Substring(name.Length + 1);
-        }
-
-        public void AddDescriptionParameter(string name, string value)
-        {
-            Description = $"{Description}\n\n{name}:{value}"; 
-        }
-
-        private string[] GetDescriptionLines()
-        {
-            return Description.Split('\n');
-        }
     }
 
     [ExcludeFromCodeCoverage]

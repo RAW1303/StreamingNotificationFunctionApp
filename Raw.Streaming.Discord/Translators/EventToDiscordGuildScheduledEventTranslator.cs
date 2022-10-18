@@ -7,14 +7,16 @@ namespace Raw.Streaming.Discord.Translators
 {
     internal static class EventToDiscordGuildScheduledEventTranslator
     {
-        public static IEnumerable<GuildScheduledEvent> Translate(string eventIdParameterName, IEnumerable<Event> events, string channelOverride = null)
+        private static readonly string _channelOverride = AppSettings.EventChannelOverride;
+
+        public static IEnumerable<GuildScheduledEvent> Translate(IEnumerable<Event> events)
         {
-            return events.Select(x => Translate(eventIdParameterName, x, channelOverride));
+            return events.Select(x => Translate(x));
         }
 
-        public static GuildScheduledEvent Translate(string eventIdParameterName, Event eventModel, string channelOverride = null)
+        public static GuildScheduledEvent Translate(Event eventModel)
         {
-            var isChannelOverriden = string.IsNullOrEmpty(channelOverride);
+            var isChannelOverriden = string.IsNullOrEmpty(_channelOverride);
             var guildScheduledEvent = new GuildScheduledEvent()
             {
                 Name = eventModel.Title,
@@ -24,11 +26,10 @@ namespace Raw.Streaming.Discord.Translators
                 Status = GuildScheduledEventStatus.SCHEDULED,
                 PrivacyLevel = GuildScheduledEventPrivacyLevel.GUILD_ONLY,
                 EntityType = isChannelOverriden ? GuildScheduledEventEntityType.EXTERNAL : GuildScheduledEventEntityType.VOICE,
-                ChannelId = channelOverride,
+                ChannelId = _channelOverride,
                 EntityMetadata = isChannelOverriden ? new GuildScheduledEventEntityMetadata() { Location = eventModel.Url } : null
             };
 
-            guildScheduledEvent.AddDescriptionParameter(eventIdParameterName, eventModel.Id);
             return guildScheduledEvent;
         }
     }
