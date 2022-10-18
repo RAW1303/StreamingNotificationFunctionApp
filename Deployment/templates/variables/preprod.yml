@@ -4,3 +4,4 @@ variables:
   discordScheduleChannelId: '771066982765297764'
   discordStreamGoLiveChannelId: '771066982765297764'
   discordVideoChannelId: '771066982765297764'
+  eventChannelOverride: '1031938591988912199'

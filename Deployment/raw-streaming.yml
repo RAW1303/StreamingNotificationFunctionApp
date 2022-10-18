@@ -41,6 +41,7 @@ stages:
         DiscordScheduleChannelId: $(discordScheduleChannelId)
         DiscordStreamGoLiveChannelId: $(discordStreamGoLiveChannelId)
         DiscordVideoChannelId: $(discordVideoChannelId)
+        EventChannelOverride: $(eventChannelOverride)
       orchestratorSettings:
         EventScheduleTimerTrigger: $(eventScheduleTimerTrigger)
         ScheduleDailyTimerTrigger: $(scheduleDailyTimerTrigger)

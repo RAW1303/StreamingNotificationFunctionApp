@@ -22,9 +22,12 @@ internal class DiscordEventService : IDiscordEventService
 
     public async Task<IEnumerable<GuildScheduledEvent>> SyncScheduledEvents(string guildId, IEnumerable<Event> events)
     {
+        var channelOverride = AppSettings.EventChannelOverride;
+        var isChannelOverriden = string.IsNullOrEmpty(channelOverride);
         var sourceIdParameterName = "SourceId";
         var existingEvents = await GetScheduledEvents(guildId);
-        var eventsToAdd = EventToDiscordGuildScheduledEventTranslator.Translate(sourceIdParameterName, events.Where(x => !existingEvents.Any(y => y.HasDescriptionParameter(sourceIdParameterName, x.Id))));
+        var filteredEvents = FilterEvents(existingEvents, channelOverride);
+        var eventsToAdd = EventToDiscordGuildScheduledEventTranslator.Translate(sourceIdParameterName, events.Where(x => !filteredEvents.Any(y => y.HasDescriptionParameter(sourceIdParameterName, x.Id))));
         var tasks = eventsToAdd.Select(x => CreateScheduledEvent(guildId, x));
         return await Task.WhenAll(tasks);
     }
@@ -83,5 +86,13 @@ internal class DiscordEventService : IDiscordEventService
             _logger.LogError(ex, $"Error delete scheduled event {eventId} in guild {guildId}");
             throw;
         }
+    }
+
+    private IEnumerable<GuildScheduledEvent> FilterEvents(IEnumerable<GuildScheduledEvent> events, string overrideChannel)
+    {
+        if (string.IsNullOrEmpty(overrideChannel))
+            return events;
+
+        return events.Where(e => e.ChannelId == overrideChannel);
     }
 }
