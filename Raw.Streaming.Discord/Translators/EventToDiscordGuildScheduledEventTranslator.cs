@@ -20,6 +20,9 @@ namespace Raw.Streaming.Discord.Translators
                 Description = $"{eventModel.Game}",
                 ScheduledStartTime = eventModel.Start.DateTime,
                 ScheduledEndTime = eventModel.End.DateTime,
+                Status = GuildScheduledEventStatus.SCHEDULED,
+                PrivacyLevel = GuildScheduledEventPrivacyLevel.GUILD_ONLY,
+                EntityType = GuildScheduledEventEntityType.EXTERNAL,
                 EntityMetadata = new GuildScheduledEventEntityMetadata() { Location = eventModel.Url }
             };
 

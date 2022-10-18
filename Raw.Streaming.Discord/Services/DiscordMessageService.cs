@@ -7,10 +7,15 @@ using System.Threading.Tasks;
 
 namespace Raw.Streaming.Discord.Services
 {
-    internal class DiscordMessageService : BaseDiscordApiService, IDiscordMessageService
+    internal class DiscordMessageService : IDiscordMessageService
     {
-        public DiscordMessageService(ILogger<DiscordMessageService> logger, HttpClient httpClient) : base(logger, httpClient)
+        private readonly IDiscordApiService _discordApiService;
+        private readonly ILogger _logger;
+
+        public DiscordMessageService(IDiscordApiService discordApiService, ILogger<DiscordEventService> logger)
         {
+            _discordApiService = discordApiService;
+            _logger = logger;
         }
 
         public async Task<Message> SendDiscordMessageAsync(string channelId, Message message)
@@ -18,9 +23,7 @@ namespace Raw.Streaming.Discord.Services
             try
             {
                 var endpoint = $"/channels/{channelId}/messages";
-                var response = await SendDiscordApiPostRequestAsync(endpoint, message);
-                var responseObject = JsonSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync());
-                return responseObject;
+                return await _discordApiService.SendDiscordApiPostRequestAsync<Message>(endpoint, message);
             }
             catch(Exception ex)
             {
@@ -34,9 +37,7 @@ namespace Raw.Streaming.Discord.Services
             try
             {
                 var endpoint = $"/channels/{channelId}/messages/{messageId}/crosspost";
-                var response = await SendDiscordApiPostRequestAsync(endpoint);
-                var responseObject = JsonSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync());
-                return responseObject;
+                return await _discordApiService.SendDiscordApiPostRequestAsync<Message>(endpoint);
             }
             catch (Exception ex)
             {

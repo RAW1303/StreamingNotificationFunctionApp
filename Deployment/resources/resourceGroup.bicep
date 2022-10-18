@@ -33,7 +33,7 @@ var queueSettings = [
     value: 'golive'
   }
   {
-    name: 'VideoQueueName'
+    name: 'VideosQueueName'
     value: 'videos'
   }
   {

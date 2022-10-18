@@ -2,20 +2,20 @@
 using Raw.Streaming.Discord.Exceptions;
 using Raw.Streaming.Discord.Model.DiscordApi;
 using Raw.Streaming.Discord.Services;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Raw.Streaming.Webhook.Tests.Functions;
 
 [TestFixture]
-internal class DiscordBotEventServiceTests
+internal class DiscordApiServiceTests
 {
     private Mock<HttpMessageHandler> _mockHttpMessageHandler;
-    private Mock<ILogger<DiscordEventService>> _loggerMock;
-    private DiscordEventService _service;
+    private Mock<ILogger<DiscordApiService>> _loggerMock;
+    private DiscordApiService _service;
 
     private readonly string _discordApiUrl = "https://test.com";
     private readonly string _discordBotToken = "t3stt0k3n";
@@ -30,10 +30,10 @@ internal class DiscordBotEventServiceTests
     [SetUp]
     public void SetUp()
     {
-        _loggerMock = new Mock<ILogger<DiscordEventService>>();
+        _loggerMock = new Mock<ILogger<DiscordApiService>>();
         _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
         var httpClient = new HttpClient(_mockHttpMessageHandler.Object);
-        _service = new DiscordEventService(_loggerMock.Object, httpClient);
+        _service = new DiscordApiService(_loggerMock.Object, httpClient);
     }
 
     [Test]
@@ -41,7 +41,7 @@ internal class DiscordBotEventServiceTests
     {
         var jsonContent = await File.ReadAllTextAsync($"{AppDomain.CurrentDomain.BaseDirectory}/TestData/GetScheduledEventsResponse.json");
         SetupMockHttpMessageHandler(HttpStatusCode.OK, jsonContent);
-        var result = await _service.GetScheduledEvents("testid");
+        var result = await _service.SendDiscordApiGetRequestAsync<IEnumerable<GuildScheduledEvent>>("testid");
 
         Assert.That(result, Has.One.Items);
         Assert.That(result, Has.One.With.Property("Id").EqualTo("1026468392015769610"));
@@ -62,7 +62,7 @@ internal class DiscordBotEventServiceTests
         SetupMockHttpMessageHandler(statusCode, errorMessage);
 
         // Act and Assert
-        Assert.That(async () => await _service.GetScheduledEvents("testid"), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
+        Assert.That(async () => await _service.SendDiscordApiGetRequestAsync<GuildScheduledEvent>("testUrl"), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
     }
 
     [InlineAutoData(HttpStatusCode.BadRequest)]
@@ -76,7 +76,7 @@ internal class DiscordBotEventServiceTests
         SetupMockHttpMessageHandler(statusCode, errorMessage);
 
         // Act and Assert
-        Assert.That(async () => await _service.CreateScheduledEvent(guildId, guildScheduledEvent), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
+        Assert.That(async () => await _service.SendDiscordApiPostRequestAsync<GuildScheduledEvent>("testUrl", guildScheduledEvent), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
     }
 
     [InlineAutoData(HttpStatusCode.BadRequest)]
@@ -90,7 +90,7 @@ internal class DiscordBotEventServiceTests
         SetupMockHttpMessageHandler(statusCode, errorMessage);
 
         // Act and Assert
-        Assert.That(async () => await _service.UpdateScheduledEvent(guildId, eventId, guildScheduledEvent), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
+        Assert.That(async () => await _service.SendDiscordApiPatchRequestAsync<GuildScheduledEvent>("testUrl", guildScheduledEvent), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
     }
 
     [InlineAutoData(HttpStatusCode.BadRequest)]
@@ -104,7 +104,7 @@ internal class DiscordBotEventServiceTests
         SetupMockHttpMessageHandler(statusCode, errorMessage);
 
         // Act and Assert
-        Assert.That(async () => await _service.DeleteScheduledEvent(guildId, eventId), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
+        Assert.That(async () => await _service.SendDiscordApiDeleteRequestAsync("testUrl"), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
     }
 
     private void SetupMockHttpMessageHandler(HttpStatusCode statusCode, string content)
