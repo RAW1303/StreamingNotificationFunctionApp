@@ -7,9 +7,9 @@ namespace Raw.Streaming.Discord.Translators
 {
     internal static class EventToDiscordGuildScheduledEventTranslator
     {
-        public static IEnumerable<GuildScheduledEvent> Translate(string eventIdParameterName, IEnumerable<Event> events)
+        public static IEnumerable<GuildScheduledEvent> Translate(string eventIdParameterName, IEnumerable<Event> events, string channelOverride = null)
         {
-            return events.Select(x => Translate(eventIdParameterName, x));
+            return events.Select(x => Translate(eventIdParameterName, x, channelOverride));
         }
 
         public static GuildScheduledEvent Translate(string eventIdParameterName, Event eventModel, string channelOverride = null)

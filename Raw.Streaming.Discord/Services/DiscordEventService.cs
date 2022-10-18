@@ -27,7 +27,7 @@ internal class DiscordEventService : IDiscordEventService
         var sourceIdParameterName = "SourceId";
         var existingEvents = await GetScheduledEvents(guildId);
         var filteredEvents = FilterEvents(existingEvents, channelOverride);
-        var eventsToAdd = EventToDiscordGuildScheduledEventTranslator.Translate(sourceIdParameterName, events.Where(x => !filteredEvents.Any(y => y.HasDescriptionParameter(sourceIdParameterName, x.Id))));
+        var eventsToAdd = EventToDiscordGuildScheduledEventTranslator.Translate(sourceIdParameterName, events.Where(x => !filteredEvents.Any(y => y.HasDescriptionParameter(sourceIdParameterName, x.Id))), channelOverride);
         var tasks = eventsToAdd.Select(x => CreateScheduledEvent(guildId, x));
         return await Task.WhenAll(tasks);
     }
