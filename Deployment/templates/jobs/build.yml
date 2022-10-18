@@ -15,12 +15,36 @@ jobs:
       targetPath: '$(Build.SourcesDirectory)/Deployment/Resources/resourceGroup.bicep'
       artifactType: 'pipeline'
       artifactName: 'infrastructure'
+      
+  - task: DotNetCoreCLI@2
+    displayName: 'Install dotnet-stryker'
+    inputs:
+      command: custom
+      custom: tool
+      arguments: install dotnet-stryker --tool-path $(Agent.BuildDirectory)/tools
+      
+  - task: SonarCloudPrepare@1
+    inputs:
+      SonarCloud: 'SonarCloud'
+      organization: 'raw13'
+      scannerMode: 'MSBuild'
+      projectKey: 'RAW1303_StreamingNotificationFunctionApp'
 
   - task: DotNetCoreCLI@2
     displayName: Run unit tests
     inputs:
       command: test
       projects: '**/*Tests/*.csproj'
+      publishTestResults: true
+      arguments: '--collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura'
+  
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish code coverage report'
+    inputs:
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+      
+  - task: SonarCloudAnalyze@1
 
   - task: DotNetCoreCLI@2
     displayName: Publish
@@ -31,9 +55,34 @@ jobs:
       arguments: '-o $(Build.ArtifactStagingDirectory)'
       zipAfterPublish: true
       modifyOutputPath: true
-    
+      
   - task: PublishPipelineArtifact@1
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
       artifactType: 'pipeline'
       artifactName: 'code'
+      
+  - task: Powershell@2
+    displayName: 'Run dotnet-stryker'
+    inputs:
+      workingDirectory: '$(Build.SourcesDirectory)/Raw.Streaming.Discord.Tests'
+      targetType: 'inline'
+      pwsh: true
+      script: $(Agent.BuildDirectory)/tools/dotnet-stryker
+      
+  - task: Powershell@2
+    displayName: 'Run dotnet-stryker'
+    inputs:
+      workingDirectory: '$(Build.SourcesDirectory)/Raw.Streaming.Webhook.Tests'
+      targetType: 'inline'
+      pwsh: true
+      script: $(Agent.BuildDirectory)/tools/dotnet-stryker
+      
+  - task: PublishMutationReport@1
+    displayName: 'Publish Mutation Test Report'
+    inputs:
+      reportPattern: '**/mutation-report.html'
+      
+  - task: SonarCloudPublish@1
+    inputs:
+      pollingTimeoutSec: '300'
