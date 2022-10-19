@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using Raw.Streaming.Discord.Model.DiscordApi;
+﻿using Raw.Streaming.Discord.Model.DiscordApi;
 using System.Text.Json;
 
 namespace Raw.Streaming.Discord.Tests.Model;

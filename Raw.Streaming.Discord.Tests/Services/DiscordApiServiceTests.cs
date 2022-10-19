@@ -2,7 +2,6 @@
 using Raw.Streaming.Discord.Exceptions;
 using Raw.Streaming.Discord.Model.DiscordApi;
 using Raw.Streaming.Discord.Services;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -37,7 +36,7 @@ internal class DiscordApiServiceTests
     }
 
     [Test]
-    public async Task GetScheduledEvents_WhenApiReturnsSuccessfully_ReturnsValidEventsList()
+    public async Task SendDiscordApiGetRequestAsync_WhenHttpClientReturnsSuccessfully_ReturnsValidEventsList()
     {
         var jsonContent = await File.ReadAllTextAsync($"{AppDomain.CurrentDomain.BaseDirectory}/TestData/GetScheduledEventsResponse.json");
         SetupMockHttpMessageHandler(HttpStatusCode.OK, jsonContent);
@@ -55,7 +54,7 @@ internal class DiscordApiServiceTests
     [TestCase(HttpStatusCode.Forbidden)]
     [TestCase(HttpStatusCode.Unauthorized)]
     [TestCase(HttpStatusCode.InternalServerError)]
-    public void GetScheduledEvents_WhenHttpClientReturnsNonSuccessStatusCode_ThrowsException(HttpStatusCode statusCode)
+    public void SendDiscordApiGetRequestAsync_WhenHttpClientReturnsNonSuccessStatusCode_ThrowsException(HttpStatusCode statusCode)
     {
         // Arrange
         var errorMessage = $"Test Error Message {statusCode}";
@@ -69,7 +68,7 @@ internal class DiscordApiServiceTests
     [InlineAutoData(HttpStatusCode.Forbidden)]
     [InlineAutoData(HttpStatusCode.Unauthorized)]
     [InlineAutoData(HttpStatusCode.InternalServerError)]
-    public void CreateScheduledEvent_WhenHttpClientReturnsNonSuccessStatusCode_ThrowsException(HttpStatusCode statusCode, GuildScheduledEvent guildScheduledEvent)
+    public void SendDiscordApiPostRequestAsync_WhenHttpClientReturnsNonSuccessStatusCode_ThrowsException(HttpStatusCode statusCode, GuildScheduledEvent guildScheduledEvent)
     {
         // Arrange
         var errorMessage = $"Test Error Message {statusCode}";
@@ -83,7 +82,7 @@ internal class DiscordApiServiceTests
     [InlineAutoData(HttpStatusCode.Forbidden)]
     [InlineAutoData(HttpStatusCode.Unauthorized)]
     [InlineAutoData(HttpStatusCode.InternalServerError)]
-    public void UpdateScheduledEvent_WhenHttpClientReturnsNonSuccessStatusCode_ThrowsException(HttpStatusCode statusCode, GuildScheduledEvent guildScheduledEvent)
+    public void SendDiscordApiPatchRequestAsync_WhenHttpClientReturnsNonSuccessStatusCode_ThrowsException(HttpStatusCode statusCode, GuildScheduledEvent guildScheduledEvent)
     {
         // Arrange
         var errorMessage = $"Test Error Message {statusCode}";
@@ -97,7 +96,7 @@ internal class DiscordApiServiceTests
     [InlineAutoData(HttpStatusCode.Forbidden)]
     [InlineAutoData(HttpStatusCode.Unauthorized)]
     [InlineAutoData(HttpStatusCode.InternalServerError)]
-    public void DeleteScheduledEvent_WhenHttpClientReturnsNonSuccessStatusCode_ThrowsException(HttpStatusCode statusCode)
+    public void SendDiscordApiDeleteRequestAsync_WhenHttpClientReturnsNonSuccessStatusCode_ThrowsException(HttpStatusCode statusCode)
     {
         // Arrange
         var errorMessage = $"Test Error Message {statusCode}";
