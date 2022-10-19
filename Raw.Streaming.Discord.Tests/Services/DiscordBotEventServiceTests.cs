@@ -10,8 +10,6 @@ using System.Threading;
 
 namespace Raw.Streaming.Webhook.Tests.Functions;
 
-#nullable disable
-
 [TestFixture]
 internal class DiscordApiServiceTests
 {
