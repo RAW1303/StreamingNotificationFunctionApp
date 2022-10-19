@@ -38,7 +38,7 @@ jobs:
       command: test
       projects: '**/*Tests/*.csproj'
       publishTestResults: true
-      arguments: '--collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura'
+      arguments: '--collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover'
         
   - task: SonarCloudAnalyze@1
 
