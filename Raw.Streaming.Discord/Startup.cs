@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Raw.Streaming.Discord.Services;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 [assembly: FunctionsStartup(typeof(Raw.Streaming.Discord.Startup))]
@@ -9,6 +10,7 @@ using System.Runtime.CompilerServices;
 
 namespace Raw.Streaming.Discord
 {
+    [ExcludeFromCodeCoverage]
     internal class Startup : FunctionsStartup
     {
         public override void Configure(IFunctionsHostBuilder builder)

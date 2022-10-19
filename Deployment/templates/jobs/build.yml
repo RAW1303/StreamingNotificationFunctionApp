@@ -58,6 +58,7 @@ jobs:
       modifyOutputPath: true
       
   - task: PublishPipelineArtifact@1
+    displayName: Publish Code
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
       artifactType: 'pipeline'

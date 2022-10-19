@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Raw.Streaming.Discord.Exceptions;
 using Raw.Streaming.Discord.Model.DiscordApi;
-using Raw.Streaming.Discord.Model.DiscordApi.Exceptions;
 using System.Net;
 using System.Net.Http;
 using System.Text;

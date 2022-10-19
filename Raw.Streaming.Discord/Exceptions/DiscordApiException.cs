@@ -1,17 +1,13 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
-namespace Raw.Streaming.Discord.Exceptions
-{
-    [Serializable]
-    public sealed class DiscordApiException : Exception
-    {
-        private DiscordApiException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
+namespace Raw.Streaming.Discord.Exceptions;
 
-        public DiscordApiException(string message) : base(message)
-        {
-        }
-    }
+[Serializable]
+[ExcludeFromCodeCoverage]
+public sealed class DiscordApiException : Exception
+{
+    private DiscordApiException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+    public DiscordApiException(string message) : base(message) { }
 }
