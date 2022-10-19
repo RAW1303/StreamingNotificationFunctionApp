@@ -1,0 +1,3 @@
+stryker-config:
+    project: 'Raw.Streaming.Discord.Tests.csproj'
+    report-file-name: 'Raw-Streaming-Discord-Tests'

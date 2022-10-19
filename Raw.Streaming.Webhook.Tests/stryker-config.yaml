@@ -1,0 +1,3 @@
+stryker-config:
+    project: 'Raw.Streaming.Webhook.Tests.csproj'
+    report-file-name: 'Raw-Streaming-Webhook-Tests'
