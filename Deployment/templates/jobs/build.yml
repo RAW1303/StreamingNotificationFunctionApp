@@ -11,6 +11,7 @@ jobs:
 
   steps:
   - task: PublishPipelineArtifact@1
+    displayName: 'Publish bicep file'
     inputs:
       targetPath: '$(Build.SourcesDirectory)/Deployment/Resources/resourceGroup.bicep'
       artifactType: 'pipeline'
@@ -22,6 +23,12 @@ jobs:
       command: custom
       custom: tool
       arguments: install dotnet-stryker --tool-path $(Agent.BuildDirectory)/tools
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet restore'
+    inputs:
+      command: 'restore'
+      projects: '**/*.csproj'
       
   - task: SonarCloudPrepare@1
     inputs:
@@ -30,7 +37,7 @@ jobs:
       scannerMode: 'MSBuild'
       projectKey: 'RAW1303_StreamingNotificationFunctionApp'
       extraProperties: |
-        sonar.cs.opencover.reportsPaths='$(Agent.TempDirectory)/**/coverage.xml'
+        sonar.cs.opencover.reportsPaths='$(Agent.TempDirectory)\**\coverage.opencover.xml'
 
   - task: DotNetCoreCLI@2
     displayName: Run unit tests
@@ -38,7 +45,7 @@ jobs:
       command: test
       projects: '**/*Tests/*.csproj'
       publishTestResults: true
-      arguments: '--collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover'
+      arguments: '--no-restore --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover'
         
   - task: SonarCloudAnalyze@1
 
@@ -48,7 +55,7 @@ jobs:
       command: 'publish'
       publishWebProjects: false
       projects: '**/*.csproj'
-      arguments: '-o $(Build.ArtifactStagingDirectory)'
+      arguments: '-o $(Build.ArtifactStagingDirectory) --no-restore'
       zipAfterPublish: true
       modifyOutputPath: true
       
