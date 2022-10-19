@@ -13,15 +13,15 @@ namespace Raw.Streaming.Discord.Model.DiscordApi
         [JsonPropertyName("guild_id")]
         public string GuildId { get; set; }
         [JsonPropertyName("channel_id")]
-        public string? ChannelId { get; set; }
+        public string ChannelId { get; set; }
         [JsonPropertyName("creator_id")]
-        public string? CreatorId { get; set; }
+        public string CreatorId { get; set; }
         [JsonPropertyName("name")]
         public string Name { get; set; }
         [JsonPropertyName("description")]
-        public string? Description { get; set; }
+        public string Description { get; set; }
         [JsonPropertyName("image")]
-        public string? Image { get; set; }
+        public string Image { get; set; }
         [JsonPropertyName("scheduled_start_time")]
         public DateTimeOffset ScheduledStartTime { get; set; }
         [JsonPropertyName("scheduled_end_time")]

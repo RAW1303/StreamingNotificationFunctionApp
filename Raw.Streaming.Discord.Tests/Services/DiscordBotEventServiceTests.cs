@@ -10,6 +10,8 @@ using System.Threading;
 
 namespace Raw.Streaming.Webhook.Tests.Functions;
 
+#nullable disable
+
 [TestFixture]
 internal class DiscordApiServiceTests
 {
@@ -69,7 +71,7 @@ internal class DiscordApiServiceTests
     [InlineAutoData(HttpStatusCode.Forbidden)]
     [InlineAutoData(HttpStatusCode.Unauthorized)]
     [InlineAutoData(HttpStatusCode.InternalServerError)]
-    public void CreateScheduledEvent_WhenHttpClientReturnsNonSuccessStatusCode_ThrowsException(HttpStatusCode statusCode, string guildId, GuildScheduledEvent guildScheduledEvent)
+    public void CreateScheduledEvent_WhenHttpClientReturnsNonSuccessStatusCode_ThrowsException(HttpStatusCode statusCode, GuildScheduledEvent guildScheduledEvent)
     {
         // Arrange
         var errorMessage = $"Test Error Message {statusCode}";
@@ -83,7 +85,7 @@ internal class DiscordApiServiceTests
     [InlineAutoData(HttpStatusCode.Forbidden)]
     [InlineAutoData(HttpStatusCode.Unauthorized)]
     [InlineAutoData(HttpStatusCode.InternalServerError)]
-    public void UpdateScheduledEvent_WhenHttpClientReturnsNonSuccessStatusCode_ThrowsException(HttpStatusCode statusCode, string guildId, string eventId, GuildScheduledEvent guildScheduledEvent)
+    public void UpdateScheduledEvent_WhenHttpClientReturnsNonSuccessStatusCode_ThrowsException(HttpStatusCode statusCode, GuildScheduledEvent guildScheduledEvent)
     {
         // Arrange
         var errorMessage = $"Test Error Message {statusCode}";
@@ -97,7 +99,7 @@ internal class DiscordApiServiceTests
     [InlineAutoData(HttpStatusCode.Forbidden)]
     [InlineAutoData(HttpStatusCode.Unauthorized)]
     [InlineAutoData(HttpStatusCode.InternalServerError)]
-    public void DeleteScheduledEvent_WhenHttpClientReturnsNonSuccessStatusCode_ThrowsException(HttpStatusCode statusCode, string guildId, string eventId)
+    public void DeleteScheduledEvent_WhenHttpClientReturnsNonSuccessStatusCode_ThrowsException(HttpStatusCode statusCode)
     {
         // Arrange
         var errorMessage = $"Test Error Message {statusCode}";

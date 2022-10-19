@@ -6,7 +6,7 @@ namespace Raw.Streaming.Discord.Exceptions;
 
 [ExcludeFromCodeCoverage]
 [Serializable]
-internal class DiscordApiRateLimitException : Exception
+public sealed class DiscordApiRateLimitException : Exception
 {
     private DiscordApiRateLimitException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     public DiscordApiRateLimitException() : base() { }
