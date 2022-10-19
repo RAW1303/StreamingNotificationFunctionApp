@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Raw.Streaming.Discord.Model.DiscordApi;
 using System;
-using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Raw.Streaming.Discord.Services
@@ -12,7 +10,7 @@ namespace Raw.Streaming.Discord.Services
         private readonly IDiscordApiService _discordApiService;
         private readonly ILogger _logger;
 
-        public DiscordMessageService(IDiscordApiService discordApiService, ILogger<DiscordEventService> logger)
+        public DiscordMessageService(IDiscordApiService discordApiService, ILogger<DiscordMessageService> logger)
         {
             _discordApiService = discordApiService;
             _logger = logger;
