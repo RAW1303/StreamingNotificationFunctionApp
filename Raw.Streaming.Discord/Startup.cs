@@ -8,18 +8,17 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Raw.Streaming.Discord.Tests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 
-namespace Raw.Streaming.Discord
+namespace Raw.Streaming.Discord;
+
+[ExcludeFromCodeCoverage]
+internal class Startup : FunctionsStartup
 {
-    [ExcludeFromCodeCoverage]
-    internal class Startup : FunctionsStartup
+    public override void Configure(IFunctionsHostBuilder builder)
     {
-        public override void Configure(IFunctionsHostBuilder builder)
-        {
-            builder.Services.AddLogging();
-            builder.Services.AddHttpClient();
-            builder.Services.AddSingleton<IDiscordApiService, DiscordApiService>();
-            builder.Services.AddSingleton<IDiscordEventService, DiscordEventService>();
-            builder.Services.AddSingleton<IDiscordMessageService, DiscordMessageService>();
-        }
+        builder.Services.AddLogging();
+        builder.Services.AddHttpClient();
+        builder.Services.AddSingleton<IDiscordApiService, DiscordApiService>();
+        builder.Services.AddSingleton<IDiscordEventService, DiscordEventService>();
+        builder.Services.AddSingleton<IDiscordMessageService, DiscordMessageService>();
     }
 }

@@ -24,7 +24,7 @@ internal class DiscordEventService : IDiscordEventService
     {
         var existingEvents = await GetScheduledEvents(guildId);
         var botExistingEvents = existingEvents.Where(e => e.CreatorId == AppSettings.DiscordBotApplicationId);
-        var eventsToAdd = EventToDiscordGuildScheduledEventTranslator.Translate(events.Where(x => !existingEvents.Any(y => x.Title == y.Name)));
+        var eventsToAdd = EventToDiscordGuildScheduledEventTranslator.Translate(events.Where(x => !botExistingEvents.Any(y => x.Title == y.Name)));
         var tasks = eventsToAdd.Select(x => CreateScheduledEvent(guildId, x));
         return await Task.WhenAll(tasks);
     }
@@ -53,34 +53,6 @@ internal class DiscordEventService : IDiscordEventService
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error creating scheduled event in guild {guildId}");
-            throw;
-        }
-    }
-
-    public async Task<GuildScheduledEvent> UpdateScheduledEvent(string guildId, string eventId, GuildScheduledEvent guildScheduledEvent)
-    {
-        try
-        {
-            var endpoint = $"guilds/{guildId}/scheduled-events/{eventId}";
-            return await _discordApiService.SendDiscordApiPatchRequestAsync<GuildScheduledEvent>(endpoint, guildScheduledEvent);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error updating scheduled event {eventId} in guild {guildId}");
-            throw;
-        }
-    }
-
-    public async Task DeleteScheduledEvent(string guildId, string eventId)
-    {
-        try
-        {
-            var endpoint = $"guilds/{guildId}/scheduled-events/{eventId}";
-            await _discordApiService.SendDiscordApiDeleteRequestAsync(endpoint);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error delete scheduled event {eventId} in guild {guildId}");
             throw;
         }
     }
