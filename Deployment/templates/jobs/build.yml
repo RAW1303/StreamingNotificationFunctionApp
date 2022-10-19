@@ -36,8 +36,6 @@ jobs:
       organization: 'raw13'
       scannerMode: 'MSBuild'
       projectKey: 'RAW1303_StreamingNotificationFunctionApp'
-      extraProperties: |
-        sonar.cs.opencover.reportsPaths='$(Agent.TempDirectory)\**\coverage.opencover.xml'
 
   - task: DotNetCoreCLI@2
     displayName: Run unit tests
@@ -45,8 +43,8 @@ jobs:
       command: test
       projects: '**/*Tests/*.csproj'
       publishTestResults: true
-      arguments: '--no-restore --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover'
-        
+      arguments: '--no-restore --collect "Code Coverage"'
+
   - task: SonarCloudAnalyze@1
 
   - task: DotNetCoreCLI@2
