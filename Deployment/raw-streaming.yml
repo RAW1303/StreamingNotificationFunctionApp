@@ -16,6 +16,8 @@ variables:
 stages:
 - stage: Build
   displayName: Build
+  variables:
+  - group: Build
   jobs:
   - template: templates/jobs/build.yml
       
@@ -36,11 +38,15 @@ stages:
       location: $(location)
       discordBotSettings:
         DiscordApiUrl: $(discordApiUrl)
+        DiscordBotApplicationId: $(discordBotApplicationId)
+        DiscordGuildId: $(discordGuildId)
         DiscordNotificationGroupIds: $(discordNotificationGroupIds)
         DiscordScheduleChannelId: $(discordScheduleChannelId)
         DiscordStreamGoLiveChannelId: $(discordStreamGoLiveChannelId)
         DiscordVideoChannelId: $(discordVideoChannelId)
+        EventChannelOverride: $(eventChannelOverride)
       orchestratorSettings:
+        EventScheduleTimerTrigger: $(eventScheduleTimerTrigger)
         ScheduleDailyTimerTrigger: $(scheduleDailyTimerTrigger)
         ScheduleWeeklyTimerTrigger: $(scheduleWeeklyTimerTrigger)
         TwitchApiChannelEndpoint: $(twitchApiChannelEndpoint)
@@ -81,11 +87,13 @@ stages:
       location: $(location)
       discordBotSettings:
         DiscordApiUrl: $(discordApiUrl)
+        DiscordBotApplicationId: $(discordBotApplicationId)
         DiscordNotificationGroupIds: $(discordNotificationGroupIds)
         DiscordScheduleChannelId: $(discordScheduleChannelId)
         DiscordStreamGoLiveChannelId: $(discordStreamGoLiveChannelId)
         DiscordVideoChannelId: $(discordVideoChannelId)
       orchestratorSettings:
+        EventScheduleTimerTrigger: $(eventScheduleTimerTrigger)
         ScheduleDailyTimerTrigger: $(scheduleDailyTimerTrigger)
         ScheduleWeeklyTimerTrigger: $(scheduleWeeklyTimerTrigger)
         TwitchApiChannelEndpoint: $(twitchApiChannelEndpoint)

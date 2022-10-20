@@ -30,7 +30,7 @@ namespace Raw.Streaming.Webhook.Functions
         }
 
         [FunctionName("NotifyTwitchHighlights")]
-        [return: ServiceBus("%VideoQueueName%")]
+        [return: ServiceBus("%VideosQueueName%")]
         public async Task<ServiceBusMessage> NotifyTwitchHighlightsTrigger(
             [TimerTrigger("%TwitchHighlightsTimerTrigger%")] TimerInfo timer)
         {

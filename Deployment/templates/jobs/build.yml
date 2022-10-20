@@ -11,6 +11,7 @@ jobs:
 
   steps:
   - task: PublishPipelineArtifact@1
+    displayName: 'Publish bicep file'
     inputs:
       targetPath: '$(Build.SourcesDirectory)/Deployment/Resources/resourceGroup.bicep'
       artifactType: 'pipeline'
@@ -22,6 +23,12 @@ jobs:
       command: custom
       custom: tool
       arguments: install dotnet-stryker --tool-path $(Agent.BuildDirectory)/tools
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet restore'
+    inputs:
+      command: 'restore'
+      projects: '**/*.csproj'
       
   - task: SonarCloudPrepare@1
     inputs:
@@ -36,14 +43,8 @@ jobs:
       command: test
       projects: '**/*Tests/*.csproj'
       publishTestResults: true
-      arguments: '--collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura'
-  
-  - task: PublishCodeCoverageResults@1
-    displayName: 'Publish code coverage report'
-    inputs:
-      codeCoverageTool: 'Cobertura'
-      summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
-      
+      arguments: '--no-restore --collect "Code Coverage"'
+
   - task: SonarCloudAnalyze@1
 
   - task: DotNetCoreCLI@2
@@ -52,11 +53,12 @@ jobs:
       command: 'publish'
       publishWebProjects: false
       projects: '**/*.csproj'
-      arguments: '-o $(Build.ArtifactStagingDirectory)'
+      arguments: '-o $(Build.ArtifactStagingDirectory) --no-restore'
       zipAfterPublish: true
       modifyOutputPath: true
       
   - task: PublishPipelineArtifact@1
+    displayName: Publish Code
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
       artifactType: 'pipeline'
@@ -68,7 +70,7 @@ jobs:
       workingDirectory: '$(Build.SourcesDirectory)/Raw.Streaming.Discord.Tests'
       targetType: 'inline'
       pwsh: true
-      script: $(Agent.BuildDirectory)/tools/dotnet-stryker
+      script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch)'
       
   - task: Powershell@2
     displayName: 'Run dotnet-stryker'
@@ -76,13 +78,20 @@ jobs:
       workingDirectory: '$(Build.SourcesDirectory)/Raw.Streaming.Webhook.Tests'
       targetType: 'inline'
       pwsh: true
-      script: $(Agent.BuildDirectory)/tools/dotnet-stryker
+      script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch)'
       
   - task: PublishMutationReport@1
-    displayName: 'Publish Mutation Test Report'
+    displayName: 'Publish Raw.Streaming.Discord.Tests Mutation Test Report'
     inputs:
-      reportPattern: '**/mutation-report.html'
+      reportPattern: '$(Build.SourcesDirectory)/Raw.Streaming.Discord.Tests/**/mutation-report.html'
+      reportDisplayName: 'Raw.Streaming.Discord.Tests'
       
+  - task: PublishMutationReport@1
+    displayName: 'Publish Raw.Streaming.Webhook.Tests Mutation Test Report'
+    inputs:
+      reportPattern: '$(Build.SourcesDirectory)/Raw.Streaming.Webhook.Tests/**/mutation-report.html'
+      reportDisplayName: 'Raw.Streaming.Webhook.Tests'
+
   - task: SonarCloudPublish@1
     inputs:
       pollingTimeoutSec: '300'

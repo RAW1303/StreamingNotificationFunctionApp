@@ -1,109 +1,150 @@
-﻿namespace Raw.Streaming.Webhook.Tests.Functions
+﻿using Raw.Streaming.Webhook.Functions;
+
+namespace Raw.Streaming.Webhook.Tests.Functions;
+
+[TestFixture]
+internal class ScheduleControllerTests
 {
-    [TestFixture]
-    internal class ScheduleControllerTests
+    private Mock<ITwitchApiService> _twitchApiServiceMock;
+    private Mock<IMapper> _mapperMock;
+    private Mock<ILogger<ScheduleController>> _loggerMock;
+    private ScheduleController _controller;
+    private Fixture _fixture = new();
+
+    [SetUp]
+    public void Setup()
     {
-        private Mock<ITwitchApiService> _twitchApiServiceMock;
-        private Mock<IMapper> _mapperMock;
-        private Mock<ILogger<ScheduleController>> _loggerMock;
-        private ScheduleController _controller;
+        _twitchApiServiceMock = new Mock<ITwitchApiService>();
+        _mapperMock = new Mock<IMapper>();
+        _loggerMock = new Mock<ILogger<ScheduleController>>();
+        _controller = new ScheduleController(_twitchApiServiceMock.Object, _mapperMock.Object, _loggerMock.Object);
+    }
 
-        [SetUp]
-        public void Setup()
+    [Test, AutoData]
+    public async Task NotifyDailySchedule_WhenGetScheduledStreamsAsyncReturnsEmptyList_ReturnsNull(DateTimeOffset triggerTime)
+    {
+        // Arrange
+        _twitchApiServiceMock
+            .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>()))
+            .ReturnsAsync(new TwitchSchedule());
+        _mapperMock
+            .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))
+            .Returns(new Event());
+
+        // Act
+        var result = await _controller.NotifyDailySchedule(triggerTime);
+
+        // Assert
+        Assert.That(result, Is.Null);
+    }
+
+    [Test, AutoData]
+    public async Task NotifyDailySchedule_WhenGetScheduledStreamsAsyncReturnsItems_ReturnsServiceBusMessage(DateTimeOffset triggerTime, TwitchScheduleSegment segment)
+    {
+        // Arrange
+        segment.StartTime = triggerTime;
+        _twitchApiServiceMock
+            .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>()))
+            .ReturnsAsync(new TwitchSchedule{ Segments = new List<TwitchScheduleSegment>() { segment } });
+        _mapperMock
+            .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))
+            .Returns(new Event());
+
+        // Act
+        var result = await _controller.NotifyDailySchedule(triggerTime);
+
+        // Assert
+        Assert.That(result, Is.Not.Null);
+    }
+
+    [Test, AutoData]
+    public void NotifyDailySchedule_WhenGetScheduledStreamsAsyncThrowsException_ThrowsException(DateTimeOffset triggerTime)
+    {
+        // Arrange
+        var exception = new Exception("Test message");
+        _twitchApiServiceMock
+            .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>()))
+            .ThrowsAsync(exception);
+        _mapperMock
+            .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))
+            .Returns(new Event());
+
+        // Act & Assert
+        Assert.That(() => _controller.NotifyDailySchedule(triggerTime), Throws.Exception.EqualTo(exception));
+    }
+
+    [Test, AutoData]
+    public async Task NotifyWeeklySchedule_WhenGetScheduledStreamsAsyncWorks_ReturnsServiceBusMessage(DateTimeOffset triggerTime)
+    {
+        // Arrange
+        _twitchApiServiceMock
+            .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>()))
+            .ReturnsAsync(new TwitchSchedule());
+        _mapperMock
+            .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))
+            .Returns(new Event());
+
+        // Act
+        var result = await _controller.NotifyWeeklySchedule(triggerTime);
+
+        // Assert
+        Assert.That(result, Is.Not.Null);
+    }
+
+    [Test, AutoData]
+    public void NotifyWeeklySchedule_WhenGetScheduledStreamsAsyncThrowsException_ThrowsException(DateTimeOffset triggerTime)
+    {
+        // Arrange
+        var exception = new Exception("Test message");
+        _twitchApiServiceMock
+            .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>()))
+            .ThrowsAsync(exception);
+        _mapperMock
+            .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))
+            .Returns(new Event());
+
+        // Act & Assert
+        Assert.That(() => _controller.NotifyWeeklySchedule(triggerTime), Throws.Exception.EqualTo(exception));
+    }
+
+    [Test, AutoData]
+    public async Task UpdateEventSchedule_WhenGetScheduledStreamsAsyncWorks_ReturnsServiceBusMessage(DateTimeOffset triggerTime)
+    {
+        // Arrange
+        var events = new List<Event>
         {
-            _twitchApiServiceMock = new Mock<ITwitchApiService>();
-            _mapperMock = new Mock<IMapper>();
-            _loggerMock = new Mock<ILogger<ScheduleController>>();
-            _controller = new ScheduleController(_twitchApiServiceMock.Object, _mapperMock.Object, _loggerMock.Object);
-        }
+            _fixture.Build<Event>().With(x => x.IsRecurring, true).Create(),
+            _fixture.Build<Event>().With(x => x.IsRecurring, false).Create()
+        };
 
-        [Test, AutoData]
-        public async Task NotifyDailySchedule_WhenGetScheduledStreamsAsyncReturnsEmptyList_ReturnsNull(DateTimeOffset triggerTime)
-        {
-            // Arrange
-            _twitchApiServiceMock
-                .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>()))
-                .ReturnsAsync(new TwitchSchedule());
-            _mapperMock
-                .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))
-                .Returns(new Event());
+        _twitchApiServiceMock
+            .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>()))
+            .ReturnsAsync(new TwitchSchedule());
+        _mapperMock
+            .Setup(x => x.Map<IEnumerable<Event>>(It.IsAny<TwitchSchedule>()))
+            .Returns(events);
 
-            // Act
-            var result = await _controller.NotifyDailySchedule(triggerTime);
+        // Act
+        var result = await _controller.UpdateEventSchedule(triggerTime);
 
-            // Assert
-            Assert.That(result, Is.Null);
-        }
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Body.ToObjectFromJson<DiscordBotQueueItem<Event>>(), Has.Property("Entities").With.One.Items);
+    }
 
-        [Test, AutoData]
-        public async Task NotifyDailySchedule_WhenGetScheduledStreamsAsyncReturnsItems_ReturnsServiceBusMessage(DateTimeOffset triggerTime, TwitchScheduleSegment segment)
-        {
-            // Arrange
-            segment.StartTime = triggerTime;
-            _twitchApiServiceMock
-                .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>()))
-                .ReturnsAsync(new TwitchSchedule{ Segments = new List<TwitchScheduleSegment>() { segment } });
-            _mapperMock
-                .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))
-                .Returns(new Event());
+    [Test, AutoData]
+    public void UpdateEventSchedule_WhenGetScheduledStreamsAsyncThrowsException_ThrowsException(DateTimeOffset triggerTime)
+    {
+        // Arrange
+        var exception = new Exception("Test message");
+        _twitchApiServiceMock
+            .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>()))
+            .ThrowsAsync(exception);
+        _mapperMock
+            .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))
+            .Returns(new Event());
 
-            // Act
-            var result = await _controller.NotifyDailySchedule(triggerTime);
-
-            // Assert
-            Assert.That(result, Is.Not.Null);
-        }
-
-        [Test, AutoData]
-        public void NotifyDailySchedule_WhenGetScheduledStreamsAsyncThrowsException_ThrowsException(DateTimeOffset triggerTime)
-        {
-            // Arrange
-            var exception = new Exception("Test message");
-            _twitchApiServiceMock
-                .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>()))
-                .ThrowsAsync(exception);
-            _mapperMock
-                .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))
-                .Returns(new Event());
-
-            // Act & Assert
-            Assert.That(() => _controller.NotifyDailySchedule(triggerTime), Throws.Exception.EqualTo(exception));
-        }
-
-        [Test, AutoData]
-        public async Task NotifyWeeklySchedule_WhenGetScheduledStreamsAsyncWorks_ReturnsServiceBusMessage(DateTimeOffset triggerTime)
-        {
-            // Arrange
-            _twitchApiServiceMock
-                .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>()))
-                .ReturnsAsync(new TwitchSchedule());
-            _mapperMock
-                .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))
-                .Returns(new Event());
-
-            // Act
-            var result = await _controller.NotifyWeeklySchedule(triggerTime);
-
-            // Assert
-            Assert.That(result, Is.Not.Null);
-        }
-
-        [Test, AutoData]
-        public void NotifyWeeklySchedule_WhenGetScheduledStreamsAsyncThrowsException_ThrowsException(DateTimeOffset triggerTime)
-        {
-            // Arrange
-            var exception = new Exception("Test message");
-            _twitchApiServiceMock
-                .Setup(x => x.GetScheduleByBroadcasterIdAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>()))
-                .ThrowsAsync(exception);
-            _mapperMock
-                .Setup(x => x.Map<Event>(It.IsAny<StreamEvent>()))
-                .Returns(new Event());
-
-            // Act & Assert
-            Assert.That(() => _controller.NotifyWeeklySchedule(triggerTime), Throws.Exception.EqualTo(exception));
-        }
-
-
+        // Act & Assert
+        Assert.That(() => _controller.UpdateEventSchedule(triggerTime), Throws.Exception.EqualTo(exception));
     }
 }

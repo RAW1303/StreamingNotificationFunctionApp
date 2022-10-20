@@ -35,7 +35,7 @@ namespace Raw.Streaming.Webhook.Functions
         public async Task<ServiceBusMessage> NotifyDailyScheduleTrigger(
             [TimerTrigger("%ScheduleDailyTimerTrigger%")] TimerInfo timer)
         {
-            return await NotifyDailySchedule(DateTime.UtcNow);
+            return await NotifyDailySchedule(DateTimeOffset.UtcNow);
         }
 
         [ExcludeFromCodeCoverage]
@@ -44,14 +44,23 @@ namespace Raw.Streaming.Webhook.Functions
         public async Task<ServiceBusMessage> NotifyWeeklyScheduleTrigger(
             [TimerTrigger("%ScheduleWeeklyTimerTrigger%")] TimerInfo timer)
         {
-            return await NotifyWeeklySchedule(DateTime.UtcNow);
+            return await NotifyWeeklySchedule(DateTimeOffset.UtcNow);
+        }
+
+        [ExcludeFromCodeCoverage]
+        [FunctionName(nameof(UpdateEventScheduleTrigger))]
+        [return: ServiceBus("%EventScheduleQueueName%")]
+        public async Task<ServiceBusMessage> UpdateEventScheduleTrigger(
+            [TimerTrigger("%EventScheduleTimerTrigger%")] TimerInfo timer)
+        {
+            return await UpdateEventSchedule(DateTimeOffset.UtcNow);
         }
 
         public async Task<ServiceBusMessage> NotifyWeeklySchedule(DateTimeOffset triggerTime)
         {
             try
             {
-                _logger.LogInformation($"{nameof(NotifyWeeklySchedule)} execution started");
+                _logger.LogInformation($"{nameof(NotifyWeeklySchedule)} execution started for {triggerTime}");
                 var from = triggerTime;
                 var to = from.AddDays(7);
                 var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, from);
@@ -75,9 +84,9 @@ namespace Raw.Streaming.Webhook.Functions
         {
             try
             {
+                _logger.LogInformation($"{nameof(NotifyDailySchedule)} execution started for {triggerTime}");
                 var from = triggerTime.Date;
                 var to = from.AddDays(1);
-                _logger.LogInformation($"{nameof(NotifyDailySchedule)} execution started for {from:d}");
                 var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, from);
                 var filteredSegments = schedule.SegmentsExcludingVaction.Where(seg => seg.StartTime <= to);
                 if (filteredSegments.Any())
@@ -96,6 +105,29 @@ namespace Raw.Streaming.Webhook.Functions
             catch (Exception e)
             {
                 _logger.LogError($"{nameof(NotifyDailySchedule)} execution failed: {e.Message}");
+                throw;
+            }
+
+        }
+
+        public async Task<ServiceBusMessage> UpdateEventSchedule(DateTimeOffset triggerTime)
+        {
+            try
+            {
+                _logger.LogInformation($"{nameof(UpdateEventSchedule)} execution started for {triggerTime}");
+                var schedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, triggerTime);
+                var events = _mapper.Map<IEnumerable<Event>>(schedule);
+                var filteredEvents = events.Where(x => !x.IsRecurring);
+                var queueItem = new DiscordBotQueueItem<Event>(filteredEvents.ToArray());
+                return new ServiceBusMessage
+                {
+                    Body = BinaryData.FromObjectAsJson(queueItem),
+                    MessageId = $"event-schedule-{triggerTime:yyyy-MM-ddTHH:mm:ss}"
+                };
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"{nameof(UpdateEventSchedule)} execution failed: {e.Message}");
                 throw;
             }
 

@@ -1,4 +1,6 @@
-﻿namespace Raw.Streaming.Webhook.Tests.Functions
+﻿using Raw.Streaming.Webhook.Functions;
+
+namespace Raw.Streaming.Webhook.Tests.Functions
 {
     [TestFixture]
     internal class TwitchClipControllerTests

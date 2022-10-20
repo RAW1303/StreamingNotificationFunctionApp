@@ -1,0 +1,16 @@
+{
+  "stryker-config": {
+    "project-info": {
+      "name": "github.com/RAW1303/StreamingNotificationFunctionApp",
+      "module": "Raw.Streaming.Webhook"
+    },
+    "reporters": [
+      "html",
+      "dashboard"
+    ],
+    "ignore-methods": [
+      "LogInformation",
+      "LogError"
+    ]
+  }
+}

@@ -94,12 +94,12 @@ namespace Raw.Streaming.Webhook.Functions
             using var xmlReader = XmlReader.Create(stream);
             SyndicationFeed feed = SyndicationFeed.Load(xmlReader);
             logger.LogInformation($"Youtube feed content:\n{JsonConvert.SerializeObject(feed)}");
-            var item = feed.Items.FirstOrDefault();
+            var item = feed.Items.First();
             return new YoutubeFeed()
             {
                 ChannelId = GetElementExtensionValueByOuterName(item, "channelId"),
                 VideoId = GetElementExtensionValueByOuterName(item, "videoId"),
-                Title = item.Title.Text,
+                Title = item.Title?.Text,
                 Link = item.Links[0].Uri.ToString(),
                 Published = item.PublishDate,
                 Updated = item.LastUpdatedTime,

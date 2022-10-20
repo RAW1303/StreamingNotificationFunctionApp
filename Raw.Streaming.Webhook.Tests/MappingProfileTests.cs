@@ -44,7 +44,7 @@
         }
 
         [Test, AutoData]
-        public void MappingProfile_TwitchScheduleToEventList_Succeeds(string title, string categoryName, DateTimeOffset startTime, DateTimeOffset endTime)
+        public void MappingProfile_TwitchScheduleSegmentToEventList_Succeeds(string title, string categoryName, DateTimeOffset startTime, DateTimeOffset endTime, bool isRecurring)
         {
             // Arrange
             var twitchScheduleSegment = new TwitchScheduleSegment()
@@ -52,7 +52,8 @@
                 Category = new TwitchGame { Name = categoryName },
                 StartTime = startTime,
                 EndTime = endTime,
-                Title = title
+                Title = title,
+                IsRecurring = isRecurring
             };
 
             // Act
@@ -64,6 +65,41 @@
             Assert.That(result, Has.Property("Game").EqualTo(categoryName));
             Assert.That(result, Has.Property("Start").EqualTo(startTime));
             Assert.That(result, Has.Property("End").EqualTo(endTime));
+            Assert.That(result, Has.Property("IsRecurring").EqualTo(isRecurring));
+        }
+
+
+        [Test, AutoData]
+        public void MappingProfile_TwitchScheduleToEventList_Succeeds(string broadcasterName, string title, string categoryName, DateTimeOffset startTime, DateTimeOffset endTime, bool isRecurring)
+        {
+            // Arrange
+            var twitchSchedule = new TwitchSchedule()
+            {
+                BroadcasterName = broadcasterName,
+                Segments = new TwitchScheduleSegment[]
+                {
+                    new TwitchScheduleSegment()
+                    {
+                        Category = new TwitchGame { Name = categoryName },
+                        StartTime = startTime,
+                        EndTime = endTime,
+                        Title = title,
+                        IsRecurring = isRecurring
+                    }
+                }
+            };
+
+            // Act
+            var result = _mapper.Map<IEnumerable<Event>>(twitchSchedule);
+
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Has.One.With.Property("Title").EqualTo(title));
+            Assert.That(result, Has.One.With.Property("Game").EqualTo(categoryName));
+            Assert.That(result, Has.One.With.Property("Start").EqualTo(startTime));
+            Assert.That(result, Has.One.With.Property("End").EqualTo(endTime));
+            Assert.That(result, Has.One.With.Property("Url").Contains(broadcasterName));
+            Assert.That(result, Has.One.With.Property("IsRecurring").EqualTo(isRecurring));
         }
     }
 }

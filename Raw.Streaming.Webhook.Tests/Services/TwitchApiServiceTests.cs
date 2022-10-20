@@ -347,5 +347,22 @@ namespace Raw.Streaming.Webhook.Tests.Services
                     ItExpr.IsAny<CancellationToken>()
                 ).ReturnsAsync(mockResponse);
         }
+
+        private void SetupMockHttpMessageHandler(HttpStatusCode statusCode, string jsonContent)
+        {
+            var mockResponse = new HttpResponseMessage
+            {
+                StatusCode = statusCode,
+                Content = new StringContent(jsonContent)
+            };
+
+            _mockHttpMessageHandler
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                ).ReturnsAsync(mockResponse);
+        }
     }
 }
