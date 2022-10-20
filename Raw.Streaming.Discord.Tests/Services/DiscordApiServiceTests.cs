@@ -7,7 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 
-namespace Raw.Streaming.Webhook.Tests.Functions;
+namespace Raw.Streaming.Discord.Tests.Services;
 
 [TestFixture]
 internal class DiscordApiServiceTests

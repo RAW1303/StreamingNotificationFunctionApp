@@ -65,13 +65,11 @@ internal class DiscordApiService : IDiscordApiService
             var responseContent = await response.Content.ReadAsStringAsync();
             var errorMessage = $"{response.StatusCode} when error during {method.Method} request to Discord API endpoint {endpoint}\n{responseContent}";
             _logger.LogError(errorMessage);
-            switch(response.StatusCode)
+            throw response.StatusCode switch
             {
-                case HttpStatusCode.TooManyRequests:
-                    throw new DiscordApiRateLimitException(errorMessage);
-                default:
-                    throw new DiscordApiException(errorMessage);
-            }
+                HttpStatusCode.TooManyRequests => new DiscordApiRateLimitException(errorMessage),
+                _ => new DiscordApiException(errorMessage),
+            };
         }
 
         return response;

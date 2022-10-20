@@ -2,7 +2,7 @@
 using Raw.Streaming.Discord.Model.DiscordApi;
 using Raw.Streaming.Discord.Services;
 
-namespace Raw.Streaming.Webhook.Tests.Functions;
+namespace Raw.Streaming.Discord.Tests.Functions;
 
 [TestFixture]
 internal class ServiceBusFunctionsTests
