@@ -1,5 +1,6 @@
 {
   "stryker-config": {
+    "project": "Raw.Streaming.Webhook.csproj",
     "reporters": [
       "html",
       "dashboard"

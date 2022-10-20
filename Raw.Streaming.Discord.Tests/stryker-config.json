@@ -1,5 +1,6 @@
 {
   "stryker-config": {
+    "project": "Raw.Streaming.Discord.csproj",
     "reporters": [
       "html",
       "dashboard"
