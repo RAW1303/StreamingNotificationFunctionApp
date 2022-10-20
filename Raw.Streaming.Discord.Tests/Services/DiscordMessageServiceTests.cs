@@ -1,5 +1,4 @@
-﻿using Moq;
-using Raw.Streaming.Discord.Exceptions;
+﻿using Raw.Streaming.Discord.Exceptions;
 using Raw.Streaming.Discord.Model.DiscordApi;
 using Raw.Streaming.Discord.Services;
 
