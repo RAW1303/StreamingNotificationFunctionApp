@@ -155,4 +155,31 @@ internal class ServiceBusFunctionsTests
         // Act and Assert
         Assert.That(() => _controller.ProcessWeeklyScheduleMessageQueue(queueMessage), Throws.Exception.EqualTo(exception));
     }
+
+    [Test, AutoData]
+    public void ProcessEventMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Event[] events)
+    {
+        // Arrange
+        _discordEventService
+            .Setup(x => x.SyncScheduledEvents(It.IsAny<string>(), It.IsAny<IEnumerable<Event>>()))
+            .ReturnsAsync(new List<GuildScheduledEvent>());
+        var queueMessage = new DiscordBotQueueItem<Event>(events);
+
+        // Act and Assert
+        Assert.That(() => _controller.ProcessEventMessageQueue(queueMessage), Throws.Nothing);
+    }
+
+    [Test, AutoData]
+    public void ProcessEventMessageQueue_WhenSendDiscordMessageAsyncThrowsException_ThrowsException(Event[] events)
+    {
+        // Arrange
+        var exception = new Exception("Test message");
+        _discordEventService
+            .Setup(x => x.SyncScheduledEvents(It.IsAny<string>(), It.IsAny<IEnumerable<Event>>()))
+            .ThrowsAsync(exception);
+        var queueMessage = new DiscordBotQueueItem<Event>(events);
+
+        // Act and Assert
+        Assert.That(() => _controller.ProcessEventMessageQueue(queueMessage), Throws.Exception.EqualTo(exception));
+    }
 }
