@@ -1,5 +1,10 @@
 {
   "stryker-config": {
+    "reporters": [
+      "console",
+      "html",
+      "dashboard"
+    ],
     "ignore-methods": [
       "LogInformation",
       "LogError"

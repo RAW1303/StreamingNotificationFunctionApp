@@ -83,13 +83,13 @@ jobs:
   - task: PublishMutationReport@1
     displayName: 'Publish Raw.Streaming.Discord.Tests Mutation Test Report'
     inputs:
-      reportPattern: '$(Build.SourcesDirectory)/Raw.Streaming.Discord.Tests/**/mutation-report.html'
+      reportPattern: '$(Build.SourcesDirectory)/Raw.Streaming.Discord.Tests/**/mutation-report.html --dashboard-api-key $(StrykerApiKey) -v $(System.PullRequest.SourceBranch)'
       reportDisplayName: 'Raw.Streaming.Discord.Tests'
       
   - task: PublishMutationReport@1
     displayName: 'Publish Raw.Streaming.Webhook.Tests Mutation Test Report'
     inputs:
-      reportPattern: '$(Build.SourcesDirectory)/Raw.Streaming.Webhook.Tests/**/mutation-report.html'
+      reportPattern: '$(Build.SourcesDirectory)/Raw.Streaming.Webhook.Tests/**/mutation-report.html --dashboard-api-key $(StrykerApiKey) -v $(System.PullRequest.SourceBranch)'
       reportDisplayName: 'Raw.Streaming.Webhook.Tests'
 
   - task: SonarCloudPublish@1
