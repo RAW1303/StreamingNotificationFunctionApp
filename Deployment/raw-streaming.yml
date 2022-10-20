@@ -88,6 +88,7 @@ stages:
       discordBotSettings:
         DiscordApiUrl: $(discordApiUrl)
         DiscordBotApplicationId: $(discordBotApplicationId)
+        DiscordGuildId: $(discordGuildId)
         DiscordNotificationGroupIds: $(discordNotificationGroupIds)
         DiscordScheduleChannelId: $(discordScheduleChannelId)
         DiscordStreamGoLiveChannelId: $(discordStreamGoLiveChannelId)
