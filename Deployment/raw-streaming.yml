@@ -16,6 +16,8 @@ variables:
 stages:
 - stage: Build
   displayName: Build
+  variables:
+  - group: Build
   jobs:
   - template: templates/jobs/build.yml
       
