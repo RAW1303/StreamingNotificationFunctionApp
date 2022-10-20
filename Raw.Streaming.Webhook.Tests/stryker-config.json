@@ -1,0 +1,9 @@
+{
+  "stryker-config": {
+    "project": "Raw.Streaming.Webhook.Tests.csproj",
+    "ignore-methods": [
+      "LogInformation",
+      "LogError"
+    ]
+  }
+}

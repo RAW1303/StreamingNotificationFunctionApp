@@ -1,0 +1,9 @@
+{
+  "stryker-config": {
+    "project": "Raw.Streaming.Discord.Tests.csproj",
+    "ignore-methods": [
+      "LogInformation",
+      "LogError"
+    ]
+  }
+}
