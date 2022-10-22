@@ -70,7 +70,12 @@ jobs:
       workingDirectory: '$(Build.SourcesDirectory)/Raw.Streaming.Discord.Tests'
       targetType: 'inline'
       pwsh: true
-      script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch)'
+      ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
+        script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch)'
+-     ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
+        script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch) --with-baseline:$(System.PullRequest.TargetBranch)'
+      ${{ else }}:
+        script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch) --with-baseline:refs/heads/main'
       
   - task: Powershell@2
     displayName: 'Run dotnet-stryker'
@@ -78,7 +83,12 @@ jobs:
       workingDirectory: '$(Build.SourcesDirectory)/Raw.Streaming.Webhook.Tests'
       targetType: 'inline'
       pwsh: true
-      script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch)'
+      ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
+        script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch)'
+-     ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
+        script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch) --with-baseline:$(System.PullRequest.TargetBranch)'
+      ${{ else }}:
+        script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch) --with-baseline:refs/heads/main'
       
   - task: PublishMutationReport@1
     displayName: 'Publish Raw.Streaming.Discord.Tests Mutation Test Report'

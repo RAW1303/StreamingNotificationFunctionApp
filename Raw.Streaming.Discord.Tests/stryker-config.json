@@ -12,6 +12,9 @@
       "LogInformation",
       "LogError",
       "LogDebug"
-    ]
+    ],
+    "baseline": {
+      "provider": "Dashboard"
+    }
   }
 }
