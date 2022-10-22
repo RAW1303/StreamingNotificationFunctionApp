@@ -12,14 +12,12 @@ internal class ScheduleService : IScheduleService
     private readonly ITwitchApiService _twitchApiService;
     private readonly IYoutubeScheduleService _youtubeScheduleService;
     private readonly IMapper _mapper;
-    private readonly ILogger _logger;
 
-    public ScheduleService(ITwitchApiService twitchApiService, IYoutubeScheduleService youtubeScheduleService, IMapper mapper, ILogger logger)
+    public ScheduleService(ITwitchApiService twitchApiService, IYoutubeScheduleService youtubeScheduleService, IMapper mapper)
     {
         _twitchApiService = twitchApiService;
         _youtubeScheduleService = youtubeScheduleService;
         _mapper = mapper;
-        _logger = logger;
     }
 
     public async Task<IEnumerable<Event>> GetScheduleAsync(DateTimeOffset from, DateTimeOffset? to = null)
@@ -38,13 +36,13 @@ internal class ScheduleService : IScheduleService
     {
         var twitchSchedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, from);
         var filteredSegments = twitchSchedule.SegmentsExcludingVaction.Where(seg => to is null || seg.StartTime <= to);
-        return _mapper.Map<IEnumerable<Event>>(twitchSchedule);
+        return _mapper.Map<IEnumerable<Event>>(filteredSegments);
     }
 
     private async Task<IEnumerable<Event>> GetYoutubeSchedule(DateTimeOffset from, DateTimeOffset? to = null)
     {
         var youtubeSchedule = await _youtubeScheduleService.GetUpcomingBroadcastsAsync();
         var filteredSchedule = youtubeSchedule.Where(x => x.LiveStreamingDetails.ScheduledStartTime >= from && (to is null || x.LiveStreamingDetails.ScheduledStartTime <= from));
-        return _mapper.Map<IEnumerable<Event>>(youtubeSchedule);
+        return _mapper.Map<IEnumerable<Event>>(filteredSchedule);
     }
 }

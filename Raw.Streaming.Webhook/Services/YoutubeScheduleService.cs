@@ -9,7 +9,7 @@ namespace Raw.Streaming.Webhook.Services;
 
 internal class YoutubeScheduleService : IYoutubeScheduleService
 {
-    private YouTubeService _youtubeService;
+    private readonly YouTubeService _youtubeService;
     private readonly string _youtubeChannelId = AppSettings.YoutubeChannelId;
 
     private const string SEARCH_PARTS = "snippet";

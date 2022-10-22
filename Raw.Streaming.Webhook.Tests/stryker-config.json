@@ -10,7 +10,8 @@
     ],
     "ignore-methods": [
       "LogInformation",
-      "LogError"
+      "LogError",
+      "LogDebug"
     ]
   }
 }
