@@ -43,10 +43,10 @@ namespace Raw.Streaming.Webhook.Functions
         {
             try
             {
-                logger.LogInformation("StreamChangeSubscribe execution started");
+                logger.LogDebug("StreamChangeSubscribe execution started");
                 var callbackUrl = $"https://{AppSettings.WebSiteUrl}/api/{WebhookEndpoint}";
                 await _subscriptionService.SubscribeAsync($"{_webhookTopic}{_channelId}", callbackUrl);
-                logger.LogInformation("StreamChangeSubscribe execution succeeded");
+                logger.LogDebug("StreamChangeSubscribe execution succeeded");
             }
             catch (Exception e)
             {
@@ -63,7 +63,7 @@ namespace Raw.Streaming.Webhook.Functions
         {
             try
             {
-                logger.LogInformation($"{nameof(YoutubeVideoWebhook)} execution started");
+                logger.LogDebug($"{nameof(YoutubeVideoWebhook)} execution started");
                 var stream = req.Body;
                 var data = ConvertAtomToSyndication(stream, logger);
                 if (data.IsNewVideo(DateTimeOffset.UtcNow) && !string.IsNullOrWhiteSpace(data.Link))
@@ -93,7 +93,7 @@ namespace Raw.Streaming.Webhook.Functions
         {
             using var xmlReader = XmlReader.Create(stream);
             SyndicationFeed feed = SyndicationFeed.Load(xmlReader);
-            logger.LogInformation($"Youtube feed content:\n{JsonConvert.SerializeObject(feed)}");
+            logger.LogDebug($"Youtube feed content:\n{JsonConvert.SerializeObject(feed)}");
             var item = feed.Items.First();
             return new YoutubeFeed()
             {

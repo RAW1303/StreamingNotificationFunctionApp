@@ -69,6 +69,7 @@ stages:
         DiscordBotToken: $(DiscordBotToken)
       orchestratorSecrets:
         TwitchClientSecret: $(TwitchApiClientSecret)
+        YoutubeApiKey: $(YoutubeApiKey)
 
 - stage: Production
   displayName: Production
@@ -116,3 +117,4 @@ stages:
         DiscordBotToken: $(DiscordBotToken)
       orchestratorSecrets:
         TwitchClientSecret: $(TwitchApiClientSecret)
+        YoutubeApiKey: $(YoutubeApiKey)

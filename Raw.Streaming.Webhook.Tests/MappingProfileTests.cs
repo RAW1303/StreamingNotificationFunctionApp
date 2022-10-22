@@ -62,7 +62,7 @@
             // Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Has.Property("Title").EqualTo(title));
-            Assert.That(result, Has.Property("Game").EqualTo(categoryName));
+            Assert.That(result, Has.Property("Description").EqualTo(categoryName));
             Assert.That(result, Has.Property("Start").EqualTo(startTime));
             Assert.That(result, Has.Property("End").EqualTo(endTime));
             Assert.That(result, Has.Property("IsRecurring").EqualTo(isRecurring));
@@ -95,7 +95,7 @@
             // Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Has.One.With.Property("Title").EqualTo(title));
-            Assert.That(result, Has.One.With.Property("Game").EqualTo(categoryName));
+            Assert.That(result, Has.One.With.Property("Description").EqualTo(categoryName));
             Assert.That(result, Has.One.With.Property("Start").EqualTo(startTime));
             Assert.That(result, Has.One.With.Property("End").EqualTo(endTime));
             Assert.That(result, Has.One.With.Property("Url").Contains(broadcasterName));

@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 namespace Raw.Streaming.Discord.Services;
 internal class DiscordApiService : IDiscordApiService
 {
-    private readonly string _discordBotToken = AppSettings.DiscordBotToken;
-    private readonly string _discordApiUrl = AppSettings.DiscordApiUrl;
+    private string _discordBotToken => AppSettings.DiscordBotToken;
+    private string _discordApiUrl => AppSettings.DiscordApiUrl;
     private readonly HttpClient _client;
     private readonly ILogger _logger;
 

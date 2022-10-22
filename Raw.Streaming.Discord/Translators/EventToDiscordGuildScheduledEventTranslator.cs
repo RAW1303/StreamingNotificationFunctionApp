@@ -20,7 +20,7 @@ namespace Raw.Streaming.Discord.Translators
             var guildScheduledEvent = new GuildScheduledEvent()
             {
                 Name = eventModel.Title,
-                Description = $"{eventModel.Game}",
+                Description = $"{eventModel.Description}",
                 ScheduledStartTime = eventModel.Start.DateTime,
                 ScheduledEndTime = eventModel.End.DateTime,
                 Status = GuildScheduledEventStatus.SCHEDULED,
