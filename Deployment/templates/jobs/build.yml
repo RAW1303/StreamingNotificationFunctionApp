@@ -72,7 +72,7 @@ jobs:
       pwsh: true
       ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
         script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch)'
--     ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
+      ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
         script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch) --with-baseline:$(System.PullRequest.TargetBranch)'
       ${{ else }}:
         script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch) --with-baseline:refs/heads/main'
@@ -85,7 +85,7 @@ jobs:
       pwsh: true
       ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
         script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch)'
--     ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
+      ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
         script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch) --with-baseline:$(System.PullRequest.TargetBranch)'
       ${{ else }}:
         script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch) --with-baseline:refs/heads/main'
