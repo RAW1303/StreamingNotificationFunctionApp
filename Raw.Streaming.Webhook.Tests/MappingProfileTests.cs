@@ -1,10 +1,13 @@
-﻿namespace Raw.Streaming.Webhook.Tests
+﻿using Google.Apis.YouTube.v3.Data;
+
+namespace Raw.Streaming.Webhook.Tests
 {
     [TestFixture]
     public class MappingProfileTests
     {
-        public IMapper _mapper;
-        public MapperConfiguration _config;
+        private IMapper _mapper;
+        private MapperConfiguration _config;
+        private readonly Fixture _fixture = new();
 
         [SetUp]
         public void Setup()
@@ -34,7 +37,7 @@
             };
 
             // Act
-            var result = _mapper.Map<Video>(youtubeFeed);
+            var result = _mapper.Map<Common.Model.Video>(youtubeFeed);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -68,7 +71,6 @@
             Assert.That(result, Has.Property("IsRecurring").EqualTo(isRecurring));
         }
 
-
         [Test, AutoData]
         public void MappingProfile_TwitchScheduleToEventList_Succeeds(string broadcasterName, string title, string categoryName, DateTimeOffset startTime, DateTimeOffset endTime, bool isRecurring)
         {
@@ -100,6 +102,21 @@
             Assert.That(result, Has.One.With.Property("End").EqualTo(endTime));
             Assert.That(result, Has.One.With.Property("Url").Contains(broadcasterName));
             Assert.That(result, Has.One.With.Property("IsRecurring").EqualTo(isRecurring));
+        }
+
+        [Test]
+        public void MappingProfile_YoutubeVideoToEvent_Succeeds()
+        {
+            // Arrange
+            var liveStreamingDetails = _fixture.Build<VideoLiveStreamingDetails>().Without(x => x.ScheduledEndTime).Create();
+            var youtubeVideo = _fixture.Build<Google.Apis.YouTube.v3.Data.Video>().With(x => x.LiveStreamingDetails, liveStreamingDetails).Create();
+
+            // Act
+            var result = _mapper.Map<Event>(youtubeVideo);
+
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Has.Property("End").Null);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Moq;
-using Raw.Streaming.Webhook.Functions;
+﻿using Raw.Streaming.Webhook.Functions;
 
 namespace Raw.Streaming.Webhook.Tests.Functions;
 
@@ -9,7 +8,7 @@ internal class ScheduleControllerTests
     private Mock<IScheduleService> _scheduleService;
     private Mock<ILogger<ScheduleController>> _loggerMock;
     private ScheduleController _controller;
-    private Fixture _fixture = new();
+    private readonly Fixture _fixture = new();
 
     [SetUp]
     public void Setup()

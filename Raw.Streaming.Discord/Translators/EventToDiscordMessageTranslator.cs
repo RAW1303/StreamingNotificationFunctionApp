@@ -26,7 +26,7 @@ namespace Raw.Streaming.Discord.Translators
                             new EmbedField()
                             {
                                 Name = "Time",
-                                Value = $"{e.Start.ToDiscordShortTime()} - {e.End.ToDiscordShortTime()}",
+                                Value = $"{e.Start.ToDiscordShortTime()} - {e.End?.ToDiscordShortTime()}",
                                 Inline = true
                             },
                             new EmbedField()
@@ -82,7 +82,7 @@ namespace Raw.Streaming.Discord.Translators
 
         private static string GetStreamSummaryString(Event stream)
         {
-            return $"{stream.Title}\n{stream.Description}\n{stream.Start.ToDiscordShortTime()} - {stream.End.ToDiscordShortTime()}";
+            return $"{stream.Title}\n{stream.Description}\n{stream.Start.ToDiscordShortTime()} - {stream.End?.ToDiscordShortTime()}";
         }
     }
 }

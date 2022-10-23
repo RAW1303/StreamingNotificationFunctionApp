@@ -22,7 +22,7 @@ namespace Raw.Streaming.Discord.Translators
                 Name = eventModel.Title,
                 Description = $"{eventModel.Description}",
                 ScheduledStartTime = eventModel.Start.DateTime,
-                ScheduledEndTime = eventModel.End.DateTime,
+                ScheduledEndTime = eventModel.End?.DateTime ?? eventModel.Start.DateTime.AddHours(3),
                 Status = GuildScheduledEventStatus.SCHEDULED,
                 PrivacyLevel = GuildScheduledEventPrivacyLevel.GUILD_ONLY,
                 EntityType = isChannelOverriden ? GuildScheduledEventEntityType.EXTERNAL : GuildScheduledEventEntityType.VOICE,
