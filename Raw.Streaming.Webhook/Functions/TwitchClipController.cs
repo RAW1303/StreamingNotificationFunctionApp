@@ -42,7 +42,7 @@ namespace Raw.Streaming.Webhook.Functions
         {
             try
             {
-                _logger.LogInformation("NotifyTwitchClips execution started");
+                _logger.LogDebug("NotifyTwitchClips execution started");
                 var startedAt = last > next.AddMinutes(-10) ? last : next.AddMinutes(-10);
                 var clips = await GetClipsAsync(AppSettings.TwitchBroadcasterId, startedAt, next);
                 var queueItem = new DiscordBotQueueItem<Clip>(clips.ToArray());

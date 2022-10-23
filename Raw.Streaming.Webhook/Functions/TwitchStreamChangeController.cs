@@ -41,7 +41,7 @@ namespace Raw.Streaming.Webhook.Functions
         {
             try
             {
-                logger.LogInformation("StreamChangeSubscribe execution started");
+                logger.LogDebug("StreamChangeSubscribe execution started");
                 var callbackUrl = $"https://{AppSettings.WebSiteUrl}/api/{WebhookEndpoint}";
                 var condition = new BroadcastUserCondition
                 {
@@ -49,7 +49,7 @@ namespace Raw.Streaming.Webhook.Functions
                 };
 
                 await _subscriptionService.SubscribeAsync(_webhookType, condition, callbackUrl);
-                logger.LogInformation("StreamChangeSubscribe execution succeeded");
+                logger.LogDebug("StreamChangeSubscribe execution succeeded");
             }
             catch(Exception e)
             {
@@ -77,7 +77,7 @@ namespace Raw.Streaming.Webhook.Functions
         {
             try
             {
-                _logger.LogInformation("StreamChangeWebhook execution started");
+                _logger.LogDebug("StreamChangeWebhook execution started");
                 var channel = await _twitchApiService.GetChannelInfoAsync(message.BroadcasterUserId);
                 return _mapper.Map<GoLive>(channel);
             }

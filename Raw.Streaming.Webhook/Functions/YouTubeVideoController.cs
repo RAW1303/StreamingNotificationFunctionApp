@@ -70,6 +70,7 @@ namespace Raw.Streaming.Webhook.Functions
                 {
                     var video = _mapper.Map<Video>(data);
                     var queueItem = new DiscordBotQueueItem<Video>(video);
+                    logger.LogInformation($"{nameof(YoutubeVideoWebhook)} execution succeeded:{data.Title} has been sent to Discord");
                     return new ServiceBusMessage
                     {
                         Body = BinaryData.FromObjectAsJson(queueItem),

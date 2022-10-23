@@ -41,7 +41,7 @@ namespace Raw.Streaming.Webhook.Functions
         { 
             try
             {
-                _logger.LogInformation("NotifyTwitchHighlights execution started");
+                _logger.LogDebug("NotifyTwitchHighlights execution started");
                 var startedAt = last > next.AddHours(-25) ? last : next.AddHours(-25);
                 var highlights = await GetHighlightsAsync(AppSettings.TwitchBroadcasterId, startedAt);
                 var videos = _mapper.Map<IEnumerable<Video>>(highlights);
