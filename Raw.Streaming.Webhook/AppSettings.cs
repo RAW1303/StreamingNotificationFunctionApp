@@ -19,6 +19,7 @@ namespace Raw.Streaming.Webhook
         public static string TwitchSubscriptionUrl => Environment.GetEnvironmentVariable("TwitchSubscriptionUrl");
         public static string TwitchTokenUrl => Environment.GetEnvironmentVariable("TwitchTokenUrl");
         public static string WebSiteUrl => Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME");
+        public static string YoutubeApiKey => Environment.GetEnvironmentVariable("YoutubeApiKey");
         public static string YoutubeChannelId => Environment.GetEnvironmentVariable("YoutubeChannelId");
         public static string YoutubeSubscriptionUrl => Environment.GetEnvironmentVariable("YoutubeSubscriptionUrl");
         public static string YoutubeVideoTopic => Environment.GetEnvironmentVariable("YoutubeVideoTopic");

@@ -4,6 +4,7 @@ using Raw.Streaming.Webhook.Model.Twitch;
 using Raw.Streaming.Webhook.Model.Youtube;
 using System.Collections.Generic;
 using System.Linq;
+using YoutubeVideo = Google.Apis.YouTube.v3.Data.Video;
 
 namespace Raw.Streaming.Webhook;
 
@@ -17,7 +18,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Start, opt => opt.Ignore())
             .ForMember(dest => dest.End, opt => opt.Ignore())
             .ForMember(dest => dest.Title, opt => opt.Ignore())
-            .ForMember(dest => dest.Game, opt => opt.Ignore())
+            .ForMember(dest => dest.Description, opt => opt.Ignore())
             .ForMember(dest => dest.IsRecurring, opt => opt.Ignore())
             .ForMember(dest => dest.Url, opt => opt.MapFrom(src => $"https://twitch.tv/{src.BroadcasterName}"));
         CreateMap<TwitchSchedule, IEnumerable<Event>>()
@@ -27,9 +28,17 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Start, opt => opt.MapFrom(src => src.StartTime))
             .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.EndTime))
             .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
-            .ForMember(dest => dest.Game, opt => opt.MapFrom(src => src.Category.Name))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Category.Name))
             .ForMember(dest => dest.IsRecurring, opt => opt.MapFrom(src => src.IsRecurring))
             .ForMember(dest => dest.Url, opt => opt.Ignore());
+        CreateMap<YoutubeVideo, Event>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => $"YoutubeEvent_{src.Id}"))
+            .ForMember(dest => dest.Start, opt => opt.MapFrom(src => src.LiveStreamingDetails.ScheduledStartTime))
+            .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.LiveStreamingDetails.ScheduledEndTime))
+            .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Snippet.Title))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Snippet.Description))
+            .ForMember(dest => dest.IsRecurring, opt => opt.Ignore())
+            .ForMember(dest => dest.Url, opt => opt.MapFrom(src => $"https://youtube.com/watch?v={src.Id}"));
         CreateMap<TwitchClip, Clip>()
             .ForMember(dest => dest.GameName, opt => opt.Ignore());
         CreateMap<TwitchVideo, Video>()
@@ -47,7 +56,7 @@ internal class TwitchScheduleToEventListConverter : ITypeConverter<TwitchSchedul
 {
     public IEnumerable<Event> Convert(TwitchSchedule source, IEnumerable<Event> destination, ResolutionContext context)
     {
-        foreach (var model in source.Segments.Select(e => context.Mapper.Map<Event>(e)))
+        foreach (var model in source.SegmentsExcludingVaction.Select(e => context.Mapper.Map<Event>(e)))
         {
             context.Mapper.Map(source, model);
             yield return model;

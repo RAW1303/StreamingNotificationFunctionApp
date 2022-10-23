@@ -10,7 +10,11 @@
     ],
     "ignore-methods": [
       "LogInformation",
-      "LogError"
-    ]
+      "LogError",
+      "LogDebug"
+    ],
+    "baseline": {
+      "provider": "Dashboard"
+    }
   }
 }

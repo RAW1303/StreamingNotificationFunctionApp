@@ -31,10 +31,10 @@ namespace Raw.Streaming.Discord.Functions
         {
             try
             {
-                _logger.LogInformation($"{nameof(ProcessGoLiveMessageQueue)} notification started");
+                _logger.LogDebug($"{nameof(ProcessGoLiveMessageQueue)} notification started");
                 var messages = myQueueItem.Entities.Select(x => GoLiveToDiscordMessageTranslator.Translate(x));
                 await Task.WhenAll(messages.Select(x => _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordVideoChannelId, x)));
-                _logger.LogInformation($"{nameof(ProcessGoLiveMessageQueue)} notification succeeded");
+                _logger.LogDebug($"{nameof(ProcessGoLiveMessageQueue)} notification succeeded");
             }
             catch (Exception ex)
             {
@@ -48,10 +48,10 @@ namespace Raw.Streaming.Discord.Functions
         {
             try
             {
-                _logger.LogInformation($"{nameof(ProcessClipMessageQueue)} notification started");
+                _logger.LogDebug($"{nameof(ProcessClipMessageQueue)} notification started");
                 var messages = myQueueItem.Entities.Select(x => ClipToDiscordMessageTranslator.Translate(x));
                 await Task.WhenAll(messages.Select(x => _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordVideoChannelId, x)));
-                _logger.LogInformation($"{nameof(ProcessClipMessageQueue)} notification succeeded");
+                _logger.LogDebug($"{nameof(ProcessClipMessageQueue)} notification succeeded");
             }
             catch (Exception ex)
             {
@@ -65,10 +65,10 @@ namespace Raw.Streaming.Discord.Functions
         {
             try
             {
-                _logger.LogInformation($"{nameof(ProcessVideoMessageQueue)} notification started");
+                _logger.LogDebug($"{nameof(ProcessVideoMessageQueue)} notification started");
                 var messages = myQueueItem.Entities.Select(x => VideoToDiscordMessageTranslator.Translate(x));
                 await Task.WhenAll(messages.Select(x => _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordVideoChannelId, x)));
-                _logger.LogInformation($"{nameof(ProcessVideoMessageQueue)} notification succeeded");
+                _logger.LogDebug($"{nameof(ProcessVideoMessageQueue)} notification succeeded");
             }
             catch (Exception ex)
             {
@@ -82,10 +82,10 @@ namespace Raw.Streaming.Discord.Functions
         {
             try
             {
-                _logger.LogInformation($"{nameof(ProcessDailyScheduleMessageQueue)} notification started");
+                _logger.LogDebug($"{nameof(ProcessDailyScheduleMessageQueue)} notification started");
                 var message = EventToDiscordMessageTranslator.TranslateDailySchedule(myQueueItem.Entities);
                 await _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordScheduleChannelId, message);
-                _logger.LogInformation($"{nameof(ProcessDailyScheduleMessageQueue)} notification succeeded");
+                _logger.LogDebug($"{nameof(ProcessDailyScheduleMessageQueue)} notification succeeded");
             }
             catch (Exception ex)
             {
@@ -99,10 +99,10 @@ namespace Raw.Streaming.Discord.Functions
         {
             try
             {
-                _logger.LogInformation($"{nameof(ProcessWeeklyScheduleMessageQueue)} notification started");
+                _logger.LogDebug($"{nameof(ProcessWeeklyScheduleMessageQueue)} notification started");
                 var message = EventToDiscordMessageTranslator.TranslateWeeklySchedule(myQueueItem.Entities);
                 await _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordScheduleChannelId, message);
-                _logger.LogInformation($"{nameof(ProcessWeeklyScheduleMessageQueue)} notification succeeded");
+                _logger.LogDebug($"{nameof(ProcessWeeklyScheduleMessageQueue)} notification succeeded");
             }
             catch (Exception ex)
             {
@@ -116,9 +116,9 @@ namespace Raw.Streaming.Discord.Functions
         {
             try
             {
-                _logger.LogInformation($"{nameof(ProcessEventMessageQueue)} notification started");
+                _logger.LogDebug($"{nameof(ProcessEventMessageQueue)} notification started");
                 await _discordEventService.SyncScheduledEvents(AppSettings.DiscordGuildId, myQueueItem.Entities);
-                _logger.LogInformation($"{nameof(ProcessEventMessageQueue)} notification succeeded");
+                _logger.LogDebug($"{nameof(ProcessEventMessageQueue)} notification succeeded");
             }
             catch (Exception ex)
             {

@@ -36,7 +36,7 @@ namespace Raw.Streaming.Webhook.Services
         {
             var queryString = $"?broadcaster_id={broadcasterId}";
             var scope = "user:read:broadcast";
-            _logger.LogInformation($"Calling twitch channel info endpoint with query string: {queryString}");
+            _logger.LogDebug($"Calling twitch channel info endpoint with query string: {queryString}");
             var response = await SendTwitchApiGetRequestAsync<IList<TwitchChannel>>(_channelEndpoint, queryString, scope);
             return response.FirstOrDefault();
         }
@@ -46,7 +46,7 @@ namespace Raw.Streaming.Webhook.Services
             var gameIdList = string.Join(',', gameIds);
             var queryString = $"?id={gameIdList}";
             var scope = "user:read:broadcast";
-            _logger.LogInformation($"Calling twitch game endpoint with query string: {queryString}");
+            _logger.LogDebug($"Calling twitch game endpoint with query string: {queryString}");
             return await SendTwitchApiGetRequestAsync<IList<TwitchGame>>(_gameEndpoint, queryString, scope);
         }
 
@@ -56,7 +56,7 @@ namespace Raw.Streaming.Webhook.Services
             queryString = startedAt.HasValue ? $"{queryString}&started_at={UrlEncodeDateTime(startedAt)}" : queryString;
             queryString = endedAt.HasValue ? $"{queryString}&ended_at={UrlEncodeDateTime(endedAt)}" : queryString;
             var scope = "user:read:broadcast";
-            _logger.LogInformation($"Calling twitch clip endpoint with query string: {queryString}");
+            _logger.LogDebug($"Calling twitch clip endpoint with query string: {queryString}");
             return await SendTwitchApiGetRequestAsync<IList<TwitchClip>>(_clipEndpoint, queryString, scope);
         }
 
@@ -64,7 +64,7 @@ namespace Raw.Streaming.Webhook.Services
         {
             var queryString = $"?type=highlight&user_id={broadcasterId}";
             var scope = "user:read:broadcast";
-            _logger.LogInformation($"Calling twitch clip endpoint with query string: {queryString}");
+            _logger.LogDebug($"Calling twitch clip endpoint with query string: {queryString}");
             return await SendTwitchApiGetRequestAsync<IList<TwitchVideo>>(_videoEndpoint, queryString, scope);
         }
 
@@ -73,7 +73,7 @@ namespace Raw.Streaming.Webhook.Services
             var queryString = $"?broadcaster_id={broadcasterId}";
             queryString = startTime.HasValue ? $"{queryString}&start_time={UrlEncodeDateTime(startTime)}" : queryString;
             var scope = "user:read:broadcast";
-            _logger.LogInformation($"Calling twitch clip endpoint with query string: {queryString}");
+            _logger.LogDebug($"Calling twitch clip endpoint with query string: {queryString}");
             return await SendTwitchApiGetRequestAsync<TwitchSchedule>(_scheduleEndpoint, queryString, scope);
         }
 

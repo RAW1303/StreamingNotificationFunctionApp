@@ -24,7 +24,7 @@ namespace Raw.Streaming.Webhook.Services
 
         public async Task<string> GetTwitchTokenAsync(string scope)
         {
-            _logger.LogInformation($"Getting Twitch token for clientID '{_twitchClientId}' with scope '{scope}'");
+            _logger.LogDebug($"Getting Twitch token for clientID '{_twitchClientId}' with scope '{scope}'");
             var fullTokenUrl = $"{_twitchTokenUrl}?grant_type=client_credentials&scope={scope}&client_id={_twitchClientId}&client_secret={_twitchClientSecret}";
             var request = new HttpRequestMessage(HttpMethod.Post, fullTokenUrl);
             var response = await _client.SendAsync(request);

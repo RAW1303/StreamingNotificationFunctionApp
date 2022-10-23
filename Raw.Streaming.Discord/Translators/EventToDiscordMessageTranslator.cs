@@ -20,21 +20,21 @@ namespace Raw.Streaming.Discord.Translators
                             Name = "Today"
                         },
                         Title = e.Title,
-                        Description = e.Url,
+                        Description = e.Description,
                         Color = 48639,
                         Fields = new EmbedField[] {
                             new EmbedField()
                             {
-                                Name = "Game",
-                                Value = e.Game,
+                                Name = "Time",
+                                Value = $"{e.Start.ToDiscordShortTime()} - {e.End?.ToDiscordShortTime()}",
                                 Inline = true
                             },
                             new EmbedField()
                             {
-                                Name = "Time",
-                                Value = $"{e.Start.ToDiscordShortTime()} - {e.End.ToDiscordShortTime()}",
+                                Name = "Location",
+                                Value = e.Url,
                                 Inline = true
-                            },
+                            }
                         }
                     }).ToArray()
             };
@@ -82,7 +82,7 @@ namespace Raw.Streaming.Discord.Translators
 
         private static string GetStreamSummaryString(Event stream)
         {
-            return $"{stream.Title}\n{stream.Game}\n{stream.Start.ToDiscordShortTime()} - {stream.End.ToDiscordShortTime()}";
+            return $"{stream.Title}\n{stream.Description}\n{stream.Start.ToDiscordShortTime()} - {stream.End?.ToDiscordShortTime()}";
         }
     }
 }
