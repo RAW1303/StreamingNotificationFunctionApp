@@ -35,14 +35,14 @@ internal class ScheduleService : IScheduleService
     private async Task<IEnumerable<Event>> GetTwitchSchedule(DateTimeOffset from, DateTimeOffset? to = null)
     {
         var twitchSchedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, from);
-        var filteredSegments = twitchSchedule.SegmentsExcludingVaction.Where(seg => to is null || seg.StartTime <= to);
-        return _mapper.Map<IEnumerable<Event>>(filteredSegments);
+        var events = _mapper.Map<IEnumerable<Event>>(twitchSchedule);
+        return events.Where(x => x.Start >= from && (to is null || x.Start <= from));
     }
 
     private async Task<IEnumerable<Event>> GetYoutubeSchedule(DateTimeOffset from, DateTimeOffset? to = null)
     {
         var youtubeSchedule = await _youtubeScheduleService.GetUpcomingBroadcastsAsync();
-        var filteredSchedule = youtubeSchedule.Where(x => x.LiveStreamingDetails.ScheduledStartTime >= from && (to is null || x.LiveStreamingDetails.ScheduledStartTime <= from));
-        return _mapper.Map<IEnumerable<Event>>(filteredSchedule);
+        var events = _mapper.Map<IEnumerable<Event>>(youtubeSchedule);
+        return events.Where(x => x.Start >= from && (to is null || x.Start <= from));
     }
 }

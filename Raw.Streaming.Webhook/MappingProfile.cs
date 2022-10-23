@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using AutoMapper.Features;
 using Raw.Streaming.Common.Model;
 using Raw.Streaming.Webhook.Model.Twitch;
 using Raw.Streaming.Webhook.Model.Youtube;
@@ -57,7 +56,7 @@ internal class TwitchScheduleToEventListConverter : ITypeConverter<TwitchSchedul
 {
     public IEnumerable<Event> Convert(TwitchSchedule source, IEnumerable<Event> destination, ResolutionContext context)
     {
-        foreach (var model in source.Segments.Select(e => context.Mapper.Map<Event>(e)))
+        foreach (var model in source.SegmentsExcludingVaction.Select(e => context.Mapper.Map<Event>(e)))
         {
             context.Mapper.Map(source, model);
             yield return model;
