@@ -22,9 +22,10 @@ internal class ServiceBusFunctionsTests
     }
 
     [Test, AutoData]
-    public void ProcessGoLiveMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(GoLive goLive)
+    public void ProcessGoLiveMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(GoLive goLive, string channelId)
     {
         // Arrange
+        Environment.SetEnvironmentVariable("DiscordStreamGoLiveChannelId", channelId);
         _discordMessageService
             .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
             .ReturnsAsync(new Message());
@@ -32,6 +33,7 @@ internal class ServiceBusFunctionsTests
 
         // Act and Assert
         Assert.That(() => _controller.ProcessGoLiveMessageQueue(queueMessage), Throws.Nothing);
+        _discordMessageService.Verify(x => x.SendDiscordMessageAsync(channelId, It.IsAny<Message>()));
     }
 
     [Test, AutoData]
@@ -49,9 +51,10 @@ internal class ServiceBusFunctionsTests
     }
 
     [Test, AutoData]
-    public void ProcessClipMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Clip[] clips)
+    public void ProcessClipMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Clip[] clips, string channelId)
     {
         // Arrange
+        Environment.SetEnvironmentVariable("DiscordClipChannelId", channelId);
         _discordMessageService
             .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
             .ReturnsAsync(new Message());
@@ -59,6 +62,7 @@ internal class ServiceBusFunctionsTests
 
         // Act and Assert
         Assert.That(() => _controller.ProcessClipMessageQueue(queueMessage), Throws.Nothing);
+        _discordMessageService.Verify(x => x.SendDiscordMessageAsync(channelId, It.IsAny<Message>()));
     }
 
     [Test, AutoData]
@@ -76,9 +80,10 @@ internal class ServiceBusFunctionsTests
     }
 
     [Test, AutoData]
-    public void ProcessVideoMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Video[] videos)
+    public void ProcessVideoMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Video[] videos, string channelId)
     {
         // Arrange
+        Environment.SetEnvironmentVariable("DiscordVideoChannelId", channelId);
         _discordMessageService
             .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
             .ReturnsAsync(new Message());
@@ -86,6 +91,7 @@ internal class ServiceBusFunctionsTests
 
         // Act and Assert
         Assert.That(() => _controller.ProcessVideoMessageQueue(queueMessage), Throws.Nothing);
+        _discordMessageService.Verify(x => x.SendDiscordMessageAsync(channelId, It.IsAny<Message>()));
     }
 
     [Test, AutoData]
@@ -103,9 +109,10 @@ internal class ServiceBusFunctionsTests
     }
 
     [Test, AutoData]
-    public void ProcessDailyScheduleMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Event[] events)
+    public void ProcessDailyScheduleMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Event[] events, string channelId)
     {
         // Arrange
+        Environment.SetEnvironmentVariable("DiscordScheduleChannelId", channelId);
         _discordMessageService
             .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
             .ReturnsAsync(new Message());
@@ -113,6 +120,7 @@ internal class ServiceBusFunctionsTests
 
         // Act and Assert
         Assert.That(() => _controller.ProcessDailyScheduleMessageQueue(queueMessage), Throws.Nothing);
+        _discordMessageService.Verify(x => x.SendDiscordMessageAsync(channelId, It.IsAny<Message>()));
     }
 
     [Test, AutoData]
@@ -130,9 +138,10 @@ internal class ServiceBusFunctionsTests
     }
 
     [Test, AutoData]
-    public void ProcessWeeklyScheduleMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Event[] events)
+    public void ProcessWeeklyScheduleMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Event[] events, string channelId)
     {
         // Arrange
+        Environment.SetEnvironmentVariable("DiscordScheduleChannelId", channelId);
         _discordMessageService
             .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
             .ReturnsAsync(new Message());
@@ -140,6 +149,7 @@ internal class ServiceBusFunctionsTests
 
         // Act and Assert
         Assert.That(() => _controller.ProcessWeeklyScheduleMessageQueue(queueMessage), Throws.Nothing);
+        _discordMessageService.Verify(x => x.SendDiscordMessageAsync(channelId, It.IsAny<Message>()));
     }
 
     [Test, AutoData]

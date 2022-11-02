@@ -33,7 +33,7 @@ namespace Raw.Streaming.Discord.Functions
             {
                 _logger.LogDebug($"{nameof(ProcessGoLiveMessageQueue)} notification started");
                 var messages = myQueueItem.Entities.Select(x => GoLiveToDiscordMessageTranslator.Translate(x));
-                await Task.WhenAll(messages.Select(x => _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordVideoChannelId, x)));
+                await Task.WhenAll(messages.Select(x => _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordStreamGoLiveChannelId, x)));
                 _logger.LogDebug($"{nameof(ProcessGoLiveMessageQueue)} notification succeeded");
             }
             catch (Exception ex)
@@ -50,7 +50,7 @@ namespace Raw.Streaming.Discord.Functions
             {
                 _logger.LogDebug($"{nameof(ProcessClipMessageQueue)} notification started");
                 var messages = myQueueItem.Entities.Select(x => ClipToDiscordMessageTranslator.Translate(x));
-                await Task.WhenAll(messages.Select(x => _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordVideoChannelId, x)));
+                await Task.WhenAll(messages.Select(x => _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordClipChannelId, x)));
                 _logger.LogDebug($"{nameof(ProcessClipMessageQueue)} notification succeeded");
             }
             catch (Exception ex)
