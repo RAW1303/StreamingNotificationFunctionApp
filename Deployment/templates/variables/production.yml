@@ -1,6 +1,7 @@
 variables:
   resourceGroupName: RawStream
   discordBotApplicationId: '945385289642287187'
+  discordGuildId: '766813645937967124'
   discordClipChannelId: '769724698640384020'
   discordScheduleChannelId: '844887317566455888'
   discordStreamGoLiveChannelId: '766821120522715141'

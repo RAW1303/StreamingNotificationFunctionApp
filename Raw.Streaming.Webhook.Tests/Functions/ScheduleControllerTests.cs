@@ -95,8 +95,10 @@ internal class ScheduleControllerTests
         // Arrange
         var events = new List<Event>
         {
-            _fixture.Build<Event>().With(x => x.IsRecurring, true).Create(),
-            _fixture.Build<Event>().With(x => x.IsRecurring, false).Create()
+            _fixture.Build<Event>().With(x => x.IsRecurring, false).Create(),
+            _fixture.Build<Event>().With(x => x.IsRecurring, true).With(x => x.Start, triggerTime.AddDays(6)).Create(),
+            _fixture.Build<Event>().With(x => x.IsRecurring, true).With(x => x.Start, triggerTime.AddDays(7)).Create(),
+            _fixture.Build<Event>().With(x => x.IsRecurring, true).With(x => x.Start, triggerTime.AddDays(8)).Create()
         };
 
         _scheduleService
@@ -105,10 +107,12 @@ internal class ScheduleControllerTests
 
         // Act
         var result = await _controller.UpdateEventSchedule(triggerTime);
+        var queueItem = result.Body.ToObjectFromJson<DiscordBotQueueItem<Event>>();
 
         // Assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Body.ToObjectFromJson<DiscordBotQueueItem<Event>>(), Has.Property("Entities").With.One.Items);
+        Assert.That(queueItem, Has.Property("Entities").With.Exactly(2).Items);
+        Assert.That(queueItem, Has.Property("Entities").With.None.With.Property("Start").GreaterThan(triggerTime.AddDays(7)).And.Property("IsRecurring").True);
     }
 
     [Test, AutoData]

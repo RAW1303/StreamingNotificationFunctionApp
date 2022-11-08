@@ -11,7 +11,7 @@ namespace Raw.Streaming.Discord.Translators
                 $"{AppSettings.DiscordNotificationGroupIds} {goLive.BroadcasterName} is live on Twitch!",
                 $":pencil2: {goLive.Title}",
                 $":video_game: {goLive.GameName}",
-                $":tv: https://twitch.tv/{goLive.BroadcasterName}"
+                $":tv: {goLive.Url}"
             };
 
             return new Message()

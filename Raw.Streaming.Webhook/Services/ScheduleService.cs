@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Google.Apis.Logging;
 using Raw.Streaming.Common.Model;
 using System;
 using System.Collections.Generic;
@@ -36,13 +35,13 @@ internal class ScheduleService : IScheduleService
     {
         var twitchSchedule = await _twitchApiService.GetScheduleByBroadcasterIdAsync(AppSettings.TwitchBroadcasterId, from);
         var events = _mapper.Map<IEnumerable<Event>>(twitchSchedule);
-        return events.Where(x => x.Start >= from && (to is null || x.Start <= from));
+        return events.Where(x => x.Start >= from && (to is null || x.Start <= to));
     }
 
     private async Task<IEnumerable<Event>> GetYoutubeSchedule(DateTimeOffset from, DateTimeOffset? to = null)
     {
         var youtubeSchedule = await _youtubeScheduleService.GetUpcomingBroadcastsAsync();
         var events = _mapper.Map<IEnumerable<Event>>(youtubeSchedule);
-        return events.Where(x => x.Start >= from && (to is null || x.Start <= from));
+        return events.Where(x => x.Start >= from && (to is null || x.Start <= to));
     }
 }

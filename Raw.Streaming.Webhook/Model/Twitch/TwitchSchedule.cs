@@ -36,7 +36,7 @@ namespace Raw.Streaming.Webhook.Model.Twitch
     internal class TwitchScheduleSegment
     {
         [JsonPropertyName("id")]
-        public string Id { get; set; }
+        public TwitchScheduleId Id { get; set; }
         [JsonPropertyName("start_time")]
         public DateTimeOffset StartTime { get; set; }
         [JsonPropertyName("end_time")]
@@ -49,6 +49,14 @@ namespace Raw.Streaming.Webhook.Model.Twitch
         public TwitchGame Category { get; set; }
         [JsonPropertyName("is_recurring")]
         public bool IsRecurring { get; set; }
+    }
+
+    [ExcludeFromCodeCoverage]
+    internal class TwitchScheduleId
+    {
+        public string SegmentId { get; set; }
+        public int IsoYear { get; set; }
+        public int IsoWeek { get; set; }
     }
 
     [ExcludeFromCodeCoverage]

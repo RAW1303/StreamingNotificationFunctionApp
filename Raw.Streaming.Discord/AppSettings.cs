@@ -15,6 +15,5 @@ namespace Raw.Streaming.Discord
         public static string DiscordScheduleChannelId => Environment.GetEnvironmentVariable("DiscordScheduleChannelId");
         public static string DiscordStreamGoLiveChannelId => Environment.GetEnvironmentVariable("DiscordStreamGoLiveChannelId");
         public static string DiscordVideoChannelId => Environment.GetEnvironmentVariable("DiscordVideoChannelId");
-        public static string EventChannelOverride => Environment.GetEnvironmentVariable("EventChannelOverride");
     }
 }
