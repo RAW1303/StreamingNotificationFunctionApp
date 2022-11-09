@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Moq.Protected;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -196,6 +197,30 @@ namespace Raw.Streaming.Webhook.Tests.Services
                ItExpr.Is<HttpRequestMessage>(req =>
                   req.Method == HttpMethod.Get
                   && req.RequestUri.AbsoluteUri == $"{_twitchApiUrl}/{_twitchApiVideoEndpoint}?type=highlight&user_id={channelId}"
+               ),
+               ItExpr.IsAny<CancellationToken>()
+            );
+        }
+
+        [Test]
+        public async Task GetScheduleByBroadcasterIdAsync_WhenHttpClientReturnsSchedule_ReturnsSuccessfully()
+        {
+            // Arrange
+            var channelId = "TestId";
+            var content = File.ReadAllText("TestData/TwitchApiResponse/GetScheduleSuccess.json");
+            SetupMockHttpMessageHandler(HttpStatusCode.OK, content);
+
+            // Act
+            var result = await _service.GetScheduleByBroadcasterIdAsync(channelId);
+
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            _mockHttpMessageHandler.Protected().Verify(
+               "SendAsync",
+               Times.Exactly(1),
+               ItExpr.Is<HttpRequestMessage>(req =>
+                  req.Method == HttpMethod.Get
+                  && req.RequestUri.AbsoluteUri == $"{_twitchApiUrl}/{_twitchApiScheduleEndpoint}?broadcaster_id={channelId}"
                ),
                ItExpr.IsAny<CancellationToken>()
             );

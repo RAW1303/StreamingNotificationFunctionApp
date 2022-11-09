@@ -1,0 +1,18 @@
+{
+  "data": {
+    "segments": [
+      {
+        "id": "eyJzZWdtZW50SUQiOiI4Mjg1NzIzZS1kMmI4LTRjZmMtOTQ1Mi04ZGMwNzg1NjA2ZTgiLCJpc29ZZWFyIjoyMDIyLCJpc29XZWVrIjo0NX0=",
+        "start_time": "2022-11-09T19:00:00Z",
+        "end_time": "2022-11-09T21:00:00Z",
+        "title": "ACCSS - Community Series",
+        "canceled_until": null,
+        "category": {
+          "id": "1348809580",
+          "name": "Assetto Corsa Competizione"
+        },
+        "is_recurring": true
+      }
+    ]
+  }
+}

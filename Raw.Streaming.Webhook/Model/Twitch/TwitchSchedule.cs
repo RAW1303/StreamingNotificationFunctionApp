@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Raw.Streaming.Webhook.JsonConverters;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -36,6 +37,7 @@ namespace Raw.Streaming.Webhook.Model.Twitch
     internal class TwitchScheduleSegment
     {
         [JsonPropertyName("id")]
+        [JsonConverter(typeof(Base64ObjectJsonConverter<TwitchScheduleId>))]
         public TwitchScheduleId Id { get; set; }
         [JsonPropertyName("start_time")]
         public DateTimeOffset StartTime { get; set; }

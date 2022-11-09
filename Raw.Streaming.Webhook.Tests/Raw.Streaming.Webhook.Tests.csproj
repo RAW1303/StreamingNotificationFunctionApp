@@ -27,4 +27,13 @@
     <ProjectReference Include="..\Raw.Streaming.Webhook\Raw.Streaming.Webhook.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestData\TwitchApiResponse\GetChannelsSuccess.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TwitchApiResponse\GetScheduleSuccess.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
