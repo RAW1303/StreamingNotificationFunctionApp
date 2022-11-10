@@ -37,6 +37,7 @@ jobs:
       organization: 'raw13'
       scannerMode: 'MSBuild'
       projectKey: 'RAW1303_StreamingNotificationFunctionApp'
+      extraProperties: '/d:sonar.dotnet.excludeTestProjects=true'
 
   - task: DotNetCoreCLI@2
     displayName: Run unit tests
