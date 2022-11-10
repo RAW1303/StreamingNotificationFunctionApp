@@ -24,8 +24,8 @@ internal class DiscordEventService : IDiscordEventService
     {
         var existingEvents = await GetScheduledEvents(guildId);
         var botExistingEvents = existingEvents.Where(e => e.CreatorId == AppSettings.DiscordBotApplicationId);
-        var eventsToAdd = EventToDiscordGuildScheduledEventTranslator.Translate(events.Where(x => !botExistingEvents.Any(y => x.Title == y.Name)));
-        var tasks = eventsToAdd.Select(x => CreateScheduledEvent(guildId, x));
+        var eventsToAdd = EventToDiscordGuildScheduledEventTranslator.Translate(events.Where(x => !botExistingEvents.Any(y => x.Url == y.EntityMetadata.Location)));
+        var tasks = eventsToAdd.Select(x => CreateScheduledEvent(guildId, x)).ToList();
         return await Task.WhenAll(tasks);
     }
 

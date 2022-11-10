@@ -26,6 +26,28 @@ namespace Raw.Streaming.Webhook.Tests
         }
 
         [Test, AutoData]
+        public void MappingProfile_TwitchChannelToGoLive_Succeeds(string title, string gameName, string broadcasterName)
+        { 
+            // Arrange
+            var twitchChannel = new TwitchChannel()
+            {
+                Title = title,
+                GameName = gameName,
+                BroadcasterName = broadcasterName
+            };
+
+            // Act
+            var result = _mapper.Map<GoLive>(twitchChannel);
+
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Has.Property("Title").EqualTo(title));
+            Assert.That(result, Has.Property("GameName").EqualTo(gameName));
+            Assert.That(result, Has.Property("BroadcasterName").EqualTo(broadcasterName));
+            Assert.That(result, Has.Property("Url").Contains(broadcasterName));
+        }
+
+        [Test, AutoData]
         public void MappingProfile_YoutubeFeedToVideo_Succeeds(string videoId, string authorName, string link)
         {
             // Arrange
@@ -47,11 +69,12 @@ namespace Raw.Streaming.Webhook.Tests
         }
 
         [Test, AutoData]
-        public void MappingProfile_TwitchScheduleSegmentToEventList_Succeeds(string title, string categoryName, DateTimeOffset startTime, DateTimeOffset endTime, bool isRecurring)
+        public void MappingProfile_TwitchScheduleSegmentToEventList_Succeeds(string segmentId, string title, string categoryName, DateTimeOffset startTime, DateTimeOffset endTime, bool isRecurring)
         {
             // Arrange
             var twitchScheduleSegment = new TwitchScheduleSegment()
             {
+                Id = new TwitchScheduleId { SegmentId = segmentId },
                 Category = new TwitchGame { Name = categoryName },
                 StartTime = startTime,
                 EndTime = endTime,
@@ -72,7 +95,7 @@ namespace Raw.Streaming.Webhook.Tests
         }
 
         [Test, AutoData]
-        public void MappingProfile_TwitchScheduleToEventList_Succeeds(string broadcasterName, string title, string categoryName, DateTimeOffset startTime, DateTimeOffset endTime, bool isRecurring)
+        public void MappingProfile_TwitchScheduleToEventList_Succeeds(string segmentId, string broadcasterName, string title, string categoryName, DateTimeOffset startTime, DateTimeOffset endTime, bool isRecurring)
         {
             // Arrange
             var twitchSchedule = new TwitchSchedule()
@@ -82,6 +105,7 @@ namespace Raw.Streaming.Webhook.Tests
                 {
                     new TwitchScheduleSegment()
                     {
+                        Id = new TwitchScheduleId {SegmentId =  segmentId},
                         Category = new TwitchGame { Name = categoryName },
                         StartTime = startTime,
                         EndTime = endTime,
@@ -101,6 +125,7 @@ namespace Raw.Streaming.Webhook.Tests
             Assert.That(result, Has.One.With.Property("Start").EqualTo(startTime));
             Assert.That(result, Has.One.With.Property("End").EqualTo(endTime));
             Assert.That(result, Has.One.With.Property("Url").Contains(broadcasterName));
+            Assert.That(result, Has.One.With.Property("Url").Contains(segmentId));
             Assert.That(result, Has.One.With.Property("IsRecurring").EqualTo(isRecurring));
         }
 

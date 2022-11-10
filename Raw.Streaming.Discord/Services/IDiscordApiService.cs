@@ -1,5 +1,4 @@
 ﻿using Raw.Streaming.Discord.Model.DiscordApi;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Raw.Streaming.Discord.Services;

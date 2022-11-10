@@ -25,24 +25,6 @@ namespace Raw.Streaming.Webhook.Functions
         }
 
         [ExcludeFromCodeCoverage]
-        [FunctionName(nameof(NotifyDailyScheduleTrigger))]
-        [return: ServiceBus("%DailyScheduleQueueName%")]
-        public async Task<ServiceBusMessage> NotifyDailyScheduleTrigger(
-            [TimerTrigger("%ScheduleDailyTimerTrigger%")] TimerInfo timer)
-        {
-            return await NotifyDailySchedule(DateTimeOffset.UtcNow);
-        }
-
-        [ExcludeFromCodeCoverage]
-        [FunctionName(nameof(NotifyWeeklyScheduleTrigger))]
-        [return: ServiceBus("%WeeklyScheduleQueueName%")]
-        public async Task<ServiceBusMessage> NotifyWeeklyScheduleTrigger(
-            [TimerTrigger("%ScheduleWeeklyTimerTrigger%")] TimerInfo timer)
-        {
-            return await NotifyWeeklySchedule(DateTimeOffset.UtcNow);
-        }
-
-        [ExcludeFromCodeCoverage]
         [FunctionName(nameof(UpdateEventScheduleTrigger))]
         [return: ServiceBus("%EventScheduleQueueName%")]
         public async Task<ServiceBusMessage> UpdateEventScheduleTrigger(
@@ -107,7 +89,7 @@ namespace Raw.Streaming.Webhook.Functions
             {
                 _logger.LogDebug($"{nameof(UpdateEventSchedule)} execution started for {triggerTime}");
                 var events =  await _scheduleService.GetScheduleAsync(triggerTime);
-                var filteredEvents = events.Where(x => !x.IsRecurring);
+                var filteredEvents = events.Where(x => !x.IsRecurring || x.Start < triggerTime.AddDays(7));
                 var queueItem = new DiscordBotQueueItem<Event>(filteredEvents.ToArray());
                 return new ServiceBusMessage
                 {

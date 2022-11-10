@@ -1,8 +1,8 @@
 variables:
   resourceGroupName: RawStreamPpd
   discordBotApplicationId: '958119572655972372'
-  discordClipChannelId: '771066982765297764'
-  discordScheduleChannelId: '771066982765297764'
-  discordStreamGoLiveChannelId: '771066982765297764'
-  discordVideoChannelId: '771066982765297764'
-  eventChannelOverride: '1031938591988912199'
+  discordGuildId: '1039683537101660270'
+  discordClipChannelId: '1039683537835655190'
+  discordScheduleChannelId: '1039683537835655190'
+  discordStreamGoLiveChannelId: '1039683537835655190'
+  discordVideoChannelId: '1039683537835655190'

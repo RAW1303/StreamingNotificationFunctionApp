@@ -91,6 +91,7 @@ namespace Raw.Streaming.Webhook.Services
                 _logger.LogError($"Error calling twitch API endpoint: {fullUrl}");
                 throw new TwitchApiException($"Error calling twitch API endpoint: {responseContent}");
             }
+
             var responseObject = JsonSerializer.Deserialize<TwitchApiResponse<T>>(responseContent);
             return responseObject.Data;
         }
