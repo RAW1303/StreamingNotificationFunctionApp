@@ -5,7 +5,6 @@ using Raw.Streaming.Discord.Translators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace Raw.Streaming.Discord.Services;
@@ -26,9 +25,7 @@ internal class DiscordEventService : IDiscordEventService
         var existingEvents = await GetScheduledEvents(guildId);
         var botExistingEvents = existingEvents.Where(e => e.CreatorId == AppSettings.DiscordBotApplicationId);
         var eventsToAdd = EventToDiscordGuildScheduledEventTranslator.Translate(events.Where(x => !botExistingEvents.Any(y => x.Url == y.EntityMetadata.Location)));
-        var eventsToDelete = botExistingEvents.Where(x => !events.Any(y => y.Url == x.EntityMetadata.Location));
         var tasks = eventsToAdd.Select(x => CreateScheduledEvent(guildId, x)).ToList();
-        await Task.WhenAll(eventsToDelete.Select(x => DeleteScheduledEvent(guildId, x.Id)));
         return await Task.WhenAll(tasks);
     }
 
@@ -56,34 +53,6 @@ internal class DiscordEventService : IDiscordEventService
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error creating scheduled event in guild {guildId}");
-            throw;
-        }
-    }
-
-    public async Task<GuildScheduledEvent> UpdateScheduledEvent(string guildId, string eventId, GuildScheduledEvent guildScheduledEvent)
-    {
-        try
-        {
-            var endpoint = $"guilds/{guildId}/scheduled-events/{eventId}";
-            return await _discordApiService.SendDiscordApiPatchRequestAsync<GuildScheduledEvent>(endpoint, guildScheduledEvent);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error updating scheduled event {eventId} in guild {guildId}");
-            throw;
-        }
-    }
-
-    public async Task DeleteScheduledEvent(string guildId, string eventId)
-    {
-        try
-        {
-            var endpoint = $"guilds/{guildId}/scheduled-events/{eventId}";
-            await _discordApiService.SendDiscordApiDeleteRequestAsync(endpoint);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error deleting scheduled event {eventId} in guild {guildId}");
             throw;
         }
     }
