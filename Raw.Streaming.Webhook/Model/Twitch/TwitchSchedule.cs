@@ -56,8 +56,11 @@ namespace Raw.Streaming.Webhook.Model.Twitch
     [ExcludeFromCodeCoverage]
     internal class TwitchScheduleId
     {
+        [JsonPropertyName("segmentID")]
         public string SegmentId { get; set; }
+        [JsonPropertyName("isoYear")]
         public int IsoYear { get; set; }
+        [JsonPropertyName("isoWeek")]
         public int IsoWeek { get; set; }
     }
 

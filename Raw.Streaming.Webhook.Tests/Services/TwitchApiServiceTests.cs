@@ -215,6 +215,8 @@ namespace Raw.Streaming.Webhook.Tests.Services
 
             // Assert
             Assert.That(result, Is.Not.Null);
+            Assert.That(result.Segments, Has.Exactly(20).With.Property("Id").With.Property("SegmentId").EqualTo("8285723e-d2b8-4cfc-9452-8dc0785606e8"));
+            Assert.That(result.Segments, Has.One.With.Property("Id").With.Property("IsoYear").EqualTo(2022).And.Property("IsoWeek").EqualTo(48));
             _mockHttpMessageHandler.Protected().Verify(
                "SendAsync",
                Times.Exactly(1),
