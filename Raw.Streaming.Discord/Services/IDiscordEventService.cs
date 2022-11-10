@@ -9,5 +9,5 @@ internal interface IDiscordEventService
 {
     Task<IEnumerable<GuildScheduledEvent>> SyncScheduledEvents(string guildId, IEnumerable<Event> events);
     Task<IEnumerable<GuildScheduledEvent>> GetScheduledEvents(string guildId);
-    Task DeleteScheduledEvent(string guildId, string messageId);
+    Task<GuildScheduledEvent> CreateScheduledEvent(string guildId, GuildScheduledEvent guildScheduledEvent);
 }
