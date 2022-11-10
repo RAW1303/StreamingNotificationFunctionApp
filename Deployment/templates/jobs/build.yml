@@ -29,6 +29,7 @@ jobs:
     inputs:
       command: 'restore'
       projects: '**/*.csproj'
+      verbosityRestore: quiet
       
   - task: SonarCloudPrepare@1
     inputs:
