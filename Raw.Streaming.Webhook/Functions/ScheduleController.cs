@@ -33,56 +33,6 @@ namespace Raw.Streaming.Webhook.Functions
             return await UpdateEventSchedule(DateTimeOffset.UtcNow);
         }
 
-        public async Task<ServiceBusMessage> NotifyWeeklySchedule(DateTimeOffset triggerTime)
-        {
-            try
-            {
-                _logger.LogDebug($"{nameof(NotifyWeeklySchedule)} execution started for {triggerTime}");
-                var from = triggerTime;
-                var to = from.AddDays(7);
-                var events = await _scheduleService.GetScheduleAsync(triggerTime, to);
-                var queueItem = new DiscordBotQueueItem<Event>(events.ToArray());
-                return new ServiceBusMessage
-                {
-                    Body = BinaryData.FromObjectAsJson(queueItem),
-                    MessageId = $"schedule-weekly-{from:yyyy-MM-dd}"
-                };
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"{nameof(NotifyWeeklySchedule)} execution failed: {e.Message}");
-                throw;
-            }
-        }
-
-        public async Task<ServiceBusMessage> NotifyDailySchedule(DateTimeOffset triggerTime)
-        {
-            try
-            {
-                _logger.LogDebug($"{nameof(NotifyDailySchedule)} execution started for {triggerTime}");
-                var from = triggerTime.Date;
-                var to = from.AddDays(1);
-                var events = await _scheduleService.GetScheduleAsync(triggerTime, to);
-                if (events.Any())
-                {
-                    var queueItem = new DiscordBotQueueItem<Event>(events.ToArray());
-                    return new ServiceBusMessage
-                    {
-                        Body = BinaryData.FromObjectAsJson(queueItem),
-                        MessageId = $"schedule-daily-{from:yyyy-MM-dd}"
-                    };
-                }
-
-                return null;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"{nameof(NotifyDailySchedule)} execution failed: {e.Message}");
-                throw;
-            }
-
-        }
-
         public async Task<ServiceBusMessage> UpdateEventSchedule(DateTimeOffset triggerTime)
         {
             try

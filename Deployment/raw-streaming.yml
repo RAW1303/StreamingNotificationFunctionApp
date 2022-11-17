@@ -38,6 +38,7 @@ stages:
       resourceGroupName: $(resourceGroupName)
       location: $(location)
       discordBotSettings:
+        DailyScheduleTimerTrigger: $(dailyScheduleTimerTrigger)
         DiscordApiUrl: $(discordApiUrl)
         DiscordBotApplicationId: $(discordBotApplicationId)
         DiscordGuildId: $(discordGuildId)
@@ -47,8 +48,6 @@ stages:
         DiscordVideoChannelId: $(discordVideoChannelId)
       orchestratorSettings:
         EventScheduleTimerTrigger: $(eventScheduleTimerTrigger)
-        ScheduleDailyTimerTrigger: $(scheduleDailyTimerTrigger)
-        ScheduleWeeklyTimerTrigger: $(scheduleWeeklyTimerTrigger)
         TwitchApiChannelEndpoint: $(twitchApiChannelEndpoint)
         TwitchApiClipEndpoint: $(twitchApiClipEndpoint)
         TwitchApiGameEndpoint: $(twitchApiGameEndpoint)
@@ -96,8 +95,6 @@ stages:
         DiscordVideoChannelId: $(discordVideoChannelId)
       orchestratorSettings:
         EventScheduleTimerTrigger: $(eventScheduleTimerTrigger)
-        ScheduleDailyTimerTrigger: $(scheduleDailyTimerTrigger)
-        ScheduleWeeklyTimerTrigger: $(scheduleWeeklyTimerTrigger)
         TwitchApiChannelEndpoint: $(twitchApiChannelEndpoint)
         TwitchApiClipEndpoint: $(twitchApiClipEndpoint)
         TwitchApiGameEndpoint: $(twitchApiGameEndpoint)
