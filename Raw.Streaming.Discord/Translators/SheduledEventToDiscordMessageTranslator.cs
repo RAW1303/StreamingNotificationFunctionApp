@@ -1,6 +1,4 @@
-﻿using Raw.Streaming.Common.Model;
-using Raw.Streaming.Discord.Extensions;
-using Raw.Streaming.Discord.Model.DiscordApi;
+﻿using Raw.Streaming.Discord.Model.DiscordApi;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,7 +10,7 @@ namespace Raw.Streaming.Discord.Translators
         {
             return new Message()
             {
-                Content = string.Join('\n', events.Select(x => $"https://discord.com/events/{x.GuildId}/{x.Id}"))
+                Content = string.Join('\n', events.Select(x => $"{AppSettings.DiscordEventsUrl}/{x.GuildId}/{x.Id}"))
             };
         }
     }

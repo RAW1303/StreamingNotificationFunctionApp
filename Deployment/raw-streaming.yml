@@ -41,6 +41,7 @@ stages:
         DailyScheduleTimerTrigger: $(dailyScheduleTimerTrigger)
         DiscordApiUrl: $(discordApiUrl)
         DiscordBotApplicationId: $(discordBotApplicationId)
+        DiscordEventsUrl: $(discordEventsUrl)
         DiscordGuildId: $(discordGuildId)
         DiscordNotificationGroupIds: $(discordNotificationGroupIds)
         DiscordScheduleChannelId: $(discordScheduleChannelId)
@@ -54,6 +55,7 @@ stages:
         TwitchApiScheduleEndpoint: $(twitchApiScheduleEndpoint)
         TwitchApiUrl: $(twitchApiUrl)
         TwitchApiVideoEndpoint: $(twitchApiVideoEndpoint)
+        TwitchBaseUrl: $(twitchBaseUrl)
         TwitchBroadcasterId: $(twitchBroadcasterId)
         TwitchClientId: $(twitchClientId)
         TwitchClipsTimerTrigger: $(twitchClipsTimerTrigger)
@@ -64,6 +66,7 @@ stages:
         YoutubeChannelId: $(youtubeChannelId)
         YoutubeSubscriptionUrl: $(youtubeSubscriptionUrl)
         YoutubeVideoTopic: $(youtubeVideoTopic)
+        YoutubeVideoUrl: $(youtubeVideoUrl)
       discordBotSecrets:
         DiscordBotToken: $(DiscordBotToken)
       orchestratorSecrets:
@@ -88,6 +91,7 @@ stages:
       discordBotSettings:
         DiscordApiUrl: $(discordApiUrl)
         DiscordBotApplicationId: $(discordBotApplicationId)
+        DiscordEventsUrl: $(discordEventsUrl)
         DiscordGuildId: $(discordGuildId)
         DiscordNotificationGroupIds: $(discordNotificationGroupIds)
         DiscordScheduleChannelId: $(discordScheduleChannelId)
@@ -101,6 +105,7 @@ stages:
         TwitchApiScheduleEndpoint: $(twitchApiScheduleEndpoint)
         TwitchApiUrl: $(twitchApiUrl)
         TwitchApiVideoEndpoint: $(twitchApiVideoEndpoint)
+        TwitchBaseUrl: $(twitchBaseUrl)
         TwitchBroadcasterId: $(twitchBroadcasterId)
         TwitchClientId: $(twitchClientId)
         TwitchClipsTimerTrigger: $(twitchClipsTimerTrigger)
@@ -111,6 +116,7 @@ stages:
         YoutubeChannelId: $(youtubeChannelId)
         YoutubeSubscriptionUrl: $(youtubeSubscriptionUrl)
         YoutubeVideoTopic: $(youtubeVideoTopic)
+        YoutubeVideoUrl: $(youtubeVideoUrl)
       discordBotSecrets:
         DiscordBotToken: $(DiscordBotToken)
       orchestratorSecrets:
