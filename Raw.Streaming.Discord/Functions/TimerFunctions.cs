@@ -27,7 +27,6 @@ internal class TimerFunctions
 
     [ExcludeFromCodeCoverage]
     [FunctionName(nameof(NotifyDailyScheduleTrigger))]
-    [return: ServiceBus("%EventScheduleQueueName%")]
     public async Task NotifyDailyScheduleTrigger(
         [TimerTrigger("%DailyScheduleTimerTrigger%")] TimerInfo timer)
     {
@@ -42,8 +41,13 @@ internal class TimerFunctions
             var to = triggerTime.Date.AddDays(1);
             var events = await _discordEventService.GetScheduledEvents(AppSettings.DiscordGuildId);
             var todaysEvents = events.Where(x => x.ScheduledStartTime < to);
-            var message = SheduledEventToDiscordMessageTranslator.TranslateDailySchedule(todaysEvents);
-            await _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordScheduleChannelId, message);
+            _logger.LogDebug($"Found {todaysEvents.Count()} events for {to}");
+            if (todaysEvents.Any())
+            {
+                var message = SheduledEventToDiscordMessageTranslator.TranslateDailySchedule(todaysEvents);
+                await _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordScheduleChannelId, message);
+            }
+            _logger.LogDebug($"{nameof(NotifyDailySchedule)} execution complete for {triggerTime}");
         }
         catch (Exception e)
         {
