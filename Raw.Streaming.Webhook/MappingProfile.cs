@@ -12,14 +12,14 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<TwitchChannel, GoLive>()
-            .ForMember(dest => dest.Url, opt => opt.MapFrom(src => $"https://twitch.tv/{src.BroadcasterName}"));
+            .ForMember(dest => dest.Url, opt => opt.MapFrom(src => $"{AppSettings.TwitchBaseUrl}/{src.BroadcasterName}"));
         CreateMap<TwitchSchedule, Event>()
             .ForMember(dest => dest.Start, opt => opt.Ignore())
             .ForMember(dest => dest.End, opt => opt.Ignore())
             .ForMember(dest => dest.Title, opt => opt.Ignore())
             .ForMember(dest => dest.Description, opt => opt.Ignore())
             .ForMember(dest => dest.IsRecurring, opt => opt.Ignore())
-            .ForMember(dest => dest.Url, opt => opt.MapFrom(src => $"https://twitch.tv/{src.BroadcasterName}/schedule"));
+            .ForMember(dest => dest.Url, opt => opt.MapFrom(src => $"{AppSettings.TwitchBaseUrl}/{src.BroadcasterName}/schedule"));
         CreateMap<TwitchSchedule, IEnumerable<Event>>()
             .ConvertUsing<TwitchScheduleToEventListConverter>();
         CreateMap<TwitchScheduleSegment, Event>()
@@ -35,7 +35,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Snippet.Title))
             .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Snippet.Description))
             .ForMember(dest => dest.IsRecurring, opt => opt.Ignore())
-            .ForMember(dest => dest.Url, opt => opt.MapFrom(src => $"https://youtube.com/watch?v={src.Id}"));
+            .ForMember(dest => dest.Url, opt => opt.MapFrom(src => $"{AppSettings.YoutubeVideoUrl}{src.Id}"));
         CreateMap<TwitchClip, Clip>()
             .ForMember(dest => dest.GameName, opt => opt.Ignore());
         CreateMap<TwitchVideo, Video>()
