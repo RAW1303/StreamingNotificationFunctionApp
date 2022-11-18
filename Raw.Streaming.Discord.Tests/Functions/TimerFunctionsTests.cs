@@ -71,6 +71,7 @@ internal class TimerFunctionsTests
         // Arrange
         var events = new List<GuildScheduledEvent>
         {
+            _fixture.Build<GuildScheduledEvent>().With(x => x.ScheduledStartTime, triggerTime.Date.AddDays(1)).Create(),
             _fixture.Build<GuildScheduledEvent>().With(x => x.ScheduledStartTime, triggerTime.AddDays(1)).Create(),
             _fixture.Build<GuildScheduledEvent>().With(x => x.ScheduledStartTime, triggerTime.AddDays(2)).Create(),
             _fixture.Build<GuildScheduledEvent>().With(x => x.ScheduledStartTime, triggerTime.AddDays(3)).Create()
