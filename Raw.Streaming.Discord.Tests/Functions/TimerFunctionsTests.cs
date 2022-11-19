@@ -27,11 +27,11 @@ internal class TimerFunctionsTests
     public void NotifyDailySchedule_WhenEvents_SendDiscordMessageAsyncIsCalled(DateTimeOffset triggerTime, string channelId)
     {
         // Arrange
-        // Arrange
         var events = new List<GuildScheduledEvent>
         {
-            _fixture.Build<GuildScheduledEvent>().With(x => x.ScheduledStartTime, triggerTime.AddHours(1)).Create(),
-            _fixture.Build<GuildScheduledEvent>().With(x => x.ScheduledStartTime, triggerTime.AddHours(2)).Create(),
+            _fixture.Build<GuildScheduledEvent>().With(x => x.ScheduledStartTime, triggerTime.Date).Create(),
+            _fixture.Build<GuildScheduledEvent>().With(x => x.ScheduledStartTime, triggerTime.Date.AddHours(1)).Create(),
+            _fixture.Build<GuildScheduledEvent>().With(x => x.ScheduledStartTime, triggerTime.Date.AddHours(2)).Create(),
             _fixture.Build<GuildScheduledEvent>().With(x => x.ScheduledStartTime, triggerTime.AddHours(3)).Create()
         };
 
@@ -108,9 +108,17 @@ internal class TimerFunctionsTests
     }
 
     [Test, AutoData]
-    public void NotifyDailySchedule_SendDiscordMessageAsyncThrowsException_Throws(DateTimeOffset triggerTime, string channelId, List<GuildScheduledEvent> events, string exceptionMessage)
+    public void NotifyDailySchedule_SendDiscordMessageAsyncThrowsException_Throws(DateTimeOffset triggerTime, string channelId, string exceptionMessage)
     {
         // Arrange
+        var events = new List<GuildScheduledEvent>
+        {
+            _fixture.Build<GuildScheduledEvent>().With(x => x.ScheduledStartTime, triggerTime.Date).Create(),
+            _fixture.Build<GuildScheduledEvent>().With(x => x.ScheduledStartTime, triggerTime.Date.AddHours(1)).Create(),
+            _fixture.Build<GuildScheduledEvent>().With(x => x.ScheduledStartTime, triggerTime.Date.AddHours(2)).Create(),
+            _fixture.Build<GuildScheduledEvent>().With(x => x.ScheduledStartTime, triggerTime.AddHours(3)).Create()
+        };
+
         Environment.SetEnvironmentVariable("DiscordScheduleChannelId", channelId);
         _discordEventService
             .Setup(x => x.GetScheduledEvents(It.IsAny<string>()))
