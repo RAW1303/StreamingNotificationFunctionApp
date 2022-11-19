@@ -7,124 +7,89 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Raw.Streaming.Discord.Functions
+namespace Raw.Streaming.Discord.Functions;
+
+[ServiceBusAccount("StreamingServiceBus")]
+internal class ServiceBusFunctions
 {
-    [ServiceBusAccount("StreamingServiceBus")]
-    internal class ServiceBusFunctions
+    private readonly IDiscordEventService _discordEventService;
+    private readonly IDiscordMessageService _discordMessageService;
+    private readonly ILogger<ServiceBusFunctions> _logger;
+
+    public ServiceBusFunctions(
+        IDiscordEventService discordEventService,
+        IDiscordMessageService discordMessageService, 
+        ILogger<ServiceBusFunctions> logger)
     {
-        private readonly IDiscordEventService _discordEventService;
-        private readonly IDiscordMessageService _discordMessageService;
-        private readonly ILogger<ServiceBusFunctions> _logger;
+        _logger = logger;
+        _discordEventService = discordEventService;
+        _discordMessageService = discordMessageService;
+    }
 
-        public ServiceBusFunctions(
-            IDiscordEventService discordEventService,
-            IDiscordMessageService discordMessageService, 
-            ILogger<ServiceBusFunctions> logger)
+    [FunctionName(nameof(ProcessGoLiveMessageQueue))]
+    public async Task ProcessGoLiveMessageQueue([ServiceBusTrigger("%GoLiveQueueName%")] DiscordBotQueueItem<GoLive> myQueueItem)
+    {
+        try
         {
-            _logger = logger;
-            _discordEventService = discordEventService;
-            _discordMessageService = discordMessageService;
+            _logger.LogDebug($"{nameof(ProcessGoLiveMessageQueue)} notification started");
+            var messages = myQueueItem.Entities.Select(x => GoLiveToDiscordMessageTranslator.Translate(x));
+            await Task.WhenAll(messages.Select(x => _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordStreamGoLiveChannelId, x)));
+            _logger.LogDebug($"{nameof(ProcessGoLiveMessageQueue)} notification succeeded");
         }
-
-        [FunctionName(nameof(ProcessGoLiveMessageQueue))]
-        public async Task ProcessGoLiveMessageQueue([ServiceBusTrigger("%GoLiveQueueName%")] DiscordBotQueueItem<GoLive> myQueueItem)
+        catch (Exception ex)
         {
-            try
-            {
-                _logger.LogDebug($"{nameof(ProcessGoLiveMessageQueue)} notification started");
-                var messages = myQueueItem.Entities.Select(x => GoLiveToDiscordMessageTranslator.Translate(x));
-                await Task.WhenAll(messages.Select(x => _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordStreamGoLiveChannelId, x)));
-                _logger.LogDebug($"{nameof(ProcessGoLiveMessageQueue)} notification succeeded");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{nameof(ProcessGoLiveMessageQueue)} notification failed: {ex.Message}");
-                throw;
-            }
+            _logger.LogError($"{nameof(ProcessGoLiveMessageQueue)} notification failed: {ex.Message}");
+            throw;
         }
+    }
 
-        [FunctionName(nameof(ProcessClipMessageQueue))]
-        public async Task ProcessClipMessageQueue([ServiceBusTrigger("%ClipsQueueName%")] DiscordBotQueueItem<Clip> myQueueItem)
+    [FunctionName(nameof(ProcessClipMessageQueue))]
+    public async Task ProcessClipMessageQueue([ServiceBusTrigger("%ClipsQueueName%")] DiscordBotQueueItem<Clip> myQueueItem)
+    {
+        try
         {
-            try
-            {
-                _logger.LogDebug($"{nameof(ProcessClipMessageQueue)} notification started");
-                var messages = myQueueItem.Entities.Select(x => ClipToDiscordMessageTranslator.Translate(x));
-                await Task.WhenAll(messages.Select(x => _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordClipChannelId, x)));
-                _logger.LogDebug($"{nameof(ProcessClipMessageQueue)} notification succeeded");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{nameof(ProcessClipMessageQueue)} notification failed: {ex.Message}");
-                throw;
-            }
+            _logger.LogDebug($"{nameof(ProcessClipMessageQueue)} notification started");
+            var messages = myQueueItem.Entities.Select(x => ClipToDiscordMessageTranslator.Translate(x));
+            await Task.WhenAll(messages.Select(x => _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordClipChannelId, x)));
+            _logger.LogDebug($"{nameof(ProcessClipMessageQueue)} notification succeeded");
         }
-
-        [FunctionName(nameof(ProcessVideoMessageQueue))]
-        public async Task ProcessVideoMessageQueue([ServiceBusTrigger("%VideosQueueName%")] DiscordBotQueueItem<Video> myQueueItem)
+        catch (Exception ex)
         {
-            try
-            {
-                _logger.LogDebug($"{nameof(ProcessVideoMessageQueue)} notification started");
-                var messages = myQueueItem.Entities.Select(x => VideoToDiscordMessageTranslator.Translate(x));
-                await Task.WhenAll(messages.Select(x => _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordVideoChannelId, x)));
-                _logger.LogDebug($"{nameof(ProcessVideoMessageQueue)} notification succeeded");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{nameof(ProcessVideoMessageQueue)} notification failed: {ex.Message}");
-                throw;
-            }
+            _logger.LogError($"{nameof(ProcessClipMessageQueue)} notification failed: {ex.Message}");
+            throw;
         }
+    }
 
-        [FunctionName(nameof(ProcessDailyScheduleMessageQueue))]
-        public async Task ProcessDailyScheduleMessageQueue([ServiceBusTrigger("%DailyScheduleQueueName%")] DiscordBotQueueItem<Event> myQueueItem)
+    [FunctionName(nameof(ProcessVideoMessageQueue))]
+    public async Task ProcessVideoMessageQueue([ServiceBusTrigger("%VideosQueueName%")] DiscordBotQueueItem<Video> myQueueItem)
+    {
+        try
         {
-            try
-            {
-                _logger.LogDebug($"{nameof(ProcessDailyScheduleMessageQueue)} notification started");
-                var message = EventToDiscordMessageTranslator.TranslateDailySchedule(myQueueItem.Entities);
-                await _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordScheduleChannelId, message);
-                _logger.LogDebug($"{nameof(ProcessDailyScheduleMessageQueue)} notification succeeded");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{nameof(ProcessDailyScheduleMessageQueue)} notification failed: {ex.Message}");
-                throw;
-            }
+            _logger.LogDebug($"{nameof(ProcessVideoMessageQueue)} notification started");
+            var messages = myQueueItem.Entities.Select(x => VideoToDiscordMessageTranslator.Translate(x));
+            await Task.WhenAll(messages.Select(x => _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordVideoChannelId, x)));
+            _logger.LogDebug($"{nameof(ProcessVideoMessageQueue)} notification succeeded");
         }
-
-        [FunctionName(nameof(ProcessWeeklyScheduleMessageQueue))]
-        public async Task ProcessWeeklyScheduleMessageQueue([ServiceBusTrigger("%WeeklyScheduleQueueName%")] DiscordBotQueueItem<Event> myQueueItem)
+        catch (Exception ex)
         {
-            try
-            {
-                _logger.LogDebug($"{nameof(ProcessWeeklyScheduleMessageQueue)} notification started");
-                var message = EventToDiscordMessageTranslator.TranslateWeeklySchedule(myQueueItem.Entities);
-                await _discordMessageService.SendDiscordMessageAsync(AppSettings.DiscordScheduleChannelId, message);
-                _logger.LogDebug($"{nameof(ProcessWeeklyScheduleMessageQueue)} notification succeeded");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{nameof(ProcessWeeklyScheduleMessageQueue)} notification failed: {ex.Message}");
-                throw;
-            }
+            _logger.LogError($"{nameof(ProcessVideoMessageQueue)} notification failed: {ex.Message}");
+            throw;
         }
+    }
 
-        [FunctionName(nameof(ProcessEventMessageQueue))]
-        public async Task ProcessEventMessageQueue([ServiceBusTrigger("%EventScheduleQueueName%")] DiscordBotQueueItem<Event> myQueueItem)
+    [FunctionName(nameof(ProcessEventMessageQueue))]
+    public async Task ProcessEventMessageQueue([ServiceBusTrigger("%EventScheduleQueueName%")] DiscordBotQueueItem<Event> myQueueItem)
+    {
+        try
         {
-            try
-            {
-                _logger.LogDebug($"{nameof(ProcessEventMessageQueue)} notification started");
-                await _discordEventService.SyncScheduledEvents(AppSettings.DiscordGuildId, myQueueItem.Entities);
-                _logger.LogDebug($"{nameof(ProcessEventMessageQueue)} notification succeeded");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{nameof(ProcessEventMessageQueue)} notification failed: {ex.Message}");
-                throw;
-            }
+            _logger.LogDebug($"{nameof(ProcessEventMessageQueue)} notification started");
+            await _discordEventService.SyncScheduledEvents(AppSettings.DiscordGuildId, myQueueItem.Entities);
+            _logger.LogDebug($"{nameof(ProcessEventMessageQueue)} notification succeeded");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"{nameof(ProcessEventMessageQueue)} notification failed: {ex.Message}");
+            throw;
         }
     }
 }

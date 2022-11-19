@@ -109,64 +109,6 @@ internal class ServiceBusFunctionsTests
     }
 
     [Test, AutoData]
-    public void ProcessDailyScheduleMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Event[] events, string channelId)
-    {
-        // Arrange
-        Environment.SetEnvironmentVariable("DiscordScheduleChannelId", channelId);
-        _discordMessageService
-            .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
-            .ReturnsAsync(new Message());
-        var queueMessage = new DiscordBotQueueItem<Event>(events);
-
-        // Act and Assert
-        Assert.That(() => _controller.ProcessDailyScheduleMessageQueue(queueMessage), Throws.Nothing);
-        _discordMessageService.Verify(x => x.SendDiscordMessageAsync(channelId, It.IsAny<Message>()));
-    }
-
-    [Test, AutoData]
-    public void ProcessDailyScheduleMessageQueue_WhenSendDiscordMessageAsyncThrowsException_ThrowsException(Event[] events)
-    {
-        // Arrange
-        var exception = new Exception("Test message");
-        _discordMessageService
-            .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
-            .ThrowsAsync(exception);
-        var queueMessage = new DiscordBotQueueItem<Event>(events);
-
-        // Act and Assert
-        Assert.That(() => _controller.ProcessDailyScheduleMessageQueue(queueMessage), Throws.Exception.EqualTo(exception));
-    }
-
-    [Test, AutoData]
-    public void ProcessWeeklyScheduleMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Event[] events, string channelId)
-    {
-        // Arrange
-        Environment.SetEnvironmentVariable("DiscordScheduleChannelId", channelId);
-        _discordMessageService
-            .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
-            .ReturnsAsync(new Message());
-        var queueMessage = new DiscordBotQueueItem<Event>(events);
-
-        // Act and Assert
-        Assert.That(() => _controller.ProcessWeeklyScheduleMessageQueue(queueMessage), Throws.Nothing);
-        _discordMessageService.Verify(x => x.SendDiscordMessageAsync(channelId, It.IsAny<Message>()));
-    }
-
-    [Test, AutoData]
-    public void ProcessWeeklyScheduleMessageQueue_WhenSendDiscordMessageAsyncThrowsException_ThrowsException(Event[] events)
-    {
-        // Arrange
-        var exception = new Exception("Test message");
-        _discordMessageService
-            .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
-            .ThrowsAsync(exception);
-        var queueMessage = new DiscordBotQueueItem<Event>(events);
-
-        // Act and Assert
-        Assert.That(() => _controller.ProcessWeeklyScheduleMessageQueue(queueMessage), Throws.Exception.EqualTo(exception));
-    }
-
-    [Test, AutoData]
     public void ProcessEventMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Event[] events)
     {
         // Arrange

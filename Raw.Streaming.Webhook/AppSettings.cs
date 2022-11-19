@@ -12,6 +12,7 @@ namespace Raw.Streaming.Webhook
         public static string TwitchApiScheduleEndpoint => Environment.GetEnvironmentVariable("TwitchApiScheduleEndpoint");
         public static string TwitchApiUrl => Environment.GetEnvironmentVariable("TwitchApiUrl");
         public static string TwitchApiVideoEndpoint => Environment.GetEnvironmentVariable("TwitchApiVideoEndpoint");
+        public static string TwitchBaseUrl => Environment.GetEnvironmentVariable("TwitchBaseUrl");
         public static string TwitchBroadcasterId => Environment.GetEnvironmentVariable("TwitchBroadcasterId");
         public static string TwitchClientId => Environment.GetEnvironmentVariable("TwitchClientId");
         public static string TwitchClientSecret => Environment.GetEnvironmentVariable("TwitchClientSecret");
@@ -23,5 +24,6 @@ namespace Raw.Streaming.Webhook
         public static string YoutubeChannelId => Environment.GetEnvironmentVariable("YoutubeChannelId");
         public static string YoutubeSubscriptionUrl => Environment.GetEnvironmentVariable("YoutubeSubscriptionUrl");
         public static string YoutubeVideoTopic => Environment.GetEnvironmentVariable("YoutubeVideoTopic");
+        public static string YoutubeVideoUrl => Environment.GetEnvironmentVariable("YoutubeVideoUrl");
     }
 }

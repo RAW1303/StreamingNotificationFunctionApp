@@ -10,6 +10,7 @@ namespace Raw.Streaming.Discord
         public static string DiscordBotApplicationId => Environment.GetEnvironmentVariable("DiscordBotApplicationId");
         public static string DiscordBotToken => Environment.GetEnvironmentVariable("DiscordBotToken");
         public static string DiscordClipChannelId => Environment.GetEnvironmentVariable("DiscordClipChannelId");
+        public static string DiscordEventsUrl => Environment.GetEnvironmentVariable("DiscordEventsUrl");
         public static string DiscordGuildId => Environment.GetEnvironmentVariable("DiscordGuildId");
         public static string DiscordNotificationGroupIds => Environment.GetEnvironmentVariable("DiscordNotificationGroupIds");
         public static string DiscordScheduleChannelId => Environment.GetEnvironmentVariable("DiscordScheduleChannelId");

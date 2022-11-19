@@ -38,8 +38,10 @@ stages:
       resourceGroupName: $(resourceGroupName)
       location: $(location)
       discordBotSettings:
+        DailyScheduleTimerTrigger: $(dailyScheduleTimerTrigger)
         DiscordApiUrl: $(discordApiUrl)
         DiscordBotApplicationId: $(discordBotApplicationId)
+        DiscordEventsUrl: $(discordEventsUrl)
         DiscordGuildId: $(discordGuildId)
         DiscordNotificationGroupIds: $(discordNotificationGroupIds)
         DiscordScheduleChannelId: $(discordScheduleChannelId)
@@ -47,14 +49,13 @@ stages:
         DiscordVideoChannelId: $(discordVideoChannelId)
       orchestratorSettings:
         EventScheduleTimerTrigger: $(eventScheduleTimerTrigger)
-        ScheduleDailyTimerTrigger: $(scheduleDailyTimerTrigger)
-        ScheduleWeeklyTimerTrigger: $(scheduleWeeklyTimerTrigger)
         TwitchApiChannelEndpoint: $(twitchApiChannelEndpoint)
         TwitchApiClipEndpoint: $(twitchApiClipEndpoint)
         TwitchApiGameEndpoint: $(twitchApiGameEndpoint)
         TwitchApiScheduleEndpoint: $(twitchApiScheduleEndpoint)
         TwitchApiUrl: $(twitchApiUrl)
         TwitchApiVideoEndpoint: $(twitchApiVideoEndpoint)
+        TwitchBaseUrl: $(twitchBaseUrl)
         TwitchBroadcasterId: $(twitchBroadcasterId)
         TwitchClientId: $(twitchClientId)
         TwitchClipsTimerTrigger: $(twitchClipsTimerTrigger)
@@ -65,6 +66,7 @@ stages:
         YoutubeChannelId: $(youtubeChannelId)
         YoutubeSubscriptionUrl: $(youtubeSubscriptionUrl)
         YoutubeVideoTopic: $(youtubeVideoTopic)
+        YoutubeVideoUrl: $(youtubeVideoUrl)
       discordBotSecrets:
         DiscordBotToken: $(DiscordBotToken)
       orchestratorSecrets:
@@ -89,6 +91,7 @@ stages:
       discordBotSettings:
         DiscordApiUrl: $(discordApiUrl)
         DiscordBotApplicationId: $(discordBotApplicationId)
+        DiscordEventsUrl: $(discordEventsUrl)
         DiscordGuildId: $(discordGuildId)
         DiscordNotificationGroupIds: $(discordNotificationGroupIds)
         DiscordScheduleChannelId: $(discordScheduleChannelId)
@@ -96,14 +99,13 @@ stages:
         DiscordVideoChannelId: $(discordVideoChannelId)
       orchestratorSettings:
         EventScheduleTimerTrigger: $(eventScheduleTimerTrigger)
-        ScheduleDailyTimerTrigger: $(scheduleDailyTimerTrigger)
-        ScheduleWeeklyTimerTrigger: $(scheduleWeeklyTimerTrigger)
         TwitchApiChannelEndpoint: $(twitchApiChannelEndpoint)
         TwitchApiClipEndpoint: $(twitchApiClipEndpoint)
         TwitchApiGameEndpoint: $(twitchApiGameEndpoint)
         TwitchApiScheduleEndpoint: $(twitchApiScheduleEndpoint)
         TwitchApiUrl: $(twitchApiUrl)
         TwitchApiVideoEndpoint: $(twitchApiVideoEndpoint)
+        TwitchBaseUrl: $(twitchBaseUrl)
         TwitchBroadcasterId: $(twitchBroadcasterId)
         TwitchClientId: $(twitchClientId)
         TwitchClipsTimerTrigger: $(twitchClipsTimerTrigger)
@@ -114,6 +116,7 @@ stages:
         YoutubeChannelId: $(youtubeChannelId)
         YoutubeSubscriptionUrl: $(youtubeSubscriptionUrl)
         YoutubeVideoTopic: $(youtubeVideoTopic)
+        YoutubeVideoUrl: $(youtubeVideoUrl)
       discordBotSecrets:
         DiscordBotToken: $(DiscordBotToken)
       orchestratorSecrets:
