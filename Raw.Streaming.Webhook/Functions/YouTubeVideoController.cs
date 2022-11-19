@@ -65,7 +65,8 @@ namespace Raw.Streaming.Webhook.Functions
             {
                 logger.LogDebug($"{nameof(YoutubeVideoWebhook)} execution started");
                 var stream = req.Body;
-                var data = ConvertAtomToSyndication(stream, logger);
+                var data = ConvertAtomToSyndication(stream);
+                logger.LogInformation($"YouTube video feed content:\n{JsonConvert.SerializeObject(data)}");
                 if (data.IsNewVideo(DateTimeOffset.UtcNow) && !string.IsNullOrWhiteSpace(data.Link))
                 {
                     var video = _mapper.Map<Video>(data);
@@ -90,11 +91,10 @@ namespace Raw.Streaming.Webhook.Functions
             }
         }
 
-        private static YoutubeFeed ConvertAtomToSyndication(Stream stream, ILogger logger)
+        private static YoutubeFeed ConvertAtomToSyndication(Stream stream)
         {
             using var xmlReader = XmlReader.Create(stream);
             SyndicationFeed feed = SyndicationFeed.Load(xmlReader);
-            logger.LogDebug($"Youtube feed content:\n{JsonConvert.SerializeObject(feed)}");
             var item = feed.Items.First();
             return new YoutubeFeed()
             {
