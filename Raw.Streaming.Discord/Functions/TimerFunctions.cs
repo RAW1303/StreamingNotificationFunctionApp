@@ -38,10 +38,9 @@ internal class TimerFunctions
         try
         {
             _logger.LogDebug($"{nameof(NotifyDailySchedule)} execution started for {triggerTime}");
-            var to = triggerTime.Date.AddDays(1);
             var events = await _discordEventService.GetScheduledEvents(AppSettings.DiscordGuildId);
-            var todaysEvents = events.Where(x => x.ScheduledStartTime < to);
-            _logger.LogDebug($"Found {todaysEvents.Count()} events for {to}");
+            var todaysEvents = events.Where(x => x.ScheduledStartTime.Date == triggerTime.Date);
+            _logger.LogDebug($"Found {todaysEvents.Count()} events for {triggerTime.Date: yyyy-MM-dd}");
             if (todaysEvents.Any())
             {
                 var message = SheduledEventToDiscordMessageTranslator.TranslateDailySchedule(todaysEvents);
