@@ -89,6 +89,7 @@ stages:
       resourceGroupName: $(resourceGroupName)
       location: $(location)
       discordBotSettings:
+        DailyScheduleTimerTrigger: $(dailyScheduleTimerTrigger)
         DiscordApiUrl: $(discordApiUrl)
         DiscordBotApplicationId: $(discordBotApplicationId)
         DiscordEventsUrl: $(discordEventsUrl)
