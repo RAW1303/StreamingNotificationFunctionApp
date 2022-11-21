@@ -4,18 +4,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Raw.Streaming.Webhook.Model.Youtube;
 using Raw.Streaming.Webhook.Services;
 using System;
-using System.IO;
-using System.Linq;
-using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using System.Xml;
 using Raw.Streaming.Common.Model;
-using Microsoft.Azure.Amqp.Framing;
 
 namespace Raw.Streaming.Webhook.Functions
 {
@@ -55,9 +47,8 @@ namespace Raw.Streaming.Webhook.Functions
             try
             {
                 _logger.LogDebug($"{nameof(YoutubeVideoWebhook)} execution started");
-                var feed = ConvertAtomToSyndicationFeed(req.Body);
-                _logger.LogInformation($"YouTube video feed content:\n{JsonConvert.SerializeObject(feed)}");
-                var data = YoutubeFeed.Create(feed);
+                var data = _subscriptionService.ProcessRequest(req.Body);
+
                 if (data.IsNewVideo() && !string.IsNullOrWhiteSpace(data.Link))
                 {
                     var video = _mapper.Map<Video>(data);
@@ -96,12 +87,6 @@ namespace Raw.Streaming.Webhook.Functions
                 _logger.LogError($"StreamChangeSubscribe execution failed: {e.Message}");
                 throw;
             }
-        }
-
-        private static SyndicationFeed ConvertAtomToSyndicationFeed(Stream stream)
-        {
-            using var xmlReader = XmlReader.Create(stream);
-            return SyndicationFeed.Load(xmlReader);
         }
     }
 }

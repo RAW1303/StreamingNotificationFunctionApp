@@ -53,13 +53,16 @@ internal class YouTubeVideoControllerTests
     }
 
     [Test, AutoData]
-    public void YoutubeVideoWebhook(Video video)
+    public void YoutubeVideoWebhook(Video video, DateTimeOffset dateTime)
     {
         //Arrange
+        var feed = _fixture.Build<YoutubeFeed>().With(x => x.Published, dateTime).With(x => x.Updated, dateTime).Create();
+
         var videoFeedStream = new FileStream("TestData/YouTubePushRequest/YouTubeVideoFeed.xml", FileMode.Open); 
         var mockRequest = new Mock<HttpRequest>();
         mockRequest.Setup(x => x.Body).Returns(videoFeedStream);
         _mapperMock.Setup(x => x.Map<Video>(It.IsAny<YoutubeFeed>())).Returns(video);
+        _youtubeSubscriptionService.Setup(x => x.ProcessRequest(It.IsAny<Stream>())).Returns(feed);
 
         // Act
         var result = _controller.YoutubeVideoWebhook(mockRequest.Object);

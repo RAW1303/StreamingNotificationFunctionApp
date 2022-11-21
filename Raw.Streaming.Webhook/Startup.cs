@@ -31,7 +31,7 @@ public class Startup : FunctionsStartup
         builder.Services.AddSingleton<ITwitchApiService, TwitchApiService>();
         builder.Services.AddSingleton<ITwitchSubscriptionService, TwitchSubscriptionService>();
         builder.Services.AddSingleton<IYoutubeScheduleService, YoutubeScheduleService>();
-        builder.Services.AddSingleton<IYoutubeSubscriptionService, YoutubeSubscriptionService>();
+        builder.Services.AddSingleton<IYoutubeSubscriptionService, YoutubePubSubHubbubSubscriptionService>();
         builder.Services.AddSingleton<IScheduleService, ScheduleService>();
     }
 }
