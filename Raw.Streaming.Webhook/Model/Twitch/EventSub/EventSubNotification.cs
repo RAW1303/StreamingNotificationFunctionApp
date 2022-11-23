@@ -1,12 +1,15 @@
-﻿namespace Raw.Streaming.Webhook.Model.Twitch.EventSub
-{
-    public class EventSubNotification<T> where T : Event
-    {
-        public EventSubSubscription Subscription { get; set; }
-        public T Event { get; set; }
-    }
+﻿using System.Diagnostics.CodeAnalysis;
 
-    public abstract class Event
-    {
-    }
+namespace Raw.Streaming.Webhook.Model.Twitch.EventSub;
+
+[ExcludeFromCodeCoverage]
+public class EventSubNotification<T> where T : Event
+{
+    public EventSubSubscription Subscription { get; set; }
+    public T Event { get; set; }
+}
+
+[ExcludeFromCodeCoverage]
+public abstract class Event
+{
 }

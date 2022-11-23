@@ -1,8 +1,7 @@
-﻿namespace Raw.Streaming.Webhook.Model.Twitch.EventSub
+﻿namespace Raw.Streaming.Webhook.Model.Twitch.EventSub;
+
+public class EventSubChallenge
 {
-    public class EventSubChallenge
-    {
-        public string Challenge { get; set; }
-        public EventSubSubscription Subscription { get; set; }
-    }
+    public string Challenge { get; set; }
+    public EventSubSubscription Subscription { get; set; }
 }
