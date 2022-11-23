@@ -46,7 +46,7 @@ internal class YoutubePubSubHubbubSubscriptionServiceTests : ApiTestsBase
             ItExpr.Is<HttpRequestMessage>(req =>
                 req.Method == HttpMethod.Post
                 && req.RequestUri.AbsoluteUri == _youtubeSubscriptionUrl
-                && req.Content.ReadAsStringAsync().Result.Contains("hub.mode=unsubscribe")
+                && req.Content.ReadAsStringAsync().Result.Contains("hub.mode=subscribe")
                 && req.Content.ReadAsStringAsync().Result.Contains($"&hub.callback={HttpUtility.UrlEncode(callbackUrl)}")
                 && req.Content.ReadAsStringAsync().Result.Contains($"&hub.topic={HttpUtility.UrlEncode(topicUrl)}")
             ),
