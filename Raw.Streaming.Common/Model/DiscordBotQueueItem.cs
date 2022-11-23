@@ -1,20 +1,19 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Raw.Streaming.Common.Model
+namespace Raw.Streaming.Common.Model;
+
+[ExcludeFromCodeCoverage]
+public class DiscordBotQueueItem<T> where T : Entity
 {
-    [ExcludeFromCodeCoverage]
-    public class DiscordBotQueueItem<T> where T : Entity
+    public IEnumerable<T> Entities { get; set; }
+
+    public DiscordBotQueueItem()
     {
-        public IEnumerable<T> Entities { get; set; }
+        Entities = new List<T>();
+    }
 
-        public DiscordBotQueueItem()
-        {
-            Entities = new List<T>();
-        }
-
-        public DiscordBotQueueItem(params T[] entities)
-        {
-            Entities = entities;
-        }
+    public DiscordBotQueueItem(params T[] entities)
+    {
+        Entities = entities;
     }
 }
