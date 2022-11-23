@@ -8,6 +8,7 @@ using Raw.Streaming.Webhook.Services;
 using System;
 using System.Threading.Tasks;
 using Raw.Streaming.Common.Model;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Raw.Streaming.Webhook.Functions
 {
@@ -32,6 +33,7 @@ namespace Raw.Streaming.Webhook.Functions
             _logger = logger;
         }
 
+        [ExcludeFromCodeCoverage]
         [FunctionName(nameof(YoutubeVideoSubscribeTrigger))]
         public async Task YoutubeVideoSubscribeTrigger(
             [TimerTrigger("0 0 5 * * *", RunOnStartup = true)] TimerInfo myTimer)
