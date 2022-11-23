@@ -57,9 +57,10 @@ namespace Raw.Streaming.Webhook.Services
 
             _logger.LogDebug($"Calling twitch subscription endpoint with content:\n{postDataStr}");
             var response = await _client.SendAsync(request);
+
             if (!response.IsSuccessStatusCode)
             {
-                throw new TwitchApiException($"Error while subscribing:\n{postDataStr}\n{await response.Content.ReadAsStringAsync()}");
+                throw new YouTubeApiException($"Error while subscribing:\n{postDataStr}\n{await response.Content.ReadAsStringAsync()}");
             }
         }
     }
