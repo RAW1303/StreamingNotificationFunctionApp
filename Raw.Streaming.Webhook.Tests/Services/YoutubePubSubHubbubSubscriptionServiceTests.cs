@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Moq.Protected;
+﻿using Moq.Protected;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
+using System.Web;
 
 namespace Raw.Streaming.Webhook.Tests.Services;
 
@@ -34,16 +34,21 @@ internal class YoutubePubSubHubbubSubscriptionServiceTests : ApiTestsBase
     public void SubscribeAsync_WhenOKStatusCode_CallsHttpClientSendAsync()
     {
         //Arrange
+        var topicUrl = "https://topic.com";
+        var callbackUrl = "https://callback.com";
         SetupMockHttpMessageHandler(HttpStatusCode.OK);
 
         //Act and Assert
-        Assert.DoesNotThrowAsync(async () => await _service.SubscribeAsync("https://topic.com", "https://callback.com"));
+        Assert.DoesNotThrowAsync(async () => await _service.SubscribeAsync(topicUrl, callbackUrl));
         _mockHttpMessageHandler.Protected().Verify(
             "SendAsync",
             Times.Exactly(1),
             ItExpr.Is<HttpRequestMessage>(req =>
                 req.Method == HttpMethod.Post
                 && req.RequestUri.AbsoluteUri == _youtubeSubscriptionUrl
+                && req.Content.ReadAsStringAsync().Result.Contains("hub.mode=unsubscribe")
+                && req.Content.ReadAsStringAsync().Result.Contains($"&hub.callback={HttpUtility.UrlEncode(callbackUrl)}")
+                && req.Content.ReadAsStringAsync().Result.Contains($"&hub.topic={HttpUtility.UrlEncode(topicUrl)}")
             ),
             ItExpr.IsAny<CancellationToken>()
         );
@@ -56,10 +61,12 @@ internal class YoutubePubSubHubbubSubscriptionServiceTests : ApiTestsBase
     public void SubscribeAsync_WhenNotOKStatusCode_ThrowsException(HttpStatusCode statusCode)
     {
         //Arrange
+        var topicUrl = "https://topic.com";
+        var callbackUrl = "https://callback.com";
         SetupMockHttpMessageHandler(statusCode);
 
         //Act and Assert
-        Assert.That(async () => await _service.SubscribeAsync("https://topic.com", "https://callback.com"), Throws.InstanceOf<YouTubeApiException>());
+        Assert.That(async () => await _service.SubscribeAsync(topicUrl, callbackUrl), Throws.InstanceOf<YouTubeApiException>());
         _mockHttpMessageHandler.Protected().Verify(
             "SendAsync",
             Times.Exactly(1),
@@ -75,16 +82,21 @@ internal class YoutubePubSubHubbubSubscriptionServiceTests : ApiTestsBase
     public void UnsubscribeAsync_WhenOKStatusCode_CallsHttpClientSendAsync()
     {
         //Arrange
+        var topicUrl = "https://topic.com";
+        var callbackUrl = "https://callback.com";
         SetupMockHttpMessageHandler(HttpStatusCode.OK);
 
         //Act and Assert
-        Assert.DoesNotThrowAsync(async () => await _service.UnsubscribeAsync("https://topic.com", "https://callback.com"));
+        Assert.DoesNotThrowAsync(async () => await _service.UnsubscribeAsync(topicUrl, callbackUrl));
         _mockHttpMessageHandler.Protected().Verify(
             "SendAsync",
             Times.Exactly(1),
             ItExpr.Is<HttpRequestMessage>(req =>
                 req.Method == HttpMethod.Post
                 && req.RequestUri.AbsoluteUri == _youtubeSubscriptionUrl
+                && req.Content.ReadAsStringAsync().Result.Contains("hub.mode=unsubscribe")
+                && req.Content.ReadAsStringAsync().Result.Contains($"&hub.callback={HttpUtility.UrlEncode(callbackUrl)}")
+                && req.Content.ReadAsStringAsync().Result.Contains($"&hub.topic={HttpUtility.UrlEncode(topicUrl)}")
             ),
             ItExpr.IsAny<CancellationToken>()
         );
@@ -97,19 +109,12 @@ internal class YoutubePubSubHubbubSubscriptionServiceTests : ApiTestsBase
     public void UnsubscribeAsync_WhenNotOKStatusCode_ThrowsException(HttpStatusCode statusCode)
     {
         //Arrange
+        var topicUrl = "https://topic.com";
+        var callbackUrl = "https://callback.com";
         SetupMockHttpMessageHandler(statusCode);
 
         //Act and Assert
-        Assert.That(async () => await _service.UnsubscribeAsync("https://topic.com", "https://callback.com"), Throws.InstanceOf<YouTubeApiException>());
-        _mockHttpMessageHandler.Protected().Verify(
-            "SendAsync",
-            Times.Exactly(1),
-            ItExpr.Is<HttpRequestMessage>(req =>
-                req.Method == HttpMethod.Post
-                && req.RequestUri.AbsoluteUri == _youtubeSubscriptionUrl
-            ),
-            ItExpr.IsAny<CancellationToken>()
-        );
+        Assert.That(async () => await _service.UnsubscribeAsync(topicUrl, callbackUrl), Throws.InstanceOf<YouTubeApiException>());
     }
 
     [Test]
