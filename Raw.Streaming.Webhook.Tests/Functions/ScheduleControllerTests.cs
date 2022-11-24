@@ -56,4 +56,17 @@ internal class ScheduleControllerTests
         // Act & Assert
         Assert.That(() => _controller.UpdateEventSchedule(triggerTime), Throws.Exception.EqualTo(exception));
     }
+
+    [Test, AutoData]
+    public void YoutubeVideoWebhook(DateTimeOffset triggerTime)
+    {
+        // Arrange
+        var exception = new Exception("Test message");
+        _scheduleService
+            .Setup(x => x.GetScheduleAsync(It.IsAny<DateTimeOffset>(), null))
+            .ThrowsAsync(exception);
+
+        // Act & Assert
+        Assert.That(() => _controller.UpdateEventSchedule(triggerTime), Throws.Exception.EqualTo(exception));
+    }
 }

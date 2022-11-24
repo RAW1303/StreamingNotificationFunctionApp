@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using Raw.Streaming.Webhook.Model.Youtube;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Raw.Streaming.Webhook.Services
 {
@@ -6,5 +8,6 @@ namespace Raw.Streaming.Webhook.Services
     {
         Task SubscribeAsync(string topicUrl, string callbackUrl);
         Task UnsubscribeAsync(string topicUrl, string callbackUrl);
+        YoutubeFeed ProcessRequest(Stream content);
     }
 }

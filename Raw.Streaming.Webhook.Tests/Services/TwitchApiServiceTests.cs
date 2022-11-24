@@ -9,9 +9,8 @@ using System.Threading;
 namespace Raw.Streaming.Webhook.Tests.Services
 {
     [TestFixture]
-    internal class TwitchApiServiceTests
+    internal class TwitchApiServiceTests : ApiTestsBase
     {
-        private Mock<HttpMessageHandler> _mockHttpMessageHandler;
         private Mock<ITwitchTokenService> _mockTwitchTokenService;
         private Mock<ILogger<TwitchApiService>> _loggerMock;
         private TwitchApiService _service;
@@ -354,42 +353,6 @@ namespace Raw.Streaming.Webhook.Tests.Services
 
             // Act and Assert
             Assert.That(async () => await _service.GetScheduleByBroadcasterIdAsync(channelId), Throws.InstanceOf<TwitchApiException>().With.Property("Message").Contains(errorMessage));
-        }
-
-        private void SetupMockHttpMessageHandler<T>(HttpStatusCode statusCode, T content)
-        {
-            var jsonContent = JsonSerializer.Serialize(content);
-
-            var mockResponse = new HttpResponseMessage
-            {
-                StatusCode = statusCode,
-                Content = new StringContent(jsonContent)
-            };
-
-            _mockHttpMessageHandler
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>()
-                ).ReturnsAsync(mockResponse);
-        }
-
-        private void SetupMockHttpMessageHandler(HttpStatusCode statusCode, string jsonContent)
-        {
-            var mockResponse = new HttpResponseMessage
-            {
-                StatusCode = statusCode,
-                Content = new StringContent(jsonContent)
-            };
-
-            _mockHttpMessageHandler
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>()
-                ).ReturnsAsync(mockResponse);
         }
     }
 }

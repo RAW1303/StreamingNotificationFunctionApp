@@ -34,6 +34,9 @@
     <None Update="TestData\TwitchApiResponse\GetScheduleSuccess.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\YouTubePushRequest\YouTubeVideoFeed.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

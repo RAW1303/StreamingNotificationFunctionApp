@@ -4,17 +4,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Raw.Streaming.Webhook.Model.Youtube;
 using Raw.Streaming.Webhook.Services;
 using System;
-using System.IO;
-using System.Linq;
-using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using System.Xml;
 using Raw.Streaming.Common.Model;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Raw.Streaming.Webhook.Functions
 {
@@ -27,50 +21,41 @@ namespace Raw.Streaming.Webhook.Functions
         private readonly string _channelId = AppSettings.YoutubeChannelId;
         private readonly IYoutubeSubscriptionService _subscriptionService;
         private readonly IMapper _mapper;
+        private readonly ILogger<YouTubeVideoController> _logger;
 
         public YouTubeVideoController(
             IYoutubeSubscriptionService subscriptionService,
-            IMapper mapper)
+            IMapper mapper,
+            ILogger<YouTubeVideoController> logger)
         {
             _subscriptionService = subscriptionService;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        [FunctionName("YoutubeVideoSubscribe")]
-        public async Task YoutubeVideoSubscribe(
-            [TimerTrigger("0 0 5 * * *", RunOnStartup = true)] TimerInfo myTimer,
-            ILogger logger)
+        [ExcludeFromCodeCoverage]
+        [FunctionName(nameof(YoutubeVideoSubscribeTrigger))]
+        public async Task YoutubeVideoSubscribeTrigger(
+            [TimerTrigger("0 0 5 * * *", RunOnStartup = true)] TimerInfo myTimer)
         {
-            try
-            {
-                logger.LogDebug("StreamChangeSubscribe execution started");
-                var callbackUrl = $"https://{AppSettings.WebSiteUrl}/api/{WebhookEndpoint}";
-                await _subscriptionService.SubscribeAsync($"{_webhookTopic}{_channelId}", callbackUrl);
-                logger.LogDebug("StreamChangeSubscribe execution succeeded");
-            }
-            catch (Exception e)
-            {
-                logger.LogError($"StreamChangeSubscribe execution failed: {e.Message}");
-                throw;
-            }
+            await YoutubeVideoSubscribe();
         }
 
         [FunctionName(nameof(YoutubeVideoWebhook))]
         [return: ServiceBus("%VideosQueueName%")]
         public ServiceBusMessage YoutubeVideoWebhook(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = WebhookEndpoint)] HttpRequest req,
-            ILogger logger)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = WebhookEndpoint)] HttpRequest req)
         {
             try
             {
-                logger.LogDebug($"{nameof(YoutubeVideoWebhook)} execution started");
-                var stream = req.Body;
-                var data = ConvertAtomToSyndication(stream, logger);
-                if (data.IsNewVideo(DateTimeOffset.UtcNow) && !string.IsNullOrWhiteSpace(data.Link))
+                _logger.LogDebug($"{nameof(YoutubeVideoWebhook)} execution started");
+                var data = _subscriptionService.ProcessRequest(req.Body);
+
+                if (data.IsNewVideo() && !string.IsNullOrWhiteSpace(data.Link))
                 {
                     var video = _mapper.Map<Video>(data);
                     var queueItem = new DiscordBotQueueItem<Video>(video);
-                    logger.LogInformation($"{nameof(YoutubeVideoWebhook)} execution succeeded:{data.Title} has been sent to Discord");
+                    _logger.LogInformation($"{nameof(YoutubeVideoWebhook)} execution succeeded:{data.Title} has been sent to Discord");
                     return new ServiceBusMessage
                     {
                         Body = BinaryData.FromObjectAsJson(queueItem),
@@ -79,43 +64,31 @@ namespace Raw.Streaming.Webhook.Functions
                 }
                 else
                 {
-                    logger.LogInformation($"{nameof(YoutubeVideoWebhook)} execution succeeded:{data.Title} is an old video so will not notify Discord\nPublished: {data.Published}\nUpdated: {data.Updated}");
+                    _logger.LogInformation($"{nameof(YoutubeVideoWebhook)} execution succeeded:{data.Title} is an old video so will not notify Discord\nPublished: {data.Published}\nUpdated: {data.Updated}");
                     return null;
                 }
             }
             catch (Exception e)
             {
-                logger.LogError($"{nameof(YoutubeVideoWebhook)} execution failed: {e.Message}");
+                _logger.LogError($"{nameof(YoutubeVideoWebhook)} execution failed: {e.Message}");
                 throw;
             }
         }
 
-        private static YoutubeFeed ConvertAtomToSyndication(Stream stream, ILogger logger)
+        public async Task YoutubeVideoSubscribe()
         {
-            using var xmlReader = XmlReader.Create(stream);
-            SyndicationFeed feed = SyndicationFeed.Load(xmlReader);
-            logger.LogDebug($"Youtube feed content:\n{JsonConvert.SerializeObject(feed)}");
-            var item = feed.Items.First();
-            return new YoutubeFeed()
+            try
             {
-                ChannelId = GetElementExtensionValueByOuterName(item, "channelId"),
-                VideoId = GetElementExtensionValueByOuterName(item, "videoId"),
-                Title = item.Title?.Text,
-                Link = item.Links[0].Uri.ToString(),
-                Published = item.PublishDate,
-                Updated = item.LastUpdatedTime,
-                Author = new Author
-                {
-                    Name = item.Authors[0].Name,
-                    Uri = item.Authors[0].Uri
-                }
-            };
-        }
-
-        private static string GetElementExtensionValueByOuterName(SyndicationItem item, string outerName)
-        {
-            if (item.ElementExtensions.All(x => x.OuterName != outerName)) return null;
-            return item.ElementExtensions.Single(x => x.OuterName == outerName).GetObject<XElement>().Value;
+                _logger.LogDebug("StreamChangeSubscribe execution started");
+                var callbackUrl = $"https://{AppSettings.WebSiteUrl}/api/{WebhookEndpoint}";
+                await _subscriptionService.SubscribeAsync($"{_webhookTopic}{_channelId}", callbackUrl);
+                _logger.LogDebug("StreamChangeSubscribe execution succeeded");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"StreamChangeSubscribe execution failed: {e.Message}");
+                throw;
+            }
         }
     }
 }
