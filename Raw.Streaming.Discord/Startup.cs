@@ -15,7 +15,7 @@ internal class Startup : FunctionsStartup
 {
     public override void Configure(IFunctionsHostBuilder builder)
     {
-        builder.Services.AddLogging();
+        builder.Services.AddApplicationInsightsTelemetry();
         builder.Services.AddHttpClient();
         builder.Services.AddSingleton<IDiscordApiService, DiscordApiService>();
         builder.Services.AddSingleton<IDiscordEventService, DiscordEventService>();

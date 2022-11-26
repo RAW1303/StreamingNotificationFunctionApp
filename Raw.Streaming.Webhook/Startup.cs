@@ -23,7 +23,7 @@ public class Startup : FunctionsStartup
             ApiKey = AppSettings.YoutubeApiKey,
         });
 
-        builder.Services.AddLogging();
+        builder.Services.AddApplicationInsightsTelemetry();
         builder.Services.AddHttpClient();
         builder.Services.AddAutoMapper(typeof(MappingProfile));
         builder.Services.AddSingleton(youtubeService);
