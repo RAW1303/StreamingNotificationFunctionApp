@@ -206,6 +206,7 @@ resource functionApps 'Microsoft.Web/sites@2022-03-01' = [for (functionApp, i) i
           value: toLower(functionApp.name)
         }
       ])
+      netFrameworkVersion: 'v7.0'
     }
     httpsOnly: true
   }
