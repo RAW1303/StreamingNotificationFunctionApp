@@ -1,7 +1,10 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Raw.Streaming.Common.Logging;
 using Raw.Streaming.Discord.Services;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 [assembly: FunctionsStartup(typeof(Raw.Streaming.Discord.Startup))]
@@ -15,7 +18,11 @@ internal class Startup : FunctionsStartup
 {
     public override void Configure(IFunctionsHostBuilder builder)
     {
-        builder.Services.AddApplicationInsightsTelemetry();
+        var logger = builder.Services.FirstOrDefault(s => s.ServiceType == typeof(ILogger<>));
+        if (logger != null)
+            builder.Services.Remove(logger);
+
+        builder.Services.Add(new ServiceDescriptor(typeof(ILogger<>), typeof(FunctionLogger<>), ServiceLifetime.Transient));
         builder.Services.AddHttpClient();
         builder.Services.AddSingleton<IDiscordApiService, DiscordApiService>();
         builder.Services.AddSingleton<IDiscordEventService, DiscordEventService>();
