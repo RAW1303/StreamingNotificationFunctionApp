@@ -67,39 +67,52 @@ jobs:
       artifactName: 'code'
       
   - task: Powershell@2
-    displayName: 'Run dotnet-stryker'
+    displayName: 'Raw.Streaming.Common Styker Mutation Tests'
+    inputs:
+      workingDirectory: '$(Build.SourcesDirectory)/Raw.Streaming.Common.Tests'
+      targetType: 'inline'
+      pwsh: true
+      ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+        script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch) --with-baseline:$(System.PullRequest.TargetBranch)'
+      ${{ else }}:
+        script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch)'
+      
+  - task: Powershell@2
+    displayName: 'Raw.Streaming.Discord Styker Mutation Tests'
     inputs:
       workingDirectory: '$(Build.SourcesDirectory)/Raw.Streaming.Discord.Tests'
       targetType: 'inline'
       pwsh: true
-      ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
-        script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch)'
-      ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
+      ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
         script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch) --with-baseline:$(System.PullRequest.TargetBranch)'
       ${{ else }}:
-        script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch) --with-baseline:refs/heads/main'
+        script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch)'
       
   - task: Powershell@2
-    displayName: 'Run dotnet-stryker'
+    displayName: 'Raw.Streaming.Webhook Styker Mutation Tests'
     inputs:
       workingDirectory: '$(Build.SourcesDirectory)/Raw.Streaming.Webhook.Tests'
       targetType: 'inline'
       pwsh: true
-      ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
-        script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch)'
-      ${{ elseif eq(variables['Build.Reason'], 'PullRequest') }}:
+      ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
         script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch) --with-baseline:$(System.PullRequest.TargetBranch)'
       ${{ else }}:
-        script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch) --with-baseline:refs/heads/main'
+        script: '$(Agent.BuildDirectory)/tools/dotnet-stryker --dashboard-api-key $(StrykerApiKey) -v $(Build.SourceBranch)'
       
   - task: PublishMutationReport@1
-    displayName: 'Publish Raw.Streaming.Discord.Tests Mutation Test Report'
+    displayName: 'Publish Raw.Streaming.Common Stryker Report'
+    inputs:
+      reportPattern: '$(Build.SourcesDirectory)/Raw.Streaming.Common.Tests/**/mutation-report.html'
+      reportDisplayName: 'Raw.Streaming.Common.Tests'
+      
+  - task: PublishMutationReport@1
+    displayName: 'Publish Raw.Streaming.Discord Stryker Report'
     inputs:
       reportPattern: '$(Build.SourcesDirectory)/Raw.Streaming.Discord.Tests/**/mutation-report.html'
       reportDisplayName: 'Raw.Streaming.Discord.Tests'
       
   - task: PublishMutationReport@1
-    displayName: 'Publish Raw.Streaming.Webhook.Tests Mutation Test Report'
+    displayName: 'Publish Raw.Streaming.Webhook Stryker Report'
     inputs:
       reportPattern: '$(Build.SourcesDirectory)/Raw.Streaming.Webhook.Tests/**/mutation-report.html'
       reportDisplayName: 'Raw.Streaming.Webhook.Tests'

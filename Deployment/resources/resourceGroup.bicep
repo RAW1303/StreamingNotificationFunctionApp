@@ -44,8 +44,8 @@ var queueSettings = [
 
 var commonAppSettings = concat(queueSettings, [
   {
-    name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-    value: applicationInsights.properties.InstrumentationKey
+    name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+    value: applicationInsights.properties.ConnectionString
   }
   {
     name: 'AzureWebJobsStorage'
@@ -206,6 +206,7 @@ resource functionApps 'Microsoft.Web/sites@2022-03-01' = [for (functionApp, i) i
           value: toLower(functionApp.name)
         }
       ])
+      netFrameworkVersion: 'v6.0'
     }
     httpsOnly: true
   }
