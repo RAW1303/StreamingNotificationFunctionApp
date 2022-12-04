@@ -7,6 +7,7 @@ using AutoMapper;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using Raw.Streaming.Common.Extensions;
 using Raw.Streaming.Common.Model;
 using Raw.Streaming.Webhook.Services;
 
@@ -32,19 +33,23 @@ namespace Raw.Streaming.Webhook.Functions
         [ExcludeFromCodeCoverage]
         [FunctionName(nameof(NotifyTwitchClipsTrigger))]
         [return: ServiceBus("%ClipsQueueName%")]
-        public async Task<ServiceBusMessage> NotifyTwitchClipsTrigger(
+        public async Task<ServiceBusMessage?> NotifyTwitchClipsTrigger(
             [TimerTrigger("%TwitchClipsTimerTrigger%")] TimerInfo timer)
         {
             return await NotifyTwitchClips(timer.ScheduleStatus.Last, timer.ScheduleStatus.Next);
         }
 
-        public async Task<ServiceBusMessage> NotifyTwitchClips(DateTimeOffset last, DateTimeOffset next)
+        public async Task<ServiceBusMessage?> NotifyTwitchClips(DateTimeOffset last, DateTimeOffset next)
         {
             try
             {
                 _logger.LogDebug("NotifyTwitchClips execution started");
                 var startedAt = last > next.AddMinutes(-10) ? last : next.AddMinutes(-10);
                 var clips = await GetClipsAsync(AppSettings.TwitchBroadcasterId, startedAt, next);
+
+                if (clips.IsNullOrEmpty())
+                    return null;
+
                 var queueItem = new DiscordBotQueueItem<Clip>(clips.ToArray());
                 return new ServiceBusMessage
                 {
