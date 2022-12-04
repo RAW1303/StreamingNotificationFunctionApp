@@ -17,17 +17,38 @@ namespace Raw.Streaming.Discord.Translators
         {
             var guildScheduledEvent = new GuildScheduledEvent()
             {
-                Name = eventModel.Title,
+                Name = eventModel.Title ?? string.Empty,
                 Description = $"{eventModel.Description}",
                 ScheduledStartTime = eventModel.Start.DateTime,
                 ScheduledEndTime = eventModel.End?.DateTime ?? eventModel.Start.DateTime.AddHours(3),
                 Status = GuildScheduledEventStatus.SCHEDULED,
                 PrivacyLevel = GuildScheduledEventPrivacyLevel.GUILD_ONLY,
                 EntityType = GuildScheduledEventEntityType.EXTERNAL,
-                EntityMetadata = new GuildScheduledEventEntityMetadata() { Location = eventModel.Url }
+                EntityMetadata = new GuildScheduledEventEntityMetadata() { Location = eventModel.Url ?? string.Empty }
             };
 
             return guildScheduledEvent;
+        }
+
+        public static IEnumerable<GuildScheduledEvent> Merge(IEnumerable<GuildScheduledEvent> targets, IEnumerable<Event> sources)
+        {
+            foreach(var target in targets)
+            {
+                var source = sources.FirstOrDefault(x => IsUpdate(target, x));
+
+                if (source is null) continue;
+
+                yield return Merge(target, source);
+            }
+        }
+
+        public static GuildScheduledEvent Merge(GuildScheduledEvent target, Event source)
+        {
+            target.Name = source.Title ?? string.Empty;
+            target.Description = $"{source.Description}";
+            target.ScheduledStartTime = source.Start.DateTime;
+            target.ScheduledEndTime = source.End?.DateTime ?? source.Start.DateTime.AddHours(3);
+            return target;
         }
 
         public static bool IsUpdate(GuildScheduledEvent target, Event source)
