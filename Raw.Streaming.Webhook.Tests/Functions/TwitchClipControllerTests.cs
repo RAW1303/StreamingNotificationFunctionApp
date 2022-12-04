@@ -9,6 +9,7 @@ namespace Raw.Streaming.Webhook.Tests.Functions
         private Mock<IMapper> _mapperMock;
         private Mock<ILogger<TwitchClipController>> _loggerMock;
         private TwitchClipController _controller;
+        private Fixture _fixture;
 
         [SetUp]
         public void Setup()
@@ -17,10 +18,36 @@ namespace Raw.Streaming.Webhook.Tests.Functions
             _mapperMock = new Mock<IMapper>();
             _loggerMock = new Mock<ILogger<TwitchClipController>>();
             _controller = new TwitchClipController(_twitchApiService.Object, _mapperMock.Object, _loggerMock.Object);
+            _fixture = new Fixture();
         }
 
         [Test, AutoData]
-        public async Task NotifyTwitchClips_WhenTwitchApiServiceSuccessful_ReturnsServiceBusMessage(DateTimeOffset last, DateTimeOffset next)
+        public async Task NotifyTwitchClips_WhenTwitchApiServiceReturnsClips_ReturnsServiceBusMessage(DateTimeOffset last, DateTimeOffset next)
+        {
+            // Arrange
+            var gameId = "testGameId";
+            var clip = _fixture.Build<TwitchClip>().With(x => x.GameId, gameId).Create();
+            var game = _fixture.Build<TwitchGame>().With(x => x.Id, gameId).Create();
+
+            _twitchApiService
+                .Setup(x => x.GetClipsByBroadcasterAsync(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>()))
+                .ReturnsAsync(new List<TwitchClip> { clip });
+            _twitchApiService
+                .Setup(x => x.GetGamesAsync(It.IsAny<string[]>()))
+                .ReturnsAsync(new List<TwitchGame> { game });
+            _mapperMock
+                .Setup(x => x.Map<Clip>(It.IsAny<TwitchClip>()))
+                .Returns(new Clip());
+
+            // Act
+            var result = await _controller.NotifyTwitchClips(last, next);
+
+            // Assert test
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test, AutoData]
+        public async Task NotifyTwitchClips_WhenTwitchApiServiceReturnsEmptyList_ReturnsNull(DateTimeOffset last, DateTimeOffset next)
         {
             // Arrange
             _twitchApiService
@@ -36,8 +63,8 @@ namespace Raw.Streaming.Webhook.Tests.Functions
             // Act
             var result = await _controller.NotifyTwitchClips(last, next);
 
-            // Assert
-            Assert.That(result, Is.Not.Null);
+            // Assert test
+            Assert.That(result, Is.Null);
         }
 
         [TestCase("2022-04-19T22:00", "2022-04-19T22:05", "2022-04-19T22:00")]
