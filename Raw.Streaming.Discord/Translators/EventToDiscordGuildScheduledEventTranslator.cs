@@ -1,6 +1,7 @@
 ﻿using Raw.Streaming.Common.Model;
 using Raw.Streaming.Discord.Model.DiscordApi;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Raw.Streaming.Discord.Translators
@@ -27,6 +28,15 @@ namespace Raw.Streaming.Discord.Translators
             };
 
             return guildScheduledEvent;
+        }
+
+        public static bool IsUpdate(GuildScheduledEvent target, Event source)
+        {
+            return source.Url == target.EntityMetadata.Location
+                && (source.Title != target.Name
+                || source.Description != target.Description
+                || source.Start.DateTime != target.ScheduledStartTime
+                || source.End?.DateTime != target.ScheduledEndTime);
         }
     }
 }

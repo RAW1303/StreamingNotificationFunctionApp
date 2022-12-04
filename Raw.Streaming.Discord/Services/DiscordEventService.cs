@@ -20,13 +20,21 @@ internal class DiscordEventService : IDiscordEventService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<GuildScheduledEvent>> SyncScheduledEvents(string guildId, IEnumerable<Event> events)
+    public async Task SyncScheduledEvents(string guildId, IEnumerable<Event> events)
     {
         var existingEvents = await GetScheduledEvents(guildId);
         var botExistingEvents = existingEvents.Where(e => e.CreatorId == AppSettings.DiscordBotApplicationId);
+
         var eventsToAdd = EventToDiscordGuildScheduledEventTranslator.Translate(events.Where(x => !botExistingEvents.Any(y => x.Url == y.EntityMetadata.Location)));
-        var tasks = eventsToAdd.Select(x => CreateScheduledEvent(guildId, x)).ToList();
-        return await Task.WhenAll(tasks);
+        var eventsToUpdate = EventToDiscordGuildScheduledEventTranslator.Translate(events.Where(x => !botExistingEvents.Any(y => EventToDiscordGuildScheduledEventTranslator.IsUpdate(y, x))));
+        var eventsToDelete = botExistingEvents.Where(x => !events.Any(y => x.EntityMetadata.Location == y.Url));
+
+        var tasks = new List<Task>();
+        tasks.AddRange(eventsToAdd.Select(x => CreateScheduledEvent(guildId, x)));
+        tasks.AddRange(eventsToUpdate.Select(x => UpdateScheduledEvent(guildId, x.Id, x)));
+        tasks.AddRange(eventsToDelete.Select(x => DeleteScheduledEvent(x.GuildId, x.Id)));
+
+        await Task.WhenAll(tasks);
     }
 
     public async Task<IEnumerable<GuildScheduledEvent>> GetScheduledEvents(string guildId)
@@ -53,6 +61,34 @@ internal class DiscordEventService : IDiscordEventService
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error creating scheduled event in guild {guildId}");
+            throw;
+        }
+    }
+
+    public async Task<GuildScheduledEvent> UpdateScheduledEvent(string guildId, string eventId, GuildScheduledEvent guildScheduledEvent)
+    {
+        try
+        {
+            var endpoint = $"guilds/{guildId}/scheduled-events/{eventId}";
+            return await _discordApiService.SendDiscordApiPatchRequestAsync<GuildScheduledEvent>(endpoint, guildScheduledEvent);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error updating scheduled event {eventId} in guild {guildId}");
+            throw;
+        }
+    }
+
+    public async Task DeleteScheduledEvent(string guildId, string eventId)
+    {
+        try
+        {
+            var endpoint = $"guilds/{guildId}/scheduled-events/{eventId}";
+            await _discordApiService.SendDiscordApiDeleteRequestAsync(endpoint);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error deleting scheduled event {eventId} in guild {guildId}");
             throw;
         }
     }

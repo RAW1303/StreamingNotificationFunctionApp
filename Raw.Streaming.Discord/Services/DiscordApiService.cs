@@ -28,14 +28,14 @@ internal class DiscordApiService : IDiscordApiService
         return responseObject;
     }
 
-    public async Task<T> SendDiscordApiPostRequestAsync<T>(string endpoint, DiscordApiContent content = null)
+    public async Task<T> SendDiscordApiPostRequestAsync<T>(string endpoint, DiscordApiContent? content = null)
     {
         var response = await SendDiscordApiRequestAsync(HttpMethod.Post, endpoint, content);
         var responseObject = JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync());
         return responseObject;
     }
 
-    public async Task<T> SendDiscordApiPatchRequestAsync<T>(string endpoint, DiscordApiContent content = null)
+    public async Task<T> SendDiscordApiPatchRequestAsync<T>(string endpoint, DiscordApiContent? content = null)
     {
         var response = await SendDiscordApiRequestAsync(HttpMethod.Patch, endpoint, content);
         var responseObject = JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync());
@@ -47,7 +47,7 @@ internal class DiscordApiService : IDiscordApiService
         await SendDiscordApiRequestAsync(HttpMethod.Delete, endpoint);
     }
 
-    private async Task<HttpResponseMessage> SendDiscordApiRequestAsync(HttpMethod method, string endpoint, DiscordApiContent content = null)
+    private async Task<HttpResponseMessage> SendDiscordApiRequestAsync(HttpMethod method, string endpoint, DiscordApiContent? content = null)
     {
         var fullUrl = $"{_discordApiUrl}/{endpoint}";
         var request = new HttpRequestMessage(method, fullUrl);
