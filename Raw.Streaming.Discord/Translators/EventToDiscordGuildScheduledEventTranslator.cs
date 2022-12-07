@@ -1,7 +1,6 @@
 ﻿using Raw.Streaming.Common.Model;
 using Raw.Streaming.Discord.Model.DiscordApi;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace Raw.Streaming.Discord.Translators
@@ -18,7 +17,7 @@ namespace Raw.Streaming.Discord.Translators
             var guildScheduledEvent = new GuildScheduledEvent()
             {
                 Name = eventModel.Title ?? string.Empty,
-                Description = $"{eventModel.Description}",
+                Description = eventModel.Description ?? string.Empty,
                 ScheduledStartTime = eventModel.Start.DateTime,
                 ScheduledEndTime = eventModel.End?.DateTime ?? eventModel.Start.DateTime.AddHours(3),
                 Status = GuildScheduledEventStatus.SCHEDULED,
@@ -45,9 +44,9 @@ namespace Raw.Streaming.Discord.Translators
         public static GuildScheduledEvent Merge(GuildScheduledEvent target, Event source)
         {
             target.Name = source.Title ?? string.Empty;
-            target.Description = $"{source.Description}";
+            target.Description = source.Description ?? string.Empty;
             target.ScheduledStartTime = source.Start.DateTime;
-            target.ScheduledEndTime = source.End?.DateTime ?? source.Start.DateTime.AddHours(3);
+            target.ScheduledEndTime = source.End?.DateTime ?? target.ScheduledEndTime;
             return target;
         }
 
