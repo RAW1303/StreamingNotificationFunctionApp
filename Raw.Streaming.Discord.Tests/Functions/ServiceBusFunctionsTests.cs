@@ -113,7 +113,7 @@ internal class ServiceBusFunctionsTests
     {
         // Arrange
         _discordEventService
-            .Setup(x => x.SyncScheduledEvents(It.IsAny<string>(), It.IsAny<IEnumerable<Event>>()));
+            .Setup(x => x.SyncScheduledEventsAsync(It.IsAny<string>(), It.IsAny<IEnumerable<Event>>()));
         var queueMessage = new DiscordBotQueueItem<Event>(events);
 
         // Act and Assert
@@ -126,7 +126,7 @@ internal class ServiceBusFunctionsTests
         // Arrange
         var exception = new Exception("Test message");
         _discordEventService
-            .Setup(x => x.SyncScheduledEvents(It.IsAny<string>(), It.IsAny<IEnumerable<Event>>()))
+            .Setup(x => x.SyncScheduledEventsAsync(It.IsAny<string>(), It.IsAny<IEnumerable<Event>>()))
             .ThrowsAsync(exception);
         var queueMessage = new DiscordBotQueueItem<Event>(events);
 

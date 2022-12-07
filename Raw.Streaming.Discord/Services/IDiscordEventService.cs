@@ -7,7 +7,9 @@ namespace Raw.Streaming.Discord.Services;
 
 internal interface IDiscordEventService
 {
-    Task SyncScheduledEvents(string guildId, IEnumerable<Event> events);
-    Task<IEnumerable<GuildScheduledEvent>> GetScheduledEvents(string guildId);
-    Task<GuildScheduledEvent> CreateScheduledEvent(string guildId, GuildScheduledEvent guildScheduledEvent);
+    Task SyncScheduledEventsAsync(string guildId, IEnumerable<Event> events);
+    Task<IEnumerable<GuildScheduledEvent>> GetScheduledEventsAsync(string guildId);
+    Task<GuildScheduledEvent> CreateScheduledEventAsync(string guildId, GuildScheduledEvent guildScheduledEvent);
+    Task<GuildScheduledEvent> UpdateScheduledEventAsync(string guildId, string eventId, GuildScheduledEvent guildScheduledEvent);
+    Task DeleteScheduledEventAsync(string guildId, string eventId);
 }

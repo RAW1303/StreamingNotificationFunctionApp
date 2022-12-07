@@ -20,7 +20,7 @@ internal class DiscordEventServiceTests
     }
 
     [Test, AutoData]
-    public async Task GetScheduledEvents_WhenApiServiceReturnsSuccessfully_ReturnsList(IEnumerable<GuildScheduledEvent> events)
+    public async Task GetScheduledEventsAsync_WhenApiServiceReturnsSuccessfully_ReturnsList(IEnumerable<GuildScheduledEvent> events)
     {
         //Arrange
         _mockDiscordApiService
@@ -28,7 +28,7 @@ internal class DiscordEventServiceTests
             .ReturnsAsync(events);
 
         //Act
-        var result = await _service.GetScheduledEvents("test");
+        var result = await _service.GetScheduledEventsAsync("test");
 
         //Assert
         Assert.That(result, Is.Not.Null);
@@ -36,7 +36,7 @@ internal class DiscordEventServiceTests
     }
 
     [Test, AutoData]
-    public void GetScheduledEvents_WhenApiServiceThrowsException_LogsErrorAndThrows(DiscordApiException exception)
+    public void GetScheduledEventsAsync_WhenApiServiceThrowsException_LogsErrorAndThrows(DiscordApiException exception)
     {
         //Arrange
         _mockDiscordApiService
@@ -44,11 +44,11 @@ internal class DiscordEventServiceTests
             .ThrowsAsync(exception);
 
         //Act and Assert
-        Assert.That(async () => await _service.GetScheduledEvents("test"), Throws.Exception.EqualTo(exception));
+        Assert.That(async () => await _service.GetScheduledEventsAsync("test"), Throws.Exception.EqualTo(exception));
     }
 
     [Test, AutoData]
-    public async Task CreateScheduledEvent_WhenApiServiceReturnsSuccessfully_ReturnsList(GuildScheduledEvent guildEvent)
+    public async Task CreateScheduledEventAsync_WhenApiServiceReturnsSuccessfully_ReturnsList(GuildScheduledEvent guildEvent)
     {
         //Arrange
         _mockDiscordApiService
@@ -56,7 +56,7 @@ internal class DiscordEventServiceTests
             .ReturnsAsync(guildEvent);
 
         //Act
-        var result = await _service.CreateScheduledEvent("test", new GuildScheduledEvent());
+        var result = await _service.CreateScheduledEventAsync("test", new GuildScheduledEvent());
 
         //Assert
         Assert.That(result, Is.Not.Null);
@@ -64,7 +64,7 @@ internal class DiscordEventServiceTests
     }
 
     [Test, AutoData]
-    public void CreateScheduledEvent_WhenApiServiceThrowsException_LogsErrorAndThrows(DiscordApiException exception)
+    public void CreateScheduledEventAsync_WhenApiServiceThrowsException_LogsErrorAndThrows(DiscordApiException exception)
     {
         //Arrange
         _mockDiscordApiService
@@ -72,6 +72,61 @@ internal class DiscordEventServiceTests
             .ThrowsAsync(exception);
 
         //Act and Assert
-        Assert.That(async () => await _service.CreateScheduledEvent("test", new GuildScheduledEvent()), Throws.Exception.EqualTo(exception));
+        Assert.That(async () => await _service.CreateScheduledEventAsync("test", new GuildScheduledEvent()), Throws.Exception.EqualTo(exception));
+    }
+
+    [Test, AutoData]
+    public async Task UpdateScheduledEventAsync_WhenApiServiceReturnsSuccessfully_ReturnsList(GuildScheduledEvent guildEvent)
+    {
+        //Arrange
+        _mockDiscordApiService
+            .Setup(x => x.SendDiscordApiPatchRequestAsync<GuildScheduledEvent>(It.IsAny<string>(), It.IsAny<DiscordApiContent>()))
+            .ReturnsAsync(guildEvent);
+
+        //Act
+        var result = await _service.UpdateScheduledEventAsync("test", "testId", new GuildScheduledEvent());
+
+        //Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.SameAs(guildEvent));
+    }
+
+    [Test, AutoData]
+    public void UpdateScheduledEventAsync_WhenApiServiceThrowsException_LogsErrorAndThrows(DiscordApiException exception)
+    {
+        //Arrange
+        _mockDiscordApiService
+            .Setup(x => x.SendDiscordApiPatchRequestAsync<GuildScheduledEvent>(It.IsAny<string>(), It.IsAny<DiscordApiContent>()))
+            .ThrowsAsync(exception);
+
+        //Act and Assert
+        Assert.That(async () => await _service.UpdateScheduledEventAsync("test", "testId", new GuildScheduledEvent()), Throws.Exception.EqualTo(exception));
+    }
+
+
+    [Test, AutoData]
+    public async Task DeleteScheduledEventAsync_WhenApiServiceReturnsSuccessfully_ReturnsList()
+    {
+        //Arrange
+        _mockDiscordApiService
+            .Setup(x => x.SendDiscordApiDeleteRequestAsync(It.IsAny<string>()));
+
+        //Act
+        await _service.DeleteScheduledEventAsync("test", "testId");
+
+        //Assert
+        _mockDiscordApiService.Verify(x => x.SendDiscordApiDeleteRequestAsync(It.IsAny<string>()));
+    }
+
+    [Test, AutoData]
+    public void DeleteScheduledEventAsync_WhenApiServiceThrowsException_LogsErrorAndThrows(DiscordApiException exception)
+    {
+        //Arrange
+        _mockDiscordApiService
+            .Setup(x => x.SendDiscordApiDeleteRequestAsync(It.IsAny<string>()))
+            .ThrowsAsync(exception);
+
+        //Act and Assert
+        Assert.That(async () => await _service.DeleteScheduledEventAsync("test", "testId"), Throws.Exception.EqualTo(exception));
     }
 }

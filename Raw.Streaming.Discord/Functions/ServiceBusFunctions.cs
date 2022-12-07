@@ -83,7 +83,7 @@ internal class ServiceBusFunctions
         try
         {
             _logger.LogDebug($"{nameof(ProcessEventMessageQueue)} notification started");
-            await _discordEventService.SyncScheduledEvents(AppSettings.DiscordGuildId, myQueueItem.Entities);
+            await _discordEventService.SyncScheduledEventsAsync(AppSettings.DiscordGuildId, myQueueItem.Entities);
             _logger.LogDebug($"{nameof(ProcessEventMessageQueue)} notification succeeded");
         }
         catch (Exception ex)

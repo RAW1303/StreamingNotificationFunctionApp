@@ -37,7 +37,7 @@ internal class TimerFunctionsTests
 
         Environment.SetEnvironmentVariable("DiscordScheduleChannelId", channelId);
         _discordEventService
-            .Setup(x => x.GetScheduledEvents(It.IsAny<string>()))
+            .Setup(x => x.GetScheduledEventsAsync(It.IsAny<string>()))
             .ReturnsAsync(events);
         _discordMessageService
             .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
@@ -54,7 +54,7 @@ internal class TimerFunctionsTests
         // Arrange
         Environment.SetEnvironmentVariable("DiscordScheduleChannelId", channelId);
         _discordEventService
-            .Setup(x => x.GetScheduledEvents(It.IsAny<string>()))
+            .Setup(x => x.GetScheduledEventsAsync(It.IsAny<string>()))
             .ReturnsAsync(new List<GuildScheduledEvent>());
         _discordMessageService
             .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
@@ -79,7 +79,7 @@ internal class TimerFunctionsTests
 
         Environment.SetEnvironmentVariable("DiscordScheduleChannelId", channelId);
         _discordEventService
-            .Setup(x => x.GetScheduledEvents(It.IsAny<string>()))
+            .Setup(x => x.GetScheduledEventsAsync(It.IsAny<string>()))
             .ReturnsAsync(new List<GuildScheduledEvent>());
         _discordMessageService
             .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
@@ -96,7 +96,7 @@ internal class TimerFunctionsTests
         // Arrange
         Environment.SetEnvironmentVariable("DiscordScheduleChannelId", channelId);
         _discordEventService
-            .Setup(x => x.GetScheduledEvents(It.IsAny<string>()))
+            .Setup(x => x.GetScheduledEventsAsync(It.IsAny<string>()))
             .ThrowsAsync(new Exception(exceptionMessage));
         _discordMessageService
             .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))
@@ -121,7 +121,7 @@ internal class TimerFunctionsTests
 
         Environment.SetEnvironmentVariable("DiscordScheduleChannelId", channelId);
         _discordEventService
-            .Setup(x => x.GetScheduledEvents(It.IsAny<string>()))
+            .Setup(x => x.GetScheduledEventsAsync(It.IsAny<string>()))
             .ReturnsAsync(events);
         _discordMessageService
             .Setup(x => x.SendDiscordMessageAsync(It.IsAny<string>(), It.IsAny<Message>()))

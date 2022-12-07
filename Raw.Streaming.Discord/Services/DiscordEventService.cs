@@ -20,9 +20,9 @@ internal class DiscordEventService : IDiscordEventService
         _logger = logger;
     }
 
-    public async Task SyncScheduledEvents(string guildId, IEnumerable<Event> events)
+    public async Task SyncScheduledEventsAsync(string guildId, IEnumerable<Event> events)
     {
-        var existingEvents = await GetScheduledEvents(guildId);
+        var existingEvents = await GetScheduledEventsAsync(guildId);
         var botExistingEvents = existingEvents.Where(e => e.CreatorId == AppSettings.DiscordBotApplicationId);
 
         var eventsToAdd = EventToDiscordGuildScheduledEventTranslator.Translate(events.Where(x => !botExistingEvents.Any(y => x.Url == y.EntityMetadata.Location)));
@@ -30,14 +30,14 @@ internal class DiscordEventService : IDiscordEventService
         var eventsToDelete = botExistingEvents.Where(x => !events.Any(y => x.EntityMetadata.Location == y.Url));
 
         var tasks = new List<Task>();
-        tasks.AddRange(eventsToAdd.Select(x => CreateScheduledEvent(guildId, x)));
-        tasks.AddRange(eventsToUpdate.Select(x => UpdateScheduledEvent(guildId, x.Id, x)));
-        tasks.AddRange(eventsToDelete.Select(x => DeleteScheduledEvent(x.GuildId, x.Id)));
+        tasks.AddRange(eventsToAdd.Select(x => CreateScheduledEventAsync(guildId, x)));
+        tasks.AddRange(eventsToUpdate.Select(x => UpdateScheduledEventAsync(guildId, x.Id, x)));
+        tasks.AddRange(eventsToDelete.Select(x => DeleteScheduledEventAsync(x.GuildId, x.Id)));
 
         await Task.WhenAll(tasks);
     }
 
-    public async Task<IEnumerable<GuildScheduledEvent>> GetScheduledEvents(string guildId)
+    public async Task<IEnumerable<GuildScheduledEvent>> GetScheduledEventsAsync(string guildId)
     {
         try
         {
@@ -51,7 +51,7 @@ internal class DiscordEventService : IDiscordEventService
         }
     }
 
-    public async Task<GuildScheduledEvent> CreateScheduledEvent(string guildId, GuildScheduledEvent guildScheduledEvent)
+    public async Task<GuildScheduledEvent> CreateScheduledEventAsync(string guildId, GuildScheduledEvent guildScheduledEvent)
     {
         try
         {
@@ -65,7 +65,7 @@ internal class DiscordEventService : IDiscordEventService
         }
     }
 
-    public async Task<GuildScheduledEvent> UpdateScheduledEvent(string guildId, string eventId, GuildScheduledEvent guildScheduledEvent)
+    public async Task<GuildScheduledEvent> UpdateScheduledEventAsync(string guildId, string eventId, GuildScheduledEvent guildScheduledEvent)
     {
         try
         {
@@ -79,7 +79,7 @@ internal class DiscordEventService : IDiscordEventService
         }
     }
 
-    public async Task DeleteScheduledEvent(string guildId, string eventId)
+    public async Task DeleteScheduledEventAsync(string guildId, string eventId)
     {
         try
         {
