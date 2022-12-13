@@ -33,17 +33,19 @@ namespace Raw.Streaming.Webhook.Functions
         [FunctionName(nameof(NotifyTwitchHighlightsTrigger))]
         [return: ServiceBus("%VideosQueueName%")]
         public async Task<ServiceBusMessage?> NotifyTwitchHighlightsTrigger(
-            [TimerTrigger("%TwitchHighlightsTimerTrigger%")] TimerInfo timer)
+        [TimerTrigger("%TwitchHighlightsTimerTrigger%")] TimerInfo timer)
         {
-                return await NotifyTwitchHighlights(timer.ScheduleStatus.Last, timer.ScheduleStatus.Next);
+            var last = timer.ScheduleStatus.Last;
+            var next = timer.ScheduleStatus.Next;
+            var startedAt = last > next.AddHours(-25) ? last : next.AddHours(-25);
+            return await NotifyTwitchHighlights(startedAt);
         }
 
-        public async Task<ServiceBusMessage?> NotifyTwitchHighlights(DateTimeOffset last, DateTimeOffset next)
+        public async Task<ServiceBusMessage?> NotifyTwitchHighlights(DateTimeOffset startedAt)
         { 
             try
             {
                 _logger.LogDebug("NotifyTwitchHighlights execution started");
-                var startedAt = last > next.AddHours(-25) ? last : next.AddHours(-25);
                 var highlights = await GetHighlightsAsync(AppSettings.TwitchBroadcasterId, startedAt);
 
                 if (highlights.IsNullOrEmpty())
