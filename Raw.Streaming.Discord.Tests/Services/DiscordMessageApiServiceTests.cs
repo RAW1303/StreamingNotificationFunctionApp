@@ -6,7 +6,6 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
-using System.Threading.Channels;
 
 namespace Raw.Streaming.Discord.Tests.Services;
 
@@ -69,61 +68,49 @@ internal class DiscordMessageApiServiceTests : DiscordApiServiceTests
         Assert.That(async () => await _service.SendDiscordMessageAsync(channelId, message), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
     }
 
-    /*
     [Test, AutoData]
-    public async Task SendDiscordMessageAsync_WhenApiServiceReturnsSuccessfully_ReturnsMessage(Message message)
+    public async Task CrosspostDiscordMessageAsync_WhenHttpClientReturnsSuccessfully_ReturnsValidEventsList(Message message)
     {
-        //Arrange
-        _mockDiscordApiService
-            .Setup(x => x.SendDiscordApiPostRequestAsync<Message>(It.IsAny<string>(), It.IsAny<DiscordApiContent>()))
-            .ReturnsAsync(message);
+        // Arrange
+        var channelId = "testChannelId";
+        var messageId = "testMessageId";
+        var jsonContent = await File.ReadAllTextAsync($"{AppDomain.CurrentDomain.BaseDirectory}/TestData/DiscordMessage.json");
+        SetupMockHttpMessageHandler(HttpStatusCode.OK, jsonContent);
 
-        //Act
-        var result = await _service.SendDiscordMessageAsync("test", new Message());
+        // Act
+        var result = await _service.CrosspostDiscordMessageAsync(channelId, messageId);
 
-        //Assert
+        // Assert
+        _mockHttpMessageHandler
+            .Protected()
+            .Verify(
+                "SendAsync",
+                Times.Once(),
+                ItExpr.Is<HttpRequestMessage>(x =>
+                    x.RequestUri.AbsoluteUri.Contains($"/channels/{channelId}/messages/{messageId}/crosspost")
+                    && x.Method == HttpMethod.Post),
+                ItExpr.IsAny<CancellationToken>()
+            );
+
         Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.SameAs(message));
+        Assert.That(result, Has.Property("Id").EqualTo("334385199974967042"));
+        Assert.That(result, Has.Property("Content").EqualTo("Supa Hot"));
+        Assert.That(result, Has.Property("Author").With.Property("Username").EqualTo("Mason"));
     }
 
-    [Test, AutoData]
-    public void SendDiscordMessageAsync_WhenApiServiceThrowsException_Throws(DiscordApiException exception)
+    [InlineAutoData(HttpStatusCode.BadRequest)]
+    [InlineAutoData(HttpStatusCode.Forbidden)]
+    [InlineAutoData(HttpStatusCode.Unauthorized)]
+    [InlineAutoData(HttpStatusCode.InternalServerError)]
+    public void CrosspostDiscordMessageAsync_WhenHttpClientReturnsNonSuccessStatusCode_ThrowsException(HttpStatusCode statusCode, Message message)
     {
-        //Arrange
-        _mockDiscordApiService
-            .Setup(x => x.SendDiscordApiPostRequestAsync<Message>(It.IsAny<string>(), It.IsAny<DiscordApiContent>()))
-            .ThrowsAsync(exception);
+        // Arrange
+        var channelId = "testChannelId";
+        var messageId = "testMessageId";
+        var errorMessage = $"Test Error Message {statusCode}";
+        SetupMockHttpMessageHandler(statusCode, errorMessage);
 
-        //Act and Assert
-        Assert.That(async () => await _service.SendDiscordMessageAsync("test", new Message()), Throws.Exception.EqualTo(exception));
+        // Act and Assert
+        Assert.That(async () => await _service.CrosspostDiscordMessageAsync(channelId, messageId), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
     }
-
-    [Test, AutoData]
-    public async Task CrosspostDiscordMessageAsync_WhenApiServiceReturnsSuccessfully_ReturnsMessage(Message message)
-    {
-        //Arrange
-        _mockDiscordApiService
-            .Setup(x => x.SendDiscordApiPostRequestAsync<Message>(It.IsAny<string>(), null))
-            .ReturnsAsync(message);
-
-        //Act
-        var result = await _service.CrosspostDiscordMessageAsync("test", "testId");
-
-        //Assert
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result, Is.SameAs(message));
-    }
-
-    [Test, AutoData]
-    public void CrosspostDiscordMessageAsync_WhenApiServiceThrowsException_Throws(DiscordApiException exception)
-    {
-        //Arrange
-        _mockDiscordApiService
-            .Setup(x => x.SendDiscordApiPostRequestAsync<Message>(It.IsAny<string>(), null))
-            .ThrowsAsync(exception);
-
-        //Act and Assert
-        Assert.That(async () => await _service.CrosspostDiscordMessageAsync("test", "testId"), Throws.Exception.EqualTo(exception));
-    }
-    */
 }
