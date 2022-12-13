@@ -19,8 +19,6 @@ namespace Raw.Streaming.Discord.Model.DiscordApi
         public string Name { get; set; }
         [JsonPropertyName("description")]
         public string Description { get; set; }
-        [JsonPropertyName("image")]
-        public string Image { get; set; }
         [JsonPropertyName("scheduled_start_time")]
         public DateTimeOffset ScheduledStartTime { get; set; }
         [JsonPropertyName("scheduled_end_time")]
@@ -35,6 +33,8 @@ namespace Raw.Streaming.Discord.Model.DiscordApi
         public int? EntityId { get; set; }
         [JsonPropertyName("entity_metadata")]
         public GuildScheduledEventEntityMetadata EntityMetadata { get; set; }
+        [JsonPropertyName("image")]
+        public string Image { get; set; }
     }
 
     [ExcludeFromCodeCoverage]

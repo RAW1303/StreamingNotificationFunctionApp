@@ -5,20 +5,14 @@ using Raw.Streaming.Discord.Translators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Raw.Streaming.Discord.Services;
 
-internal class DiscordEventService : IDiscordEventService
+internal class DiscordEventApiService : DiscordApiService, IDiscordEventService
 {
-    private readonly IDiscordApiService _discordApiService;
-    private readonly ILogger _logger;
-
-    public DiscordEventService(IDiscordApiService discordApiService, ILogger<DiscordEventService> logger)
-    {
-        _discordApiService = discordApiService;
-        _logger = logger;
-    }
+    public DiscordEventApiService(HttpClient httpClient, ILogger<DiscordEventApiService> logger) : base(httpClient, logger) { }
 
     public async Task SyncScheduledEventsAsync(string guildId, IEnumerable<Event> events)
     {
@@ -42,7 +36,7 @@ internal class DiscordEventService : IDiscordEventService
         try
         {
             var endpoint = $"guilds/{guildId}/scheduled-events";
-            return await _discordApiService.SendDiscordApiGetRequestAsync<IEnumerable<GuildScheduledEvent>>(endpoint);
+            return await SendDiscordApiGetRequestAsync<IEnumerable<GuildScheduledEvent>>(endpoint);
         }
         catch(Exception ex)
         {
@@ -56,7 +50,7 @@ internal class DiscordEventService : IDiscordEventService
         try
         {
             var endpoint = $"guilds/{guildId}/scheduled-events";
-            return await _discordApiService.SendDiscordApiPostRequestAsync<GuildScheduledEvent>(endpoint, guildScheduledEvent);
+            return await SendDiscordApiPostRequestAsync<GuildScheduledEvent>(endpoint, guildScheduledEvent);
         }
         catch (Exception ex)
         {
@@ -70,7 +64,7 @@ internal class DiscordEventService : IDiscordEventService
         try
         {
             var endpoint = $"guilds/{guildId}/scheduled-events/{eventId}";
-            return await _discordApiService.SendDiscordApiPatchRequestAsync<GuildScheduledEvent>(endpoint, guildScheduledEvent);
+            return await SendDiscordApiPatchRequestAsync<GuildScheduledEvent>(endpoint, guildScheduledEvent);
         }
         catch (Exception ex)
         {
@@ -84,7 +78,7 @@ internal class DiscordEventService : IDiscordEventService
         try
         {
             var endpoint = $"guilds/{guildId}/scheduled-events/{eventId}";
-            await _discordApiService.SendDiscordApiDeleteRequestAsync(endpoint);
+            await SendDiscordApiDeleteRequestAsync(endpoint);
         }
         catch (Exception ex)
         {

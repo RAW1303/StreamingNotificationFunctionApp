@@ -1,0 +1,27 @@
+{
+  "id": "1026468392015769610",
+  "guild_id": "766813645937967124",
+  "channel_id": null,
+  "creator_id": "106705823366922240",
+  "name": "Test event",
+  "description": "sdgdfgffdsgfdsg",
+  "image": null,
+  "scheduled_start_time": "2022-10-03T13:00:00.520000+00:00",
+  "scheduled_end_time": "2022-10-03T15:00:00.520000+00:00",
+  "privacy_level": 2,
+  "status": 1,
+  "entity_type": 3,
+  "entity_id": null,
+  "entity_metadata": {
+    "location": "https://twitch.tv/royweller"
+  },
+  "sku_ids": [],
+  "creator": {
+    "id": "106705823366922240",
+    "username": "Roy Weller",
+    "avatar": "79498fb627c03abab3c1e359f3164519",
+    "avatar_decoration": null,
+    "discriminator": "1427",
+    "public_flags": 0
+  }
+}
