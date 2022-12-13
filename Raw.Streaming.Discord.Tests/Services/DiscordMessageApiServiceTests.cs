@@ -1,4 +1,5 @@
-﻿using Moq.Protected;
+﻿using Microsoft.Azure.Amqp.Framing;
+using Moq.Protected;
 using Raw.Streaming.Discord.Exceptions;
 using Raw.Streaming.Discord.Model.DiscordApi;
 using Raw.Streaming.Discord.Services;
@@ -68,6 +69,18 @@ internal class DiscordMessageApiServiceTests : DiscordApiServiceTestBase
         Assert.That(async () => await _service.SendDiscordMessageAsync(channelId, message), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
     }
 
+    public void GetScheduledEventsAsync_WhenHttpClientReturnsTooManyRequestsStatusCode_ThrowsException(Message message)
+    {
+        // Arrange
+        var statusCode = HttpStatusCode.TooManyRequests;
+        var channelId = "testChannelId";
+        var errorMessage = $"Test Error Message {statusCode}";
+        SetupMockHttpMessageHandler(statusCode, errorMessage);
+
+        // Act and Assert
+        Assert.That(async () => await _service.SendDiscordMessageAsync(channelId, message), Throws.InstanceOf<DiscordApiRateLimitException>().With.Property("Message").Contains(errorMessage));
+    }
+
     [Test, AutoData]
     public async Task CrosspostDiscordMessageAsync_WhenHttpClientReturnsSuccessfully_ReturnsValidEventsList(Message message)
     {
@@ -112,5 +125,18 @@ internal class DiscordMessageApiServiceTests : DiscordApiServiceTestBase
 
         // Act and Assert
         Assert.That(async () => await _service.CrosspostDiscordMessageAsync(channelId, messageId), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
+    }
+
+    public void CrosspostDiscordMessageAsync_WhenHttpClientReturnsTooManyRequestsStatusCode_ThrowsException(Message message)
+    {
+        // Arrange
+        var statusCode = HttpStatusCode.TooManyRequests;
+        var messageId = "testMessageId";
+        var channelId = "testChannelId";
+        var errorMessage = $"Test Error Message {statusCode}";
+        SetupMockHttpMessageHandler(statusCode, errorMessage);
+
+        // Act and Assert
+        Assert.That(async () => await _service.CrosspostDiscordMessageAsync(channelId, messageId), Throws.InstanceOf<DiscordApiRateLimitException>().With.Property("Message").Contains(errorMessage));
     }
 }
