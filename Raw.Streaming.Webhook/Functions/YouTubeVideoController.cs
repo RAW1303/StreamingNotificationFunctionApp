@@ -36,14 +36,14 @@ namespace Raw.Streaming.Webhook.Functions
         [ExcludeFromCodeCoverage]
         [FunctionName(nameof(YoutubeVideoSubscribeTrigger))]
         public async Task YoutubeVideoSubscribeTrigger(
-            [TimerTrigger("0 0 5 * * *", RunOnStartup = true)] TimerInfo myTimer)
+            [TimerTrigger("0 0 5 * * *")] TimerInfo myTimer)
         {
             await YoutubeVideoSubscribe();
         }
 
         [FunctionName(nameof(YoutubeVideoWebhook))]
         [return: ServiceBus("%VideosQueueName%")]
-        public ServiceBusMessage YoutubeVideoWebhook(
+        public ServiceBusMessage? YoutubeVideoWebhook(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = WebhookEndpoint)] HttpRequest req)
         {
             try

@@ -7,7 +7,7 @@ namespace Raw.Streaming.Discord.Tests.Functions;
 [TestFixture]
 internal class ServiceBusFunctionsTests
 {
-    private Mock<IDiscordEventService> _discordEventService;
+    private Mock<IEventManagementService> _eventManagementService;
     private Mock<IDiscordMessageService> _discordMessageService;
     private Mock<ILogger<ServiceBusFunctions>> _loggerMock;
     private ServiceBusFunctions _controller;
@@ -15,10 +15,10 @@ internal class ServiceBusFunctionsTests
     [SetUp]
     public void Setup()
     {
-        _discordEventService = new Mock<IDiscordEventService>();
+        _eventManagementService = new Mock<IEventManagementService>();
         _discordMessageService = new Mock<IDiscordMessageService>();
         _loggerMock = new Mock<ILogger<ServiceBusFunctions>>();
-        _controller = new ServiceBusFunctions(_discordEventService.Object, _discordMessageService.Object, _loggerMock.Object);
+        _controller = new ServiceBusFunctions(_eventManagementService.Object, _discordMessageService.Object, _loggerMock.Object);
     }
 
     [Test, AutoData]
@@ -32,7 +32,7 @@ internal class ServiceBusFunctionsTests
         var queueMessage = new DiscordBotQueueItem<GoLive>(goLive);
 
         // Act and Assert
-        Assert.That(() => _controller.ProcessGoLiveMessageQueue(queueMessage), Throws.Nothing);
+        Assert.That(async () => await _controller.ProcessGoLiveMessageQueue(queueMessage), Throws.Nothing);
         _discordMessageService.Verify(x => x.SendDiscordMessageAsync(channelId, It.IsAny<Message>()));
     }
 
@@ -47,7 +47,7 @@ internal class ServiceBusFunctionsTests
         var queueMessage = new DiscordBotQueueItem<GoLive>(goLive);
 
         // Act and Assert
-        Assert.That(() => _controller.ProcessGoLiveMessageQueue(queueMessage), Throws.Exception.EqualTo(exception));
+        Assert.That(async () => await _controller.ProcessGoLiveMessageQueue(queueMessage), Throws.Exception.EqualTo(exception));
     }
 
     [Test, AutoData]
@@ -61,7 +61,7 @@ internal class ServiceBusFunctionsTests
         var queueMessage = new DiscordBotQueueItem<Clip>(clips);
 
         // Act and Assert
-        Assert.That(() => _controller.ProcessClipMessageQueue(queueMessage), Throws.Nothing);
+        Assert.That(async () => await _controller.ProcessClipMessageQueue(queueMessage), Throws.Nothing);
         _discordMessageService.Verify(x => x.SendDiscordMessageAsync(channelId, It.IsAny<Message>()));
     }
 
@@ -76,7 +76,7 @@ internal class ServiceBusFunctionsTests
         var queueMessage = new DiscordBotQueueItem<Clip>(clips);
 
         // Act and Assert
-        Assert.That(() => _controller.ProcessClipMessageQueue(queueMessage), Throws.Exception.EqualTo(exception));
+        Assert.That(async () => await _controller.ProcessClipMessageQueue(queueMessage), Throws.Exception.EqualTo(exception));
     }
 
     [Test, AutoData]
@@ -90,7 +90,7 @@ internal class ServiceBusFunctionsTests
         var queueMessage = new DiscordBotQueueItem<Video>(videos);
 
         // Act and Assert
-        Assert.That(() => _controller.ProcessVideoMessageQueue(queueMessage), Throws.Nothing);
+        Assert.That(async () => await _controller.ProcessVideoMessageQueue(queueMessage), Throws.Nothing);
         _discordMessageService.Verify(x => x.SendDiscordMessageAsync(channelId, It.IsAny<Message>()));
     }
 
@@ -105,20 +105,19 @@ internal class ServiceBusFunctionsTests
         var queueMessage = new DiscordBotQueueItem<Video>(videos);
 
         // Act and Assert
-        Assert.That(() => _controller.ProcessVideoMessageQueue(queueMessage), Throws.Exception.EqualTo(exception));
+        Assert.That(async () => await _controller.ProcessVideoMessageQueue(queueMessage), Throws.Exception.EqualTo(exception));
     }
 
     [Test, AutoData]
     public void ProcessEventMessageQueue_WhenSendDiscordMessageAsyncSucceeds_DoesNotThrowException(Event[] events)
     {
         // Arrange
-        _discordEventService
-            .Setup(x => x.SyncScheduledEvents(It.IsAny<string>(), It.IsAny<IEnumerable<Event>>()))
-            .ReturnsAsync(new List<GuildScheduledEvent>());
+        _eventManagementService
+            .Setup(x => x.SyncScheduledEventsAsync(It.IsAny<string>(), It.IsAny<IEnumerable<Event>>()));
         var queueMessage = new DiscordBotQueueItem<Event>(events);
 
         // Act and Assert
-        Assert.That(() => _controller.ProcessEventMessageQueue(queueMessage), Throws.Nothing);
+        Assert.That(async () => await _controller.ProcessEventMessageQueue(queueMessage), Throws.Nothing);
     }
 
     [Test, AutoData]
@@ -126,12 +125,12 @@ internal class ServiceBusFunctionsTests
     {
         // Arrange
         var exception = new Exception("Test message");
-        _discordEventService
-            .Setup(x => x.SyncScheduledEvents(It.IsAny<string>(), It.IsAny<IEnumerable<Event>>()))
+        _eventManagementService
+            .Setup(x => x.SyncScheduledEventsAsync(It.IsAny<string>(), It.IsAny<IEnumerable<Event>>()))
             .ThrowsAsync(exception);
         var queueMessage = new DiscordBotQueueItem<Event>(events);
 
         // Act and Assert
-        Assert.That(() => _controller.ProcessEventMessageQueue(queueMessage), Throws.Exception.EqualTo(exception));
+        Assert.That(async () => await _controller.ProcessEventMessageQueue(queueMessage), Throws.Exception.EqualTo(exception));
     }
 }

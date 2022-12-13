@@ -12,17 +12,17 @@ namespace Raw.Streaming.Discord.Functions;
 [ServiceBusAccount("StreamingServiceBus")]
 internal class ServiceBusFunctions
 {
-    private readonly IDiscordEventService _discordEventService;
     private readonly IDiscordMessageService _discordMessageService;
+    private readonly IEventManagementService _eventManagementService;
     private readonly ILogger<ServiceBusFunctions> _logger;
 
     public ServiceBusFunctions(
-        IDiscordEventService discordEventService,
+        IEventManagementService eventManagementService,
         IDiscordMessageService discordMessageService, 
         ILogger<ServiceBusFunctions> logger)
     {
         _logger = logger;
-        _discordEventService = discordEventService;
+        _eventManagementService = eventManagementService;
         _discordMessageService = discordMessageService;
     }
 
@@ -83,7 +83,7 @@ internal class ServiceBusFunctions
         try
         {
             _logger.LogDebug($"{nameof(ProcessEventMessageQueue)} notification started");
-            await _discordEventService.SyncScheduledEvents(AppSettings.DiscordGuildId, myQueueItem.Entities);
+            await _eventManagementService.SyncScheduledEventsAsync(AppSettings.DiscordGuildId, myQueueItem.Entities);
             _logger.LogDebug($"{nameof(ProcessEventMessageQueue)} notification succeeded");
         }
         catch (Exception ex)

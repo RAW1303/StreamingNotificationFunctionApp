@@ -62,11 +62,11 @@ internal class TwitchScheduleToEventListConverter : ITypeConverter<TwitchSchedul
     }
 }
 
-internal class TwitchScheduleUrlResolver : IValueResolver<TwitchScheduleSegment, Event, string>
+internal class TwitchScheduleUrlResolver : IValueResolver<TwitchScheduleSegment, Event, string?>
 {
-    public string Resolve(TwitchScheduleSegment source, Event destination, string member, ResolutionContext context)
+    public string Resolve(TwitchScheduleSegment source, Event destination, string? member, ResolutionContext context)
     {
-        var queryString = source.IsRecurring ? $"segmentID={source.Id.SegmentId}" : $"seriesID={source.Id.SegmentId}";
+        var queryString = source.IsRecurring ? $"segmentID={source.Id?.SegmentId}" : $"seriesID={source.Id?.SegmentId}";
         return $"{destination.Url}?{queryString}";
     }
 }

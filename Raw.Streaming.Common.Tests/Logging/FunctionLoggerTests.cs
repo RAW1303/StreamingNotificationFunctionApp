@@ -1,9 +1,9 @@
-using AutoFixture.NUnit3;
 using Microsoft.Extensions.Logging;
 using Raw.Streaming.Common.Logging;
 
 namespace Raw.Streaming.Common.Tests.Logging;
 
+[TestFixture]
 public class FunctionLoggerTests
 {
     private Mock<ILoggerFactory> _mockILoggerFactory;

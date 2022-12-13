@@ -34,11 +34,19 @@ namespace Raw.Streaming.Webhook.Services
 
         public async Task<TwitchChannel> GetChannelInfoAsync(string broadcasterId)
         {
-            var queryString = $"?broadcaster_id={broadcasterId}";
-            var scope = "user:read:broadcast";
-            _logger.LogDebug($"Calling twitch channel info endpoint with query string: {queryString}");
-            var response = await SendTwitchApiGetRequestAsync<IList<TwitchChannel>>(_channelEndpoint, queryString, scope);
-            return response.FirstOrDefault();
+            try
+            {
+                var queryString = $"?broadcaster_id={broadcasterId}";
+                var scope = "user:read:broadcast";
+                _logger.LogDebug($"Calling twitch channel info endpoint with query string: {queryString}");
+                var response = await SendTwitchApiGetRequestAsync<IList<TwitchChannel>>(_channelEndpoint, queryString, scope);
+                return response.First();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Could not get channel info for channel id {broadcasterId}");
+                throw;
+            }
         }
 
         public async Task<IList<TwitchGame>> GetGamesAsync(params string[] gameIds)
@@ -98,7 +106,7 @@ namespace Raw.Streaming.Webhook.Services
 
         private static string UrlEncodeDateTime(DateTimeOffset? dateTime)
         {
-            return HttpUtility.UrlEncode($"{dateTime.Value.UtcDateTime:yyyy-MM-ddTHH:mm:ssK}");
+            return HttpUtility.UrlEncode($"{dateTime?.UtcDateTime:yyyy-MM-ddTHH:mm:ssK}");
         }
     }
 }

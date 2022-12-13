@@ -24,8 +24,7 @@ internal class Startup : FunctionsStartup
 
         builder.Services.Add(new ServiceDescriptor(typeof(ILogger<>), typeof(FunctionLogger<>), ServiceLifetime.Transient));
         builder.Services.AddHttpClient();
-        builder.Services.AddSingleton<IDiscordApiService, DiscordApiService>();
-        builder.Services.AddSingleton<IDiscordEventService, DiscordEventService>();
-        builder.Services.AddSingleton<IDiscordMessageService, DiscordMessageService>();
+        builder.Services.AddSingleton<IDiscordEventService, DiscordEventApiService>();
+        builder.Services.AddSingleton<IDiscordMessageService, DiscordMessageApiService>();
     }
 }

@@ -8,46 +8,47 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Raw.Streaming.Discord.Services;
-internal class DiscordApiService : IDiscordApiService
+
+internal abstract class BaseDiscordApiService
 {
     private static readonly string _discordBotToken = AppSettings.DiscordBotToken;
     private static readonly string _discordApiUrl = AppSettings.DiscordApiUrl;
-    private readonly HttpClient _client;
-    private readonly ILogger _logger;
+    protected readonly HttpClient _client;
+    protected readonly ILogger _logger;
 
-    public DiscordApiService(HttpClient httpClient, ILogger<DiscordApiService> logger)
+    protected BaseDiscordApiService(HttpClient httpClient, ILogger<BaseDiscordApiService> logger)
     {
         _client = httpClient;
         _logger = logger;
     }
 
-    public async Task<T> SendDiscordApiGetRequestAsync<T>(string endpoint)
+    protected async Task<T> SendDiscordApiGetRequestAsync<T>(string endpoint)
     {
         var response = await SendDiscordApiRequestAsync(HttpMethod.Get, endpoint);
         var responseObject = JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync());
         return responseObject;
     }
 
-    public async Task<T> SendDiscordApiPostRequestAsync<T>(string endpoint, DiscordApiContent content = null)
+    protected async Task<T> SendDiscordApiPostRequestAsync<T>(string endpoint, DiscordApiContent? content = null)
     {
         var response = await SendDiscordApiRequestAsync(HttpMethod.Post, endpoint, content);
         var responseObject = JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync());
         return responseObject;
     }
 
-    public async Task<T> SendDiscordApiPatchRequestAsync<T>(string endpoint, DiscordApiContent content = null)
+    protected async Task<T> SendDiscordApiPatchRequestAsync<T>(string endpoint, DiscordApiContent? content = null)
     {
         var response = await SendDiscordApiRequestAsync(HttpMethod.Patch, endpoint, content);
         var responseObject = JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync());
         return responseObject;
     }
 
-    public async Task SendDiscordApiDeleteRequestAsync(string endpoint)
+    protected async Task SendDiscordApiDeleteRequestAsync(string endpoint)
     {
         await SendDiscordApiRequestAsync(HttpMethod.Delete, endpoint);
     }
 
-    private async Task<HttpResponseMessage> SendDiscordApiRequestAsync(HttpMethod method, string endpoint, DiscordApiContent content = null)
+    private async Task<HttpResponseMessage> SendDiscordApiRequestAsync(HttpMethod method, string endpoint, DiscordApiContent? content = null)
     {
         var fullUrl = $"{_discordApiUrl}/{endpoint}";
         var request = new HttpRequestMessage(method, fullUrl);

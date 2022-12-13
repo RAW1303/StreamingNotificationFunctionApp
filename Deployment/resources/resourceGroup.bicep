@@ -21,10 +21,6 @@ var queueSettings = [
     value: 'clips'
   }
   {
-    name: 'DailyScheduleQueueName'
-    value: 'dailyschedule'
-  }
-  {
     name: 'EventScheduleQueueName'
     value: 'eventschedule'
   }
@@ -35,10 +31,6 @@ var queueSettings = [
   {
     name: 'VideosQueueName'
     value: 'videos'
-  }
-  {
-    name: 'WeeklyScheduleQueueName'
-    value: 'weeklyschedule'
   }
 ]
 

@@ -1,4 +1,5 @@
-﻿using Raw.Streaming.Webhook.JsonConverters;
+﻿using Raw.Streaming.Common.Extensions;
+using Raw.Streaming.Webhook.JsonConverters;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -11,13 +12,13 @@ namespace Raw.Streaming.Webhook.Model.Twitch;
 internal class TwitchSchedule
 {
     [JsonPropertyName("broadcaster_id")]
-    public string BroadcasterId { get; set; }
+    public string? BroadcasterId { get; set; }
     [JsonPropertyName("broadcaster_name")]
-    public string BroadcasterName { get; set; }
+    public string? BroadcasterName { get; set; }
     [JsonPropertyName("broadcaster_login")]
-    public string BroadcasterLogin { get; set; }
+    public string? BroadcasterLogin { get; set; }
     [JsonPropertyName("vacation")]
-    public TwitchScheduleVacation Vacation { get; set; }
+    public TwitchScheduleVacation? Vacation { get; set; }
     [JsonPropertyName("segments")]
     public IEnumerable<TwitchScheduleSegment> Segments { get; set; } = new List<TwitchScheduleSegment>();
 
@@ -25,6 +26,9 @@ internal class TwitchSchedule
     { 
         get
         {
+            if(Segments.IsNullOrEmpty())
+                return Enumerable.Empty<TwitchScheduleSegment>();
+
             if(Vacation?.StartTime == null)
                 return Segments;
 
@@ -38,17 +42,17 @@ internal class TwitchScheduleSegment
 {
     [JsonPropertyName("id")]
     [JsonConverter(typeof(Base64ObjectJsonConverter<TwitchScheduleId>))]
-    public TwitchScheduleId Id { get; set; }
+    public TwitchScheduleId? Id { get; set; }
     [JsonPropertyName("start_time")]
     public DateTimeOffset StartTime { get; set; }
     [JsonPropertyName("end_time")]
     public DateTimeOffset? EndTime { get; set; }
     [JsonPropertyName("title")]
-    public string Title { get; set; }
+    public string? Title { get; set; }
     [JsonPropertyName("canceled_until")]
     public DateTimeOffset? CancelledUntil { get; set; }
     [JsonPropertyName("category")]
-    public TwitchGame Category { get; set; }
+    public TwitchGame? Category { get; set; }
     [JsonPropertyName("is_recurring")]
     public bool IsRecurring { get; set; }
 }
@@ -57,7 +61,7 @@ internal class TwitchScheduleSegment
 internal class TwitchScheduleId
 {
     [JsonPropertyName("segmentID")]
-    public string SegmentId { get; set; }
+    public string? SegmentId { get; set; }
     [JsonPropertyName("isoYear")]
     public int IsoYear { get; set; }
     [JsonPropertyName("isoWeek")]
