@@ -49,6 +49,7 @@ internal class EventToDiscordGuildScheduledEventTranslatorTests
 
         //Assert
         Assert.That(result, Is.Not.Null);
+        Assert.That(result, Has.Property("Id").EqualTo(target.Id));
         Assert.That(result, Has.Property("ScheduledEndTime").Not.Null);
         Assert.That(result.ScheduledEndTime, Is.EqualTo(sourceEnd));
     }
@@ -65,6 +66,7 @@ internal class EventToDiscordGuildScheduledEventTranslatorTests
 
         //Assert
         Assert.That(result, Is.Not.Null);
+        Assert.That(result, Has.Property("Id").EqualTo(target.Id));
         Assert.That(result, Has.Property("ScheduledEndTime").Not.Null);
         Assert.That(result.ScheduledEndTime, Is.EqualTo(dateTime));
     }

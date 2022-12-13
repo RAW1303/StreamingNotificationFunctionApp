@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace Raw.Streaming.Discord.Services;
 
-internal abstract class DiscordApiService
+internal abstract class BaseDiscordApiService
 {
     private static readonly string _discordBotToken = AppSettings.DiscordBotToken;
     private static readonly string _discordApiUrl = AppSettings.DiscordApiUrl;
     protected readonly HttpClient _client;
     protected readonly ILogger _logger;
 
-    protected DiscordApiService(HttpClient httpClient, ILogger<DiscordApiService> logger)
+    protected BaseDiscordApiService(HttpClient httpClient, ILogger<BaseDiscordApiService> logger)
     {
         _client = httpClient;
         _logger = logger;

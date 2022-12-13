@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Raw.Streaming.Discord.Services;
 
-internal class DiscordMessageApiService : DiscordApiService, IDiscordMessageService
+internal class DiscordMessageApiService : BaseDiscordApiService, IDiscordMessageService
 {
     public DiscordMessageApiService(HttpClient httpClient, ILogger<DiscordMessageApiService> logger) : base(httpClient, logger) { }
 

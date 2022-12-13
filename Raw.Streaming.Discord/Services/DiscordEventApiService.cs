@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Raw.Streaming.Discord.Services;
 
-internal class DiscordEventApiService : DiscordApiService, IDiscordEventService
+internal class DiscordEventApiService : BaseDiscordApiService, IDiscordEventService
 {
     public DiscordEventApiService(HttpClient httpClient, ILogger<DiscordEventApiService> logger) : base(httpClient, logger) { }
 
@@ -19,9 +19,9 @@ internal class DiscordEventApiService : DiscordApiService, IDiscordEventService
         var existingEvents = await GetScheduledEventsAsync(guildId);
         var botExistingEvents = existingEvents.Where(e => e.CreatorId == AppSettings.DiscordBotApplicationId);
 
-        var eventsToAdd = EventToDiscordGuildScheduledEventTranslator.Translate(events.Where(x => !botExistingEvents.Any(y => x.Url == y.EntityMetadata.Location)));
+        var eventsToAdd = EventToDiscordGuildScheduledEventTranslator.Translate(events.Where(x => !botExistingEvents.Any(y => x.Url == y.EntityMetadata?.Location)));
         var eventsToUpdate = EventToDiscordGuildScheduledEventTranslator.Merge(botExistingEvents, events);
-        var eventsToDelete = botExistingEvents.Where(x => !events.Any(y => x.EntityMetadata.Location == y.Url));
+        var eventsToDelete = botExistingEvents.Where(x => !events.Any(y => x.EntityMetadata?.Location == y.Url));
 
         var tasks = new List<Task>();
         tasks.AddRange(eventsToAdd.Select(x => CreateScheduledEventAsync(guildId, x)));
