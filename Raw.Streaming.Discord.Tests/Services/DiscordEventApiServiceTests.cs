@@ -75,6 +75,17 @@ internal class DiscordEventApiServiceTests : DiscordApiServiceTestBase
         Assert.That(async () => await _service.GetScheduledEventsAsync("testId"), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
     }
 
+    public void GetScheduledEventsAsync_WhenHttpClientReturnsTooManyRequestsStatusCode_ThrowsException()
+    {
+        // Arrange
+        var statusCode = HttpStatusCode.TooManyRequests;
+        var errorMessage = $"Test Error Message {statusCode}";
+        SetupMockHttpMessageHandler(statusCode, errorMessage);
+
+        // Act and Assert
+        Assert.That(async () => await _service.GetScheduledEventsAsync("testId"), Throws.InstanceOf<DiscordApiRateLimitException>().With.Property("Message").Contains(errorMessage));
+    }
+
     [Test, AutoData]
     public async Task CreateScheduledEventAsync_WhenHttpClientReturnsSuccessfully_ReturnsValidEvent(GuildScheduledEvent guildScheduledEvent)
     {
@@ -118,6 +129,17 @@ internal class DiscordEventApiServiceTests : DiscordApiServiceTestBase
 
         // Act and Assert
         Assert.That(async () => await _service.CreateScheduledEventAsync("testId", guildScheduledEvent), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
+    }
+
+    public void CreateScheduledEventAsync_WhenHttpClientReturnsTooManyRequestsStatusCode_ThrowsException(GuildScheduledEvent guildScheduledEvent)
+    {
+        // Arrange
+        var statusCode = HttpStatusCode.TooManyRequests;
+        var errorMessage = $"Test Error Message {statusCode}";
+        SetupMockHttpMessageHandler(statusCode, errorMessage);
+
+        // Act and Assert
+        Assert.That(async () => await _service.CreateScheduledEventAsync("testId", guildScheduledEvent), Throws.InstanceOf<DiscordApiRateLimitException>().With.Property("Message").Contains(errorMessage));
     }
 
     [Test, AutoData]
@@ -167,6 +189,17 @@ internal class DiscordEventApiServiceTests : DiscordApiServiceTestBase
         Assert.That(async () => await _service.UpdateScheduledEventAsync("testGuildId", "testEventId", guildScheduledEvent), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
     }
 
+    public void UpdateScheduledEventAsync_WhenHttpClientReturnsTooManyRequestsStatusCode_ThrowsException(GuildScheduledEvent guildScheduledEvent)
+    {
+        // Arrange
+        var statusCode = HttpStatusCode.TooManyRequests;
+        var errorMessage = $"Test Error Message {statusCode}";
+        SetupMockHttpMessageHandler(statusCode, errorMessage);
+
+        // Act and Assert
+        Assert.That(async () => await _service.UpdateScheduledEventAsync("testGuildId", "testEventId", guildScheduledEvent), Throws.InstanceOf<DiscordApiRateLimitException>().With.Property("Message").Contains(errorMessage));
+    }
+
     [Test]
     public async Task DeleteScheduledEventAsync_WhenHttpClientReturnsSuccessfully_ReturnsValidEventsList()
     {
@@ -204,5 +237,16 @@ internal class DiscordEventApiServiceTests : DiscordApiServiceTestBase
 
         // Act and Assert
         Assert.That(async () => await _service.DeleteScheduledEventAsync("testGuildId", "testEventId"), Throws.InstanceOf<DiscordApiException>().With.Property("Message").Contains(errorMessage));
+    }
+
+    public void DeleteScheduledEventAsync_WhenHttpClientReturnsTooManyRequestsStatusCode_ThrowsException(GuildScheduledEvent guildScheduledEvent)
+    {
+        // Arrange
+        var statusCode = HttpStatusCode.TooManyRequests;
+        var errorMessage = $"Test Error Message {statusCode}";
+        SetupMockHttpMessageHandler(statusCode, errorMessage);
+
+        // Act and Assert
+        Assert.That(async () => await _service.DeleteScheduledEventAsync("testGuildId", "testEventId"), Throws.InstanceOf<DiscordApiRateLimitException>().With.Property("Message").Contains(errorMessage));
     }
 }
