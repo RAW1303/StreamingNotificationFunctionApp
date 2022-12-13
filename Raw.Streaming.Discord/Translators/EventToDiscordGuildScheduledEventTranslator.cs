@@ -52,7 +52,7 @@ namespace Raw.Streaming.Discord.Translators
 
         public static bool IsUpdate(GuildScheduledEvent target, Event source)
         {
-            return source.Url == target.EntityMetadata.Location
+            return source.Url == target.EntityMetadata?.Location
                 && (source.Title != target.Name
                 || source.Description != target.Description
                 || source.Start.DateTime != target.ScheduledStartTime
