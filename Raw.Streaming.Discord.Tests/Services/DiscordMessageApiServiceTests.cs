@@ -10,7 +10,7 @@ using System.Threading;
 namespace Raw.Streaming.Discord.Tests.Services;
 
 [TestFixture]
-internal class DiscordMessageApiServiceTests : DiscordApiServiceTests
+internal class DiscordMessageApiServiceTests : DiscordApiServiceTestBase
 {
     private Mock<ILogger<DiscordMessageApiService>> _loggerMock;
     private DiscordMessageApiService _service;

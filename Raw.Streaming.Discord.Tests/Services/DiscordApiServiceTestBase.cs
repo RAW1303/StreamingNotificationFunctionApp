@@ -1,13 +1,11 @@
 ﻿using Moq.Protected;
-using Raw.Streaming.Discord.Services;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 
 namespace Raw.Streaming.Discord.Tests.Services;
 
-[TestFixture]
-internal class DiscordApiServiceTests
+internal class DiscordApiServiceTestBase
 {
     protected Mock<HttpMessageHandler> _mockHttpMessageHandler;
 

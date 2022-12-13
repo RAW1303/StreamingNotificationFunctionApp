@@ -15,7 +15,7 @@ internal class IEnumerableExtensionsTests
         var result = input.IsNullOrEmpty();
 
         // Assert
-        Assert.IsTrue(result);
+        Assert.That(result, Is.True);
     }
 
     [Test]
@@ -28,7 +28,7 @@ internal class IEnumerableExtensionsTests
         var result = input.IsNullOrEmpty();
 
         // Assert
-        Assert.IsTrue(result);
+        Assert.That(result, Is.True);
     }
 
     [Test]
@@ -41,6 +41,6 @@ internal class IEnumerableExtensionsTests
         var result = input.IsNullOrEmpty();
 
         // Assert
-        Assert.IsFalse(result);
+        Assert.That(result, Is.False);
     }
 }

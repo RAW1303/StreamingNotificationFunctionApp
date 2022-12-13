@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Raw.Streaming.Discord.Services;
+
 internal abstract class DiscordApiService
 {
     private static readonly string _discordBotToken = AppSettings.DiscordBotToken;
@@ -15,7 +16,7 @@ internal abstract class DiscordApiService
     protected readonly HttpClient _client;
     protected readonly ILogger _logger;
 
-    public DiscordApiService(HttpClient httpClient, ILogger<DiscordApiService> logger)
+    protected DiscordApiService(HttpClient httpClient, ILogger<DiscordApiService> logger)
     {
         _client = httpClient;
         _logger = logger;

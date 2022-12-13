@@ -16,9 +16,9 @@ namespace Raw.Streaming.Discord.Model.DiscordApi
         [JsonPropertyName("creator_id")]
         public string CreatorId { get; set; }
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
         [JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         [JsonPropertyName("scheduled_start_time")]
         public DateTimeOffset ScheduledStartTime { get; set; }
         [JsonPropertyName("scheduled_end_time")]
@@ -32,16 +32,16 @@ namespace Raw.Streaming.Discord.Model.DiscordApi
         [JsonPropertyName("entity_id")]
         public int? EntityId { get; set; }
         [JsonPropertyName("entity_metadata")]
-        public GuildScheduledEventEntityMetadata EntityMetadata { get; set; }
+        public GuildScheduledEventEntityMetadata? EntityMetadata { get; set; }
         [JsonPropertyName("image")]
-        public string Image { get; set; }
+        public string? Image { get; set; }
     }
 
     [ExcludeFromCodeCoverage]
     internal class GuildScheduledEventEntityMetadata
     {
         [JsonPropertyName("location")]
-        public string Location { get; set; }
+        public string? Location { get; set; }
     }
 
     internal enum GuildScheduledEventPrivacyLevel
