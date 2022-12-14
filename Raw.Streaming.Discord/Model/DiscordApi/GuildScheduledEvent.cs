@@ -22,7 +22,7 @@ namespace Raw.Streaming.Discord.Model.DiscordApi
         [JsonPropertyName("scheduled_start_time")]
         public DateTimeOffset ScheduledStartTime { get; set; }
         [JsonPropertyName("scheduled_end_time")]
-        public DateTimeOffset ScheduledEndTime { get; set; }
+        public DateTimeOffset? ScheduledEndTime { get; set; }
         [JsonPropertyName("privacy_level")]
         public GuildScheduledEventPrivacyLevel PrivacyLevel { get; set; }
         [JsonPropertyName("status")]
