@@ -53,12 +53,10 @@ internal class DiscordEventApiServiceTests : DiscordApiServiceTestBase
                 ItExpr.IsAny<CancellationToken>()
             );
 
-        Assert.That(result, Has.One.Items);
+        Assert.That(result, Has.Exactly(2).Items);
         Assert.That(result, Has.One.With.Property("Id").EqualTo("1026468392015769610"));
-        Assert.That(result, Has.One.With.Property("Description").EqualTo("sdgdfgffdsgfdsg"));
-        Assert.That(result, Has.One.With.Property("ScheduledStartTime").EqualTo(new DateTimeOffset(2022, 10, 03, 13, 00, 00, 520, TimeSpan.FromHours(0))));
-        Assert.That(result, Has.One.With.Property("ScheduledEndTime").EqualTo(new DateTimeOffset(2022, 10, 03, 15, 00, 00, 520, TimeSpan.FromHours(0))));
-        Assert.That(result, Has.One.With.Property("EntityMetadata").With.Property("Location").EqualTo("https://twitch.tv/royweller"));
+        Assert.That(result, Has.One.With.Property("Id").EqualTo("1026468392015769611"));
+        Assert.That(result, Has.One.With.Property("ScheduledEndTime").Null);
     }
 
     [TestCase(HttpStatusCode.BadRequest)]
